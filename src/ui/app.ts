@@ -25,6 +25,8 @@ interface AppState {
   aiChar:     Character | null;
   engine:     ChallengeEngine | null;
   combatState: CombatState | null;
+  playerWeaponIndex:  number;
+  playerProfileIndex: number;
 }
 
 /** Boot the application. */
@@ -35,6 +37,8 @@ export function startApp(container: HTMLElement): void {
     aiChar:     null,
     engine:     null,
     combatState: null,
+    playerWeaponIndex:  0,
+    playerProfileIndex: 0,
   };
 
   function goToSelection(): void {
@@ -43,9 +47,11 @@ export function startApp(container: HTMLElement): void {
     app.aiChar      = null;
     app.engine      = null;
     app.combatState = null;
-    mountSelectionScreen(container, ({ playerCharId, aiCharId }) => {
-      app.playerChar = getCharacterById(playerCharId) ?? null;
-      app.aiChar     = getCharacterById(aiCharId) ?? null;
+    mountSelectionScreen(container, ({ playerCharId, aiCharId, playerWeaponIndex, playerProfileIndex }) => {
+      app.playerChar          = getCharacterById(playerCharId) ?? null;
+      app.aiChar              = getCharacterById(aiCharId) ?? null;
+      app.playerWeaponIndex   = playerWeaponIndex;
+      app.playerProfileIndex  = playerProfileIndex;
       if (app.playerChar && app.aiChar) goToCombat();
     });
   }
@@ -55,7 +61,15 @@ export function startApp(container: HTMLElement): void {
 
     const dice   = new RealDiceRoller();
     const engine = new ChallengeEngine(app.playerChar, app.aiChar, dice);
-    const state  = buildInitialState(app.playerChar, app.aiChar);
+    let   state  = buildInitialState(app.playerChar, app.aiChar);
+
+    // Pre-select the player's weapon chosen on the selection screen so the
+    // engine never pauses to ask for weapon input during the Focus phase.
+    const preSelected = app.playerChar.weapons[app.playerWeaponIndex]
+      ?.profiles[app.playerProfileIndex];
+    if (preSelected) {
+      state = { ...state, player: { ...state.player, selectedWeaponProfile: preSelected } };
+    }
 
     app.screen      = 'combat';
     app.engine      = engine;
@@ -76,6 +90,9 @@ export function startApp(container: HTMLElement): void {
       },
       onWithdraw() {
         advanceWith({ useWithdraw: true });
+      },
+      onAbandon() {
+        goToSelection();
       },
     };
 
@@ -113,6 +130,7 @@ export function startApp(container: HTMLElement): void {
         onContinue:  () => advanceWith({ continueChallenge: true }),
         onEnd:       () => advanceWith({ continueChallenge: false }),
         onWithdraw:  () => advanceWith({ useWithdraw: true }),
+        onAbandon:   () => goToSelection(),
       },
     );
   }

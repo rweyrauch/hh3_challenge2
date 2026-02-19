@@ -141,7 +141,7 @@ export class ChallengeEngine {
         return { state, waitingForInput: true };
       }
 
-      let next = { ...state, player: { ...state.player, selectedGambit: gambitId } };
+      let next: CombatState = { ...state, player: { ...state.player, selectedGambit: gambitId } };
 
       // Handle Feint and Riposte selected by the player
       if (gambitId === 'feint-and-riposte') {
@@ -170,7 +170,7 @@ export class ChallengeEngine {
         state.player.feintAndRiposteBan,
       );
 
-      let next = { ...state, ai: { ...state.ai, selectedGambit: aiGambitId } };
+      let next: CombatState = { ...state, ai: { ...state.ai, selectedGambit: aiGambitId } };
 
       // Taunt and Bait: increment counter for AI
       if (aiGambitId === 'taunt-and-bait') {
@@ -179,8 +179,13 @@ export class ChallengeEngine {
 
       next = addLog(next, `AI selects gambit: ${aiGambitId}`, 'info');
 
-      // Transition to focus phase; player picks weapon first
+      // Transition to focus phase.
+      // If the player's weapon was pre-selected (chosen once at startup),
+      // advance directly through focus instead of waiting for weapon input.
       next = { ...next, phase: 'focus' };
+      if (next.player.selectedWeaponProfile !== null) {
+        return this.advanceFocus(next, undefined);
+      }
       return { state: next, waitingForInput: true }; // wait for weapon selection
     }
 
@@ -210,7 +215,7 @@ export class ChallengeEngine {
     // AI picks weapon
     if (state.ai.selectedWeaponProfile === null) {
       const profile = this.selectAIWeapon();
-      let next = { ...state, ai: { ...state.ai, selectedWeaponProfile: profile } };
+      let next: CombatState = { ...state, ai: { ...state.ai, selectedWeaponProfile: profile } };
       next = addLog(next, `AI selects weapon: ${profile.profileName}`, 'info');
 
       // Resolve Focus Roll
@@ -334,14 +339,14 @@ export class ChallengeEngine {
       player: {
         ...next.player,
         selectedGambit: null,
-        selectedWeaponProfile: null,
+        // selectedWeaponProfile is intentionally kept — chosen once at startup
         feintAndRiposteBan: null,
         woundsInflictedThisChallenge: 0, // reset for next round comparison
       },
       ai: {
         ...next.ai,
         selectedGambit: null,
-        selectedWeaponProfile: null,
+        selectedWeaponProfile: null, // reset so AI re-runs weapon selection + focus roll
         feintAndRiposteBan: null,
         woundsInflictedThisChallenge: 0,
       },

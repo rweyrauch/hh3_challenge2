@@ -8,15 +8,17 @@
  */
 import type { Character } from '../../models/character.js';
 import type { Gambit, GambitId } from '../../models/gambit.js';
-import { CUSTODES_CHARACTERS }  from './custodes.js';
-import { ORK_CHARACTERS }       from './orks.js';
-import { CORE_GAMBITS }         from '../gambits/coreGambits.js';
-import { CUSTODES_GAMBITS }     from '../gambits/custodes.js';
-import { ORK_GAMBITS }          from '../gambits/orks.js';
+import { CUSTODES_CHARACTERS }       from './custodes.js';
+import { ORK_CHARACTERS }            from './orks.js';
+import { LEGION_ASTARTES_CHARACTERS } from './legionAstartes.js';
+import { CORE_GAMBITS }              from '../gambits/coreGambits.js';
+import { CUSTODES_GAMBITS }          from '../gambits/custodes.js';
+import { ORK_GAMBITS }               from '../gambits/orks.js';
 
 export const ALL_CHARACTERS: Character[] = [
   ...CUSTODES_CHARACTERS,
   ...ORK_CHARACTERS,
+  ...LEGION_ASTARTES_CHARACTERS,
 ];
 
 const CHAR_MAP = new Map<string, Character>(
@@ -65,8 +67,9 @@ export function getCharactersByFaction(): { faction: string; characters: Charact
 /** Human-readable faction label. */
 export function getFactionLabel(faction: string): string {
   const labels: Record<string, string> = {
-    'legio-custodes': 'Legio Custodes',
-    'orks': 'Orks',
+    'legio-custodes':  'Legio Custodes',
+    'orks':            'Orks',
+    'legion-astartes': 'Legion Astartes',
   };
   return labels[faction] ?? faction;
 }

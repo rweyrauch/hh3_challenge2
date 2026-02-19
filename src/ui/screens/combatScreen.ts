@@ -24,6 +24,7 @@ export interface CombatScreenCallbacks {
   onContinue: () => void;
   onEnd: () => void;
   onWithdraw: () => void;
+  onAbandon: () => void;
 }
 
 /** Mount the combat screen and render the initial state. */
@@ -35,6 +36,8 @@ export function mountCombatScreen(
   callbacks: CombatScreenCallbacks,
 ): void {
   container.innerHTML = buildShell(playerChar, aiChar);
+  container.querySelector('#btn-abandon')
+    ?.addEventListener('click', callbacks.onAbandon);
   updateCombatScreen(container, state, playerChar, aiChar, callbacks);
 }
 
@@ -145,6 +148,13 @@ function buildShell(playerChar: Character, aiChar: Character): string {
 
       <!-- Combat log -->
       <div id="cs-log" class="mb-2"></div>
+
+      <!-- Persistent navigation -->
+      <div class="text-end">
+        <button id="btn-abandon" class="btn btn-outline-secondary btn-sm">
+          ✕ Abandon &amp; Return to Selection
+        </button>
+      </div>
     </div>
 
     <!-- Weapon selection modal -->
