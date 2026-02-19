@@ -1,0 +1,88 @@
+/* ── HH3 Challenge Phase Simulator — Custom Styles ── */
+
+/* Stat block table: compact */
+.stat-table {
+  font-size: 0.78rem;
+}
+.stat-table th,
+.stat-table td {
+  padding: 2px 5px;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Wound pips */
+.wound-pip {
+  font-size: 0.65rem;
+  padding: 3px 5px;
+  border-radius: 3px;
+}
+
+/* Shake animation — triggered when a model takes damage */
+@keyframes shake {
+  0%   { transform: translateX(0); }
+  10%  { transform: translateX(-6px) rotate(-2deg); }
+  20%  { transform: translateX(6px)  rotate(2deg); }
+  30%  { transform: translateX(-4px); }
+  40%  { transform: translateX(4px); }
+  50%  { transform: translateX(-2px); }
+  60%  { transform: translateX(2px); }
+  100% { transform: translateX(0); }
+}
+.shake {
+  animation: shake 0.5s ease-in-out;
+}
+
+/* Gambit buttons */
+.gambit-btn {
+  min-height: 56px;
+  text-align: left;
+}
+.gambit-name {
+  display: block;
+  font-size: 0.8rem;
+  line-height: 1.1;
+}
+.gambit-desc {
+  font-size: 0.65rem;
+  line-height: 1.2;
+  margin-top: 2px;
+  color: #9ca3af;
+}
+
+/* Combat log */
+.combat-log {
+  font-family: 'Courier New', Courier, monospace;
+}
+.log-entry {
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  padding: 1px 0;
+}
+.log-tag {
+  opacity: 0.5;
+  margin-right: 4px;
+}
+
+/* VS divider on selection screen */
+.vs-divider {
+  padding: 1rem;
+}
+
+/* Mobile-friendly stat block */
+@media (max-width: 576px) {
+  .stat-table th,
+  .stat-table td {
+    font-size: 0.7rem;
+    padding: 2px 3px;
+  }
+
+  .gambit-btn {
+    min-height: 40px;
+  }
+}
+
+/* Phase header */
+#cs-phase {
+  font-size: 0.9rem;
+  padding: 6px 12px;
+}
