@@ -64,8 +64,11 @@ const LION_EL_JONSON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [LION_SWORD, WOLF_BLADE],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['sword-of-the-order', 'the-lions-choler'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const CORSWAIN: Character = {
@@ -80,7 +83,7 @@ const CORSWAIN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [CORSWAIN_THE_BLADE],
-  factionGambitIds: [],
+  factionGambitIds: ['sword-of-the-order'],
   specialRules: [],
 };
 
@@ -96,7 +99,7 @@ const MARDUK_SEDRAS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [DEATH_OF_WORLDS],
-  factionGambitIds: [],
+  factionGambitIds: ['sword-of-the-order'],
   specialRules: [],
 };
 
@@ -116,8 +119,11 @@ const JAGHATAI_KHAN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [WHITE_TIGER_DAO],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['the-path-of-the-warrior', 'death-by-a-thousand-cuts'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const QIN_XA: Character = {
@@ -132,7 +138,7 @@ const QIN_XA: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [TAILS_OF_THE_DRAGON],
-  factionGambitIds: [],
+  factionGambitIds: ['the-path-of-the-warrior'],
   specialRules: [],
 };
 
@@ -148,7 +154,7 @@ const HIBOU_KHAN: Character = {
     Sv: 2, Inv: 5,
   },
   weapons: [BREATH_OF_THE_STORM],
-  factionGambitIds: [],
+  factionGambitIds: ['the-path-of-the-warrior'],
   specialRules: [],
 };
 
@@ -168,8 +174,11 @@ const LEMAN_RUSS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [AXE_OF_HELWINTER, SWORD_OF_BALENIGHT],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory', 'howl-of-the-death-wolf'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 5 },
+  ],
 };
 
 const HVARL_RED_BLADE: Character = {
@@ -184,7 +193,7 @@ const HVARL_RED_BLADE: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [HEARTH_SPLITTER],
-  factionGambitIds: [],
+  factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
   specialRules: [],
 };
 
@@ -200,7 +209,7 @@ const GEIGOR_FELL_HAND: Character = {
     Sv: 2, Inv: 5,
   },
   weapons: [THE_FELL_HAND],
-  factionGambitIds: [],
+  factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
   specialRules: [],
 };
 
@@ -220,8 +229,11 @@ const ROGAL_DORN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [STORMS_TEETH],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['a-wall-unyielding'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const SIGISMUND: Character = {
@@ -236,7 +248,7 @@ const SIGISMUND: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [THE_BLACK_SWORD],
-  factionGambitIds: [],
+  factionGambitIds: ['a-wall-unyielding', 'deaths-champion'],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
     { name: 'Precision', threshold: 4 },
@@ -255,7 +267,7 @@ const FAFNIR_RANN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [HEADSMAN_AND_HUNTER],
-  factionGambitIds: [],
+  factionGambitIds: ['a-wall-unyielding', 'executioners-tax'],
   specialRules: [],
 };
 
@@ -271,7 +283,7 @@ const EVANDER_GARRIUS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [SUBJUGATOR],
-  factionGambitIds: [],
+  factionGambitIds: ['a-wall-unyielding'],
   specialRules: [],
 };
 
@@ -287,7 +299,7 @@ const CAMBA_DIAZ: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [DURENDA],
-  factionGambitIds: [],
+  factionGambitIds: ['a-wall-unyielding'],
   specialRules: [],
 };
 
@@ -303,7 +315,7 @@ const ALEXIS_POLUX: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [SOLARITE_POWER_GAUNTLET],
-  factionGambitIds: [],
+  factionGambitIds: ['a-wall-unyielding'],
   specialRules: [],
 };
 
@@ -323,8 +335,11 @@ const SANGUINIUS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [BLADE_ENCARMINE, SPEAR_OF_TELESTO, MOONSILVER_BLADE],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['thrall-of-the-red-thirst', 'angelic-descent'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 6 },
+  ],
 };
 
 const RALDORON: Character = {
@@ -339,7 +354,7 @@ const RALDORON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [ENCARMINE_WARBLADE],
-  factionGambitIds: [],
+  factionGambitIds: ['thrall-of-the-red-thirst'],
   specialRules: [],
 };
 
@@ -355,7 +370,7 @@ const DOMINION_ZEPHON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [SPIRITUM_SANGUIS],
-  factionGambitIds: [],
+  factionGambitIds: ['thrall-of-the-red-thirst'],
   specialRules: [{ name: 'EternalWarrior', value: 1 }],
 };
 
@@ -371,7 +386,7 @@ const ASTER_CROHNE: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [SAIPHAN_SHARD_AXE],
-  factionGambitIds: [],
+  factionGambitIds: ['thrall-of-the-red-thirst'],
   specialRules: [],
 };
 
@@ -391,8 +406,11 @@ const FERRUS_MANUS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [FORGEBREAKER],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['legion-of-one', 'tempered-by-war'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 5 },
+  ],
 };
 
 const SHADRAK_MEDUSON: Character = {
@@ -407,7 +425,7 @@ const SHADRAK_MEDUSON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [ALBIAN_POWER_GLADIUS],
-  factionGambitIds: [],
+  factionGambitIds: ['legion-of-one'],
   specialRules: [],
 };
 
@@ -423,7 +441,7 @@ const IRON_FATHER: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [ARTIFICER_POWER_AXE],
-  factionGambitIds: [],
+  factionGambitIds: ['legion-of-one'],
   specialRules: [],
 };
 
@@ -443,8 +461,11 @@ const ROBOUTE_GUILLIMAN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [GLADIUS_INCANDOR, HAND_OF_DOMINION],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['aegis-of-wisdom', 'calculating-swordsman'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const REMUS_VENTANUS: Character = {
@@ -459,7 +480,7 @@ const REMUS_VENTANUS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [PHAETON],
-  factionGambitIds: [],
+  factionGambitIds: ['aegis-of-wisdom'],
   specialRules: [],
 };
 
@@ -479,8 +500,11 @@ const VULKAN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [DAWNBRINGER],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 3 }],
+  factionGambitIds: ['duty-is-sacrifice'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 3 },
+    { name: 'Bulky', value: 5 },
+  ],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -499,8 +523,11 @@ const CORVUS_CORAX: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [TALONIS, CORVIDINE_TALONS],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['decapitation-strike', 'the-shadowed-lord'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 6 },
+  ],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -520,7 +547,7 @@ const SAUL_TARVITZ: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [CHARNABAL_BROADSWORD],
-  factionGambitIds: [],
+  factionGambitIds: ['paragon-of-excellence', 'bite-of-the-betrayed'],
   specialRules: [],
 };
 

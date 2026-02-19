@@ -79,6 +79,11 @@ function resolveAttackSequence(
   const d3Result = attacker.selectedGambit === 'flurry-of-blows' ? dice.rollD3() : 1;
   const mods = getStrikeModifiers(attacker.selectedGambit, state, isForPlayer, d3Result);
 
+  // Defender's gambit may override their Toughness (Steadfast Resilience, Tempered by War)
+  const defenderMods = getStrikeModifiers(
+    defender.selectedGambit, state, !isForPlayer, 1, attackerChar.stats.WS,
+  );
+
   let atkWS = attackerChar.stats.WS + mods.wsDelta;
 
   // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n)
@@ -113,6 +118,8 @@ function resolveAttackSequence(
 
   const defWS = defenderChar.stats.WS;
   const defT  = defenderChar.stats.T;
+  // Steadfast Resilience / Tempered by War may override defender's effective Toughness
+  const effectiveDefT = defenderMods.overrideDefenderToughness ?? defT;
 
   // Effective Strength and Damage for wound/damage calc
   const effectiveS = Math.max(1, atkS + mods.strengthDelta);
@@ -124,8 +131,9 @@ function resolveAttackSequence(
   }
   const baseDmg = profile.damage;
 
+  const tNote = effectiveDefT !== defT ? ` (effective T${effectiveDefT})` : '';
   log.push(
-    `${attackerChar.name} attacks: ${atkA} attacks, WS${atkWS} vs WS${defWS}, S${effectiveS} vs T${defT}, AP${weaponAP ?? '-'}`,
+    `${attackerChar.name} attacks: ${atkA} attacks, WS${atkWS} vs WS${defWS}, S${effectiveS} vs T${defT}${tNote}, AP${weaponAP ?? '-'}`,
   );
 
   // ── Hit Tests ────────────────────────────────────────────────────────────
@@ -138,9 +146,13 @@ function resolveAttackSequence(
     const isHit = hitTN <= 6 && roll >= hitTN;
 
     // Check for Critical Hit special rule (extra wound on high roll)
+    // Sources: weapon special rules AND gambit modifiers (e.g., Executioner's Tax, Death's Champion)
     let critHit = false;
     for (const sr of profile.specialRules) {
       if (sr.name === 'CriticalHit' && roll >= sr.threshold) critHit = true;
+    }
+    if (mods.criticalHitThreshold !== null && roll >= mods.criticalHitThreshold) {
+      critHit = true;
     }
 
     if (isHit || critHit) {
@@ -166,13 +178,21 @@ function resolveAttackSequence(
   }
 
   // ── Wound Tests ──────────────────────────────────────────────────────────
-  const woundTN = getWoundTargetNumber(effectiveS, defT);
+  // Base wound TN uses effectiveDefT (may be overridden by Steadfast Resilience / Tempered by War)
+  const baseWoundTN = getWoundTargetNumber(effectiveS, effectiveDefT);
   const woundRolls = dice.rollNd6(hits);
   let wounds          = 0;
   let breachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
   let shredTriggers   = 0;  // wounds that deal +1 Damage (Shred rule)
+  // Phage(T): Merciless Strike reduces defender T by 1 per unsaved wound
+  let currentDefT = effectiveDefT;
 
   for (const roll of woundRolls) {
+    // With Phage(T), recompute the wound TN each time as T decreases
+    const woundTN = mods.phageToughness
+      ? getWoundTargetNumber(effectiveS, currentDefT)
+      : baseWoundTN;
+
     let isWound = woundTN <= 6 && roll >= woundTN;
     for (const sr of profile.specialRules) {
       // Rending: high hit roll auto-wounds (approximated on wound roll here)
@@ -180,6 +200,7 @@ function resolveAttackSequence(
     }
     if (isWound) {
       wounds++;
+      if (mods.phageToughness) currentDefT = Math.max(1, currentDefT - 1);
       for (const sr of profile.specialRules) {
         // Breaching: wound roll ≥ threshold → this wound ignores normal armour (AP2)
         if (sr.name === 'Breaching' && roll >= sr.threshold) breachingWounds++;
@@ -189,7 +210,8 @@ function resolveAttackSequence(
     }
   }
 
-  log.push(`Wound rolls [${woundRolls.join(',')}] vs TN${woundTN} → ${wounds} wound(s)`);
+  const phageNote = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
+  log.push(`Wound rolls [${woundRolls.join(',')}] vs TN${baseWoundTN}${phageNote} → ${wounds} wound(s)`);
 
   if (wounds === 0) {
     return {
@@ -273,9 +295,13 @@ function resolveAttackSequence(
   if (mods.damageSetToOne) dmgPerWound = 1;
 
   // Eternal Warrior: reduce damage by X, minimum 1
+  // A Wall Unyielding also grants EW(1) to its user during the opponent's Strike Step
   let ewReduction = 0;
   for (const sr of defenderChar.specialRules) {
     if (sr.name === 'EternalWarrior') ewReduction = sr.value;
+  }
+  if (defender.selectedGambit === 'a-wall-unyielding') {
+    ewReduction = Math.max(ewReduction, 1);
   }
   dmgPerWound = Math.max(1, dmgPerWound - ewReduction);
 
@@ -311,6 +337,83 @@ function resolveAttackSequence(
 }
 
 /**
+ * Resolve Spiteful Demise (Iron Warriors): when reduced to 0 wounds the
+ * model immediately inflicts one automatic hit on the opponent
+ * (S6/AP4/D2, Breaching(5+)).
+ */
+function resolveSpitefullDemise(
+  dice: DiceRoller,
+  attackerName: string,
+  defenderState: CombatantState,
+  defenderChar: Character,
+  log: string[],
+): { newWounds: number; isCasualty: boolean } {
+  log.push(`${attackerName} (Spiteful Demise): 1 automatic hit — S6/AP4/D2, Breaching(5+)!`);
+  const woundTN = getWoundTargetNumber(6, defenderChar.stats.T);
+  const woundRoll = dice.rollD6();
+  const breaching = woundRoll >= 5;
+  const isWound   = (woundTN <= 6 && woundRoll >= woundTN) || breaching;
+  log.push(`Spiteful Demise: Wound roll ${woundRoll} vs TN${woundTN}${breaching ? ' (Breaching)' : ''} → ${isWound ? 'wound' : 'no wound'}`);
+  if (!isWound) return { newWounds: defenderState.currentWounds, isCasualty: false };
+
+  const weaponAP = breaching ? 2 : 4;
+  const effectiveSave = getEffectiveSave(defenderChar.stats.Sv, defenderChar.stats.Inv, weaponAP);
+  if (effectiveSave !== null) {
+    const saveRoll = dice.rollD6();
+    const saved = saveRoll >= effectiveSave;
+    log.push(`Spiteful Demise: Save roll ${saveRoll} vs ${effectiveSave}+ → ${saved ? 'saved' : 'failed'}`);
+    if (saved) return { newWounds: defenderState.currentWounds, isCasualty: false };
+  } else {
+    log.push(`Spiteful Demise: No save (AP${weaponAP} vs Sv${defenderChar.stats.Sv}/Inv${defenderChar.stats.Inv ?? '-'})`);
+  }
+
+  // Apply D2 damage with EW reduction
+  let ewReduction = 0;
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name === 'EternalWarrior') ewReduction = sr.value;
+  }
+  const damage = Math.max(1, 2 - ewReduction);
+  const newWounds  = Math.max(0, defenderState.currentWounds - damage);
+  const isCasualty = newWounds <= 0;
+  log.push(
+    `Spiteful Demise: ${damage} damage. ${defenderChar.name}: ${defenderState.currentWounds} → ${newWounds}` +
+    (isCasualty ? ' (CASUALTY)' : ''),
+  );
+  return { newWounds, isCasualty };
+}
+
+/**
+ * Apply Duty is Sacrifice self-wounds (Salamanders).
+ * The gambit user suffers automatic wounds (AP2, D1; Invulnerable save only).
+ */
+function applyDutyIsSacrificeWounds(
+  dice: DiceRoller,
+  selfState: CombatantState,
+  selfChar: Character,
+  wounds: number,
+  log: string[],
+): { newWounds: number; isCasualty: boolean } {
+  log.push(`Duty is Sacrifice: ${selfChar.name} suffers ${wounds} automatic wound(s) (AP2, D1; Inv save only).`);
+  let current = selfState.currentWounds;
+  for (let i = 0; i < wounds && current > 0; i++) {
+    const inv = selfChar.stats.Inv;
+    if (inv !== null) {
+      const roll = dice.rollD6();
+      if (roll >= inv) {
+        log.push(`  Inv save ${roll} vs ${inv}+ — saved.`);
+        continue;
+      }
+      log.push(`  Inv save ${roll} vs ${inv}+ — failed.`);
+    } else {
+      log.push('  No Invulnerable Save — wound taken.');
+    }
+    current = Math.max(0, current - 1);
+  }
+  if (current <= 0) log.push(`  ${selfChar.name} is removed as a Casualty!`);
+  return { newWounds: current, isCasualty: current <= 0 };
+}
+
+/**
  * Resolve the full Strike Step.
  *
  * The model that won Challenge Advantage attacks first.  If they kill the
@@ -340,6 +443,24 @@ export function resolveStrikeStep(
   let updatedState = { ...state };
   let playerResult: AttackResult;
   let aiResult: AttackResult;
+
+  // ── Duty is Sacrifice: self-wounds at the start of the Strike Step ────────
+  if (state.player.selectedGambit === 'duty-is-sacrifice') {
+    const playerMods = getStrikeModifiers('duty-is-sacrifice', state, true);
+    const dis = applyDutyIsSacrificeWounds(dice, state.player, playerChar, playerMods.dutyIsSacrificeWounds, log);
+    updatedState = {
+      ...updatedState,
+      player: { ...updatedState.player, currentWounds: dis.newWounds, isCasualty: dis.isCasualty },
+    };
+  }
+  if (state.ai.selectedGambit === 'duty-is-sacrifice') {
+    const aiMods = getStrikeModifiers('duty-is-sacrifice', state, false);
+    const dis = applyDutyIsSacrificeWounds(dice, state.ai, aiChar, aiMods.dutyIsSacrificeWounds, log);
+    updatedState = {
+      ...updatedState,
+      ai: { ...updatedState.ai, currentWounds: dis.newWounds, isCasualty: dis.isCasualty },
+    };
+  }
 
   if (advantage === 'player') {
     // Player attacks first
@@ -376,6 +497,15 @@ export function resolveStrikeStep(
           state.player.woundsInflictedThisChallenge + playerResult.totalDamage,
       },
     };
+
+    // Spiteful Demise: AI inflicts auto-hit on player when reduced to 0 wounds
+    if (playerResult.defenderIsCasualty && updatedState.ai.selectedGambit === 'spiteful-demise') {
+      const sd = resolveSpitefullDemise(dice, aiChar.name, updatedState.player, playerChar, log);
+      updatedState = {
+        ...updatedState,
+        player: { ...updatedState.player, currentWounds: sd.newWounds, isCasualty: sd.isCasualty },
+      };
+    }
 
     // AI attacks second (only if not already a casualty)
     if (!playerResult.defenderIsCasualty) {
@@ -424,6 +554,15 @@ export function resolveStrikeStep(
           state.ai.woundsInflictedThisChallenge + aiResult.totalDamage,
       },
     };
+
+    // Spiteful Demise: player inflicts auto-hit on AI when reduced to 0 wounds
+    if (aiResult.defenderIsCasualty && updatedState.player.selectedGambit === 'spiteful-demise') {
+      const sd = resolveSpitefullDemise(dice, playerChar.name, updatedState.ai, aiChar, log);
+      updatedState = {
+        ...updatedState,
+        ai: { ...updatedState.ai, currentWounds: sd.newWounds, isCasualty: sd.isCasualty },
+      };
+    }
 
     if (!aiResult.defenderIsCasualty) {
       playerResult = resolveAttackSequence(

@@ -16,6 +16,8 @@ import { TRAITOR_LEGION_CHARACTERS }  from './traitorLegions.js';
 import { CORE_GAMBITS }               from '../gambits/coreGambits.js';
 import { CUSTODES_GAMBITS }           from '../gambits/custodes.js';
 import { ORK_GAMBITS }                from '../gambits/orks.js';
+import { LOYALIST_LEGION_GAMBITS }    from '../gambits/loyalistLegions.js';
+import { TRAITOR_LEGION_GAMBITS }     from '../gambits/traitorLegions.js';
 
 export const ALL_CHARACTERS: Character[] = [
   ...CUSTODES_CHARACTERS,
@@ -34,7 +36,13 @@ export function getCharacterById(id: string): Character | undefined {
 }
 
 /** All gambits indexed by id. */
-const ALL_GAMBITS: Gambit[] = [...CORE_GAMBITS, ...CUSTODES_GAMBITS, ...ORK_GAMBITS];
+const ALL_GAMBITS: Gambit[] = [
+  ...CORE_GAMBITS,
+  ...CUSTODES_GAMBITS,
+  ...ORK_GAMBITS,
+  ...LOYALIST_LEGION_GAMBITS,
+  ...TRAITOR_LEGION_GAMBITS,
+];
 const GAMBIT_MAP = new Map<GambitId, Gambit>(
   ALL_GAMBITS.map(g => [g.id, g]),
 );

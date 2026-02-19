@@ -32,7 +32,8 @@ export type SpecialRule =
   | { name: 'Fear';             value: number }       // out of scope for Challenge
   | { name: 'Shred';            threshold: number }   // re-roll wound tests below threshold
   | { name: 'Breaching';        threshold: number }   // ignore armour on roll ≥ threshold
-  | { name: 'Precision';        threshold: number };  // allocate wound to specific model
+  | { name: 'Precision';        threshold: number }   // allocate wound to specific model
+  | { name: 'Bulky';            value: number };      // counts as X models; used by Angelic Descent
 
 /** A single attack profile for a melee weapon. */
 export interface WeaponProfile {

@@ -55,8 +55,11 @@ const FULGRIM: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [LAERAN_BLADE],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['paragon-of-excellence'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const CAPTAIN_LUCIUS: Character = {
@@ -71,7 +74,9 @@ const CAPTAIN_LUCIUS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [BLADES_OF_LUCIUS],
-  factionGambitIds: [],
+  // The Faultless Blade special rule causes Paragon of Excellence to give +4
+  // instead of the standard +2; handled by the engine via characterId check.
+  factionGambitIds: ['paragon-of-excellence'],
   specialRules: [],
 };
 
@@ -91,8 +96,11 @@ const PERTURABO: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [LOGOS_ARRAY, FORGEBREAKER_DESECRATED],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['spiteful-demise', 'the-breaker'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 6 },
+  ],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -111,8 +119,11 @@ const KONRAD_CURZE: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [MERCY_AND_FORGIVENESS],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['nostraman-courage', 'a-death-long-foreseen'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const SEVATAR: Character = {
@@ -127,7 +138,7 @@ const SEVATAR: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [NIGHTS_WHISPER],
-  factionGambitIds: [],
+  factionGambitIds: ['nostraman-courage'],
   specialRules: [{ name: 'Precision', threshold: 4 }],
 };
 
@@ -147,8 +158,11 @@ const ANGRON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [GOREFATHER_AND_GORECHILD],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['violent-overkill'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const KHARN_THE_BLOODY: Character = {
@@ -163,7 +177,7 @@ const KHARN_THE_BLOODY: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [THE_CUTTER, GORECHILD_REFORGED],
-  factionGambitIds: [],
+  factionGambitIds: ['violent-overkill'],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
     { name: 'Precision', threshold: 5 },
@@ -186,8 +200,11 @@ const MORTARION: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [SILENCE],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 3 }],
+  factionGambitIds: ['steadfast-resilience'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 3 },
+    { name: 'Bulky', value: 5 },
+  ],
 };
 
 const CALAS_TYPHON: Character = {
@@ -202,7 +219,7 @@ const CALAS_TYPHON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [LACRIMAE],
-  factionGambitIds: [],
+  factionGambitIds: ['steadfast-resilience', 'witchblood'],
   specialRules: [{ name: 'EternalWarrior', value: 1 }],
 };
 
@@ -222,8 +239,13 @@ const MAGNUS_THE_RED: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [BLADE_OF_AHN_NUNURTA],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  // Battle of the Wills is a passive always-on Focus bonus (not a selectable gambit).
+  // It is handled in focusStep.ts by checking the character's specialRules.
+  factionGambitIds: ['prophetic-duellist'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 5 },
+  ],
 };
 
 const AHZEK_AHRIMAN: Character = {
@@ -238,7 +260,7 @@ const AHZEK_AHRIMAN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [CORVIDAEAN_SCEPTRE],
-  factionGambitIds: [],
+  factionGambitIds: ['prophetic-duellist'],
   specialRules: [],
 };
 
@@ -258,8 +280,11 @@ const HORUS_LUPERCAL: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [WARMASTERS_TALON, WORLDBREAKER],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 6 },
+  ],
 };
 
 const EZEKYLE_ABADDON: Character = {
@@ -274,7 +299,7 @@ const EZEKYLE_ABADDON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [CTHONIAN_POWER_CLAW],
-  factionGambitIds: [],
+  factionGambitIds: ['merciless-strike'],
   specialRules: [{ name: 'EternalWarrior', value: 1 }],
 };
 
@@ -290,7 +315,7 @@ const HORUS_AXIMAND: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [MOURN_IT_ALL],
-  factionGambitIds: [],
+  factionGambitIds: ['merciless-strike'],
   specialRules: [],
 };
 
@@ -310,8 +335,11 @@ const LORGAR: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [ILLUMINARUM],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['beseech-the-gods'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const KOR_PHAERON: Character = {
@@ -326,7 +354,7 @@ const KOR_PHAERON: Character = {
     Sv: 2, Inv: 5,
   },
   weapons: [PATRIARCHS_CLAWS],
-  factionGambitIds: [],
+  factionGambitIds: ['beseech-the-gods'],
   specialRules: [],
 };
 
@@ -342,7 +370,7 @@ const EREBUS: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [CRUX_MALIFICA],
-  factionGambitIds: [],
+  factionGambitIds: ['beseech-the-gods'],
   specialRules: [],
 };
 
@@ -358,7 +386,7 @@ const ARGEL_TAL: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [DAEMONIC_TALONS],
-  factionGambitIds: [],
+  factionGambitIds: ['beseech-the-gods'],
   specialRules: [],
 };
 
@@ -378,8 +406,11 @@ const ALPHARIUS: Character = {
     Sv: 2, Inv: null,
   },
   weapons: [THE_PALE_SPEAR],
-  factionGambitIds: [],
-  specialRules: [{ name: 'EternalWarrior', value: 2 }],
+  factionGambitIds: ['i-am-alpharius'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 2 },
+    { name: 'Bulky', value: 4 },
+  ],
 };
 
 const ARMILLUS_DYNAT: Character = {
@@ -394,7 +425,7 @@ const ARMILLUS_DYNAT: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [THE_PRINCE, THE_PROPHET],
-  factionGambitIds: [],
+  factionGambitIds: ['i-am-alpharius'],
   specialRules: [],
 };
 

@@ -12,7 +12,7 @@ import type { Character }      from '../models/character.js';
 import type { WeaponProfile }  from '../models/weapon.js';
 import { calculateCombatInitiative, buildFocusTotal, getDuellistsEdgeBonus }
   from './combatInitiative.js';
-import { getFocusDiceModification } from './gambitEffects.js';
+import { getFocusDiceModification, type FocusContext } from './gambitEffects.js';
 import type { GambitId }       from '../models/gambit.js';
 
 /** Result of one model's Focus Roll. */
@@ -60,6 +60,16 @@ function applyDiscardRules(
 }
 
 /**
+ * Return the Bulky(X) value from a character's special rules, or 0 if absent.
+ */
+function getBulkyValue(char: Character): number {
+  for (const sr of char.specialRules) {
+    if (sr.name === 'Bulky') return sr.value;
+  }
+  return 0;
+}
+
+/**
  * Roll a single model's Focus.
  */
 function rollFocus(
@@ -70,14 +80,15 @@ function rollFocus(
   currentWounds: number,
   baseWounds: number,
   guardUpBonus: number,
+  ctx: FocusContext = {},
 ): FocusRollResult {
-  const mod = getFocusDiceModification(gambitId);
+  const mod = getFocusDiceModification(gambitId, ctx);
   const numDice = 1 + mod.extraDice;
   const rawDice = dice.rollNd6(numDice);
   let keptDice = applyDiscardRules(rawDice, mod.discardLowest, mod.discardHighest);
 
-  // Kunnin' but Brutal: after rolling, may replace roll result with LD
-  if (gambitId === 'kunnin-but-brutal') {
+  // Kunnin' but Brutal / Brutal but Kunnin': replace roll with LD if LD is higher
+  if (gambitId === 'kunnin-but-brutal' || gambitId === 'brutal-but-kunnin') {
     const ldValue = char.stats.LD;
     const rollTotal = keptDice.reduce((a, b) => a + b, 0);
     if (ldValue > rollTotal) {
@@ -89,13 +100,24 @@ function rollFocus(
   const ci = calculateCombatInitiative(char.stats, profile);
   const isHeavy = char.subTypes.includes('Heavy');
   const isLight = char.subTypes.includes('Light');
-  const woundPenalty = Math.max(0, baseWounds - currentWounds);
+  const rawWoundPenalty = Math.max(0, baseWounds - currentWounds);
+  // Some gambits suppress the wound penalty (e.g., The Lion's Choler, Thrall of the Red Thirst)
+  const woundPenalty = mod.suppressWoundPenalties ? 0 : rawWoundPenalty;
   const de = getDuellistsEdgeBonus(profile.specialRules, char.specialRules);
   // Outside support is always 0 in 1v1
   const os = 0;
 
   const diceTotal = keptDice.reduce((a, b) => a + b, 0);
-  const total = buildFocusTotal(keptDice, ci, isHeavy, isLight, woundPenalty, de, os, guardUpBonus);
+  let total = buildFocusTotal(keptDice, ci, isHeavy, isLight, woundPenalty, de, os, guardUpBonus);
+
+  // Apply flat bonus from gambit (e.g., Paragon of Excellence, Howl of the Death Wolf)
+  total += mod.flatBonus;
+
+  // Prophetic Duellist: may replace the entire total with Willpower if WP is higher
+  if (mod.replaceWithWP) {
+    const wp = char.stats.WP;
+    if (wp > total) total = wp;
+  }
 
   return {
     diceRolled: rawDice,
@@ -153,6 +175,24 @@ export function resolveFocusStep(
   const playerGambit = state.player.selectedGambit;
   const aiGambit     = state.ai.selectedGambit;
 
+  // Build context for each side (used by state-dependent gambits)
+  const playerCtx: FocusContext = {
+    round:           state.round,
+    currentWounds:   state.player.currentWounds,
+    baseWounds:      state.player.baseWounds,
+    ownWP:           playerChar.stats.WP,
+    enemyBulkyValue: getBulkyValue(aiChar),
+    characterId:     playerChar.id,
+  };
+  const aiCtx: FocusContext = {
+    round:           state.round,
+    currentWounds:   state.ai.currentWounds,
+    baseWounds:      state.ai.baseWounds,
+    ownWP:           aiChar.stats.WP,
+    enemyBulkyValue: getBulkyValue(playerChar),
+    characterId:     aiChar.id,
+  };
+
   do {
     attempt++;
     if (attempt > 1) log.push('Tie! Re-rolling Focus...');
@@ -172,11 +212,22 @@ export function resolveFocusStep(
       if (attempt === 1) log.push('Abyssal Strike: AI uses opponent\'s Initiative for Focus Roll.');
     }
 
+    // I Am Alpharius: opponent's CI is treated as 1
+    if (playerGambit === 'i-am-alpharius') {
+      effectiveAiChar = { ...effectiveAiChar, stats: { ...effectiveAiChar.stats, I: 1 } };
+      if (attempt === 1) log.push('I Am Alpharius: AI\'s Combat Initiative is reduced to 1.');
+    }
+    if (aiGambit === 'i-am-alpharius') {
+      effectivePlayerChar = { ...effectivePlayerChar, stats: { ...effectivePlayerChar.stats, I: 1 } };
+      if (attempt === 1) log.push('I Am Alpharius: Player\'s Combat Initiative is reduced to 1.');
+    }
+
     playerRoll = rollFocus(
       dice, effectivePlayerChar, playerProfile,
       playerGambit,
       state.player.currentWounds, state.player.baseWounds,
       state.player.guardUpFocusBonus,
+      playerCtx,
     );
 
     aiRoll = rollFocus(
@@ -184,6 +235,7 @@ export function resolveFocusStep(
       aiGambit,
       state.ai.currentWounds, state.ai.baseWounds,
       state.ai.guardUpFocusBonus,
+      aiCtx,
     );
 
     if (attempt === 1) {
