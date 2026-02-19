@@ -8,17 +8,21 @@
  */
 import type { Character } from '../../models/character.js';
 import type { Gambit, GambitId } from '../../models/gambit.js';
-import { CUSTODES_CHARACTERS }       from './custodes.js';
-import { ORK_CHARACTERS }            from './orks.js';
+import { CUSTODES_CHARACTERS }        from './custodes.js';
+import { ORK_CHARACTERS }             from './orks.js';
 import { LEGION_ASTARTES_CHARACTERS } from './legionAstartes.js';
-import { CORE_GAMBITS }              from '../gambits/coreGambits.js';
-import { CUSTODES_GAMBITS }          from '../gambits/custodes.js';
-import { ORK_GAMBITS }               from '../gambits/orks.js';
+import { LOYALIST_LEGION_CHARACTERS } from './loyalistLegions.js';
+import { TRAITOR_LEGION_CHARACTERS }  from './traitorLegions.js';
+import { CORE_GAMBITS }               from '../gambits/coreGambits.js';
+import { CUSTODES_GAMBITS }           from '../gambits/custodes.js';
+import { ORK_GAMBITS }                from '../gambits/orks.js';
 
 export const ALL_CHARACTERS: Character[] = [
   ...CUSTODES_CHARACTERS,
   ...ORK_CHARACTERS,
   ...LEGION_ASTARTES_CHARACTERS,
+  ...LOYALIST_LEGION_CHARACTERS,
+  ...TRAITOR_LEGION_CHARACTERS,
 ];
 
 const CHAR_MAP = new Map<string, Character>(
@@ -67,9 +71,30 @@ export function getCharactersByFaction(): { faction: string; characters: Charact
 /** Human-readable faction label. */
 export function getFactionLabel(faction: string): string {
   const labels: Record<string, string> = {
+    // Pre-existing factions
     'legio-custodes':  'Legio Custodes',
     'orks':            'Orks',
     'legion-astartes': 'Legion Astartes',
+    // Loyalist Legions
+    'dark-angels':     'Dark Angels (I)',
+    'white-scars':     'White Scars (V)',
+    'space-wolves':    'Space Wolves (VI)',
+    'imperial-fists':  'Imperial Fists (VII)',
+    'blood-angels':    'Blood Angels (IX)',
+    'iron-hands':      'Iron Hands (X)',
+    'ultramarines':    'Ultramarines (XIII)',
+    'salamanders':     'Salamanders (XVIII)',
+    'raven-guard':     'Raven Guard (XIX)',
+    // Traitor Legions
+    'emperors-children': "Emperor's Children (III)",
+    'iron-warriors':     'Iron Warriors (IV)',
+    'night-lords':       'Night Lords (VIII)',
+    'world-eaters':      'World Eaters (XII)',
+    'death-guard':       'Death Guard (XIV)',
+    'thousand-sons':     'Thousand Sons (XV)',
+    'sons-of-horus':     'Sons of Horus (XVI)',
+    'word-bearers':      'Word Bearers (XVII)',
+    'alpha-legion':      'Alpha Legion (XX)',
   };
   return labels[faction] ?? faction;
 }

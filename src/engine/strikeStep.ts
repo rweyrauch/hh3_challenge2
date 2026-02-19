@@ -80,10 +80,22 @@ function resolveAttackSequence(
   const mods = getStrikeModifiers(attacker.selectedGambit, state, isForPlayer, d3Result);
 
   let atkWS = attackerChar.stats.WS + mods.wsDelta;
-  let atkS  = attackerChar.stats.S;
-  let atkA  = mods.attacksOverride !== null
+
+  // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n)
+  const sm = profile.strengthModifier;
+  let atkS = attackerChar.stats.S;
+  if (sm.kind === 'add')   atkS += sm.value;
+  if (sm.kind === 'fixed') atkS  = sm.value;
+
+  // Apply weapon profile Attacks modifier, then gambit delta/override
+  const am = profile.attacksModifier;
+  let baseA = attackerChar.stats.A;
+  if (am.kind === 'add')   baseA += am.value;
+  if (am.kind === 'fixed') baseA  = am.value;
+
+  let atkA = mods.attacksOverride !== null
     ? mods.attacksOverride
-    : attackerChar.stats.A + mods.attacksDelta;
+    : baseA + mods.attacksDelta;
 
   // Taunt and Bait: reduce own WS/A to enemy's (or enemy-1 if equal)
   if (attacker.selectedGambit === 'taunt-and-bait') {
@@ -156,18 +168,25 @@ function resolveAttackSequence(
   // ── Wound Tests ──────────────────────────────────────────────────────────
   const woundTN = getWoundTargetNumber(effectiveS, defT);
   const woundRolls = dice.rollNd6(hits);
-  let wounds = 0;
+  let wounds          = 0;
+  let breachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
+  let shredTriggers   = 0;  // wounds that deal +1 Damage (Shred rule)
 
-  // Check for Rending (auto-wound on high roll)
   for (const roll of woundRolls) {
     let isWound = woundTN <= 6 && roll >= woundTN;
     for (const sr of profile.specialRules) {
-      if (sr.name === 'Rending' && roll >= sr.threshold) {
-        isWound = true;
-        // Rending also sets AP to 2 (handled below in save calc)
+      // Rending: high hit roll auto-wounds (approximated on wound roll here)
+      if (sr.name === 'Rending' && roll >= sr.threshold) isWound = true;
+    }
+    if (isWound) {
+      wounds++;
+      for (const sr of profile.specialRules) {
+        // Breaching: wound roll ≥ threshold → this wound ignores normal armour (AP2)
+        if (sr.name === 'Breaching' && roll >= sr.threshold) breachingWounds++;
+        // Shred: wound roll ≥ threshold → this wound gains +1 Damage
+        if (sr.name === 'Shred'     && roll >= sr.threshold) shredTriggers++;
       }
     }
-    if (isWound) wounds++;
   }
 
   log.push(`Wound rolls [${woundRolls.join(',')}] vs TN${woundTN} → ${wounds} wound(s)`);
@@ -186,28 +205,54 @@ function resolveAttackSequence(
   // ── Saving Throws ────────────────────────────────────────────────────────
   const defSv  = defenderChar.stats.Sv;
   const defInv = defenderChar.stats.Inv;
+  const normalWounds  = wounds - breachingWounds;
   const effectiveSave = getEffectiveSave(defSv, defInv, weaponAP);
+  // Breaching wounds are always treated as AP2 for saves regardless of weapon AP
+  const breachSave    = breachingWounds > 0 ? getEffectiveSave(defSv, defInv, 2) : null;
 
-  const saveRolls = dice.rollNd6(wounds);
-  let saved = 0;
+  let saved    = 0;
+  let evsfUsed = false; // Every Strike Foreseen may only re-roll ONE failed save
 
+  // Normal wounds — saved against weapon AP
+  const normalSaveRolls = dice.rollNd6(normalWounds);
   if (effectiveSave !== null) {
-    for (let i = 0; i < saveRolls.length; i++) {
-      let roll = saveRolls[i];
-
-      // Every Strike Foreseen: defender re-rolls one failed save
-      if (everyStrikeActive && roll < effectiveSave) {
+    for (let i = 0; i < normalSaveRolls.length; i++) {
+      let roll = normalSaveRolls[i];
+      if (everyStrikeActive && !evsfUsed && roll < effectiveSave) {
         const reroll = dice.rollD6();
         log.push(`Every Strike Foreseen: re-roll save ${roll} → ${reroll}`);
-        saveRolls[i] = reroll;
+        normalSaveRolls[i] = reroll;
         roll = reroll;
+        evsfUsed = true;
       }
-
       if (roll >= effectiveSave) saved++;
     }
-    log.push(`Save rolls [${saveRolls.join(',')}] vs ${effectiveSave}+ → ${saved} saved`);
+  }
+
+  // Breaching wounds — always AP2
+  const breachSaveRolls = dice.rollNd6(breachingWounds);
+  if (breachSave !== null) {
+    for (let i = 0; i < breachSaveRolls.length; i++) {
+      let roll = breachSaveRolls[i];
+      if (everyStrikeActive && !evsfUsed && roll < breachSave) {
+        const reroll = dice.rollD6();
+        log.push(`Every Strike Foreseen: re-roll save ${roll} → ${reroll}`);
+        breachSaveRolls[i] = reroll;
+        roll = reroll;
+        evsfUsed = true;
+      }
+      if (roll >= breachSave) saved++;
+    }
+  }
+
+  const saveRolls = [...normalSaveRolls, ...breachSaveRolls];
+  if (effectiveSave !== null || breachSave !== null) {
+    const saveLine = breachingWounds > 0
+      ? `Normal saves [${normalSaveRolls.join(',')}] vs ${effectiveSave ?? '-'}+, Breaching saves [${breachSaveRolls.join(',')}] vs ${breachSave ?? '-'}+ → ${saved} saved`
+      : `Save rolls [${normalSaveRolls.join(',')}] vs ${effectiveSave}+ → ${saved} saved`;
+    log.push(saveLine);
   } else {
-    log.push(`No save available (AP${weaponAP} vs Sv${defSv}+/Inv${defInv ?? '-'})`);
+    log.push(`No save available (AP${weaponAP ?? '-'} vs Sv${defSv}+/Inv${defInv ?? '-'})`);
   }
 
   const unsavedWounds = wounds - saved;
@@ -228,18 +273,29 @@ function resolveAttackSequence(
   if (mods.damageSetToOne) dmgPerWound = 1;
 
   // Eternal Warrior: reduce damage by X, minimum 1
+  let ewReduction = 0;
   for (const sr of defenderChar.specialRules) {
-    if (sr.name === 'EternalWarrior') {
-      dmgPerWound = Math.max(1, dmgPerWound - sr.value);
-    }
+    if (sr.name === 'EternalWarrior') ewReduction = sr.value;
   }
+  dmgPerWound = Math.max(1, dmgPerWound - ewReduction);
 
-  const totalDamage = unsavedWounds * dmgPerWound;
+  // Shred: wounds that triggered Shred deal +1 Damage (suppressed when Flurry caps D to 1)
+  const unsavedShredWounds = wounds > 0 && !mods.damageSetToOne
+    ? Math.round((shredTriggers / wounds) * unsavedWounds)
+    : 0;
+  const shredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
+  const totalDamage =
+    (unsavedWounds - unsavedShredWounds) * dmgPerWound +
+    unsavedShredWounds * shredDmgPerWound;
+
   const defenderWoundsRemaining = Math.max(0, defender.currentWounds - totalDamage);
   const defenderIsCasualty = defenderWoundsRemaining <= 0;
 
+  const shredNote = unsavedShredWounds > 0
+    ? ` (${unsavedShredWounds} Shred wound(s) at +1 dmg)`
+    : '';
   log.push(
-    `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg = ${totalDamage} damage. ` +
+    `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg${shredNote} = ${totalDamage} damage. ` +
     `${defenderChar.name}: ${defender.currentWounds} → ${defenderWoundsRemaining} wounds` +
     (defenderIsCasualty ? ' (CASUALTY)' : ''),
   );
