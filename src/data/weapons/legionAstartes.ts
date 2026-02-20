@@ -25,6 +25,54 @@ export const POWER_SWORD: Weapon = {
   ],
 };
 
+export const POWER_AXE: Weapon = {
+  name: 'Power Axe',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Power Axe',
+      initiativeModifier: { kind: 'add', value: -1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 1 },
+      ap: 3,
+      damage: 1,
+      specialRules: [{ name: 'Breaching', threshold: 5 }],
+    },
+  ],
+};
+
+export const POWER_MAUL: Weapon = {
+  name: 'Power Maul',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Power Maul',
+      initiativeModifier: { kind: 'add', value: -1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 2 },
+      ap: 3,
+      damage: 1,
+      specialRules: [{ name: 'Breaching', threshold: 6 }],
+    },
+  ],
+};
+
+export const POWER_LANCE: Weapon = {
+  name: 'Power Lance',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Power Lance',
+      initiativeModifier: { kind: 'add', value: 1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'none' },
+      ap: 3,
+      damage: 1,
+      specialRules: [{ name: 'Precision', threshold: 6 }],
+    },
+  ],
+};
+
 /** Paragon Blade: I, A, +1S, AP2, D1, Critical Hit(6+) */
 export const PARAGON_BLADE: Weapon = {
   name: 'Paragon Blade',
@@ -108,7 +156,7 @@ export const LIGHTNING_CLAWS_PAIR: Weapon = {
       strengthModifier:   { kind: 'none' },
       ap: 3,
       damage: 1,
-      specialRules: [{ name: 'Rending', threshold: 6 }],
+      specialRules: [{ name: 'Rending', threshold: 6 }, { name: 'Breaching', threshold: 6 }],
     },
   ],
 };
@@ -125,7 +173,90 @@ export const CHAINSWORD: Weapon = {
       strengthModifier:   { kind: 'none' },
       ap: 5,
       damage: 1,
+      specialRules: [{ name: 'Shred', threshold: 6}],
+    },
+  ],
+};
+
+/** Lightning Claw: I, A, S, AP3, D1 */
+export const LIGHTNING_CLAW: Weapon = {
+  name: 'Lightning Claw',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Lightning Claw',
+      initiativeModifier: { kind: 'none' },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'none' },
+      ap: 3,
+      damage: 1,
+      specialRules: [{ name: 'Rending', threshold: 6 }, { name: 'Breaching', threshold: 6 }],
+    },
+  ],
+};
+
+/** Chainfist: I-3, A-1, +6S, AP2, D2 */
+export const CHAINFIST: Weapon = {
+  name: 'Chainfist',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Chainfist',
+      initiativeModifier: { kind: 'add', value: -3 },
+      attacksModifier:    { kind: 'add', value: -1 },
+      strengthModifier:   { kind: 'add', value: 6 },
+      ap: 2,
+      damage: 2,
+      specialRules: [{ name: 'Shred', threshold: 6}],
+    },
+  ],
+};
+
+export const SATURNINE_WAR_AXE: Weapon = {
+  name: 'Saturnine War Axe',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Saturnine War Axe',
+      initiativeModifier: { kind: 'none' },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 1 },
+      ap: 2,
+      damage: 2,
       specialRules: [],
     },
   ],
+};
+
+export const SATURNINE_DISRUPTION_FIST: Weapon = {
+  name: 'Saturnine Disruption Fist',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Saturnine Disruption Fist',
+      initiativeModifier: { kind: 'add', value: -2 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 2 },
+      ap: 2,
+      damage: 3,
+      specialRules: [],
+    },
+  ],
+};
+ 
+export const SATURNINE_CONCUSSION_HAMMER: Weapon = {
+  name: 'Saturnine Concussion Hammer',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Saturnine Concussion Hammer',
+      initiativeModifier: { kind: 'add', value: -3 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'mult', value: 2 },
+      ap: 2,
+      damage: 2,
+      specialRules: [{ name: 'CriticalHit', threshold: 6}],
+    },
+  ],
+
 };

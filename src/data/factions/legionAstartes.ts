@@ -14,7 +14,15 @@ import {
   THUNDER_HAMMER,
   CROZIUS_ARCANUM,
   LIGHTNING_CLAWS_PAIR,
+  LIGHTNING_CLAW,
   CHAINSWORD,
+  POWER_AXE,
+  POWER_LANCE,
+  POWER_MAUL,
+  CHAINFIST,
+  SATURNINE_WAR_AXE, 
+  SATURNINE_DISRUPTION_FIST, 
+  SATURNINE_CONCUSSION_HAMMER
 } from '../weapons/legionAstartes.js';
 
 // ── Praetor ─────────────────────────────────────────────────────────────────
@@ -31,7 +39,7 @@ const PRAETOR: Character = {
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },
-  weapons: [PARAGON_BLADE, POWER_SWORD],
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -50,7 +58,44 @@ const CATAPHRACTII_PRAETOR: Character = {
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },
-  weapons: [POWER_FIST, POWER_SWORD],
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Tartaros Praetor ─────────────────────────────────────────────────────
+// Praetor clad in Tartaros Terminator armour.
+const TARTAROS_PRAETOR: Character = {
+  id: 'tartaros-praetor',
+  name: 'Tartaros Praetor',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 6, BS: 5, S: 4, T: 5, W: 5,
+    I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Saturnine Praetor ─────────────────────────────────────────────────────
+// Praetor clad in Saturnine Terminator armour.  The Heavy sub-type imposes
+// a −1 penalty on Focus Rolls.
+const SATURNINE_PRAETOR: Character = {
+  id: 'saturnine-praetor',
+  name: 'Saturnine Praetor',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 5, WS: 6, BS: 5, S: 4, T: 6, W: 6,
+    I: 4, A: 4, LD: 10, CL: 9, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [SATURNINE_WAR_AXE, SATURNINE_DISRUPTION_FIST, SATURNINE_CONCUSSION_HAMMER],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -133,6 +178,8 @@ const CATAPHRACTII_CENTURION: Character = {
 export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   PRAETOR,
   CATAPHRACTII_PRAETOR,
+  TARTAROS_PRAETOR,
+  SATURNINE_PRAETOR,
   LEGION_CHAMPION,
   CHAPLAIN,
   CENTURION,

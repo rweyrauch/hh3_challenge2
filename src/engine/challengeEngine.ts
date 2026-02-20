@@ -393,6 +393,7 @@ export class ChallengeEngine {
     const sm = profile.strengthModifier;
     if (sm.kind === 'none')  return baseS;
     if (sm.kind === 'add')   return baseS + sm.value;
+    if (sm.kind === 'mult')  return baseS * sm.value;
     return sm.value; // fixed
   }
 

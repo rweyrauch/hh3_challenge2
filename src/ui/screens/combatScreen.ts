@@ -291,6 +291,7 @@ function formatModifier(mod: WeaponProfile['strengthModifier'], baseChar: string
   switch (mod.kind) {
     case 'none':  return baseChar;
     case 'add':   return `${baseChar}${mod.value >= 0 ? '+' : ''}${mod.value}`;
+    case 'mult':  return `${baseChar}${mod.value >= 0 ? 'x' : ''}${mod.value}`;
     case 'fixed': return `${mod.value}`;
   }
 }

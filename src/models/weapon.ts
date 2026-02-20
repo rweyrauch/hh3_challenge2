@@ -6,11 +6,13 @@
  *   - kind:'none'  → the weapon uses the model's base characteristic unchanged
  *   - kind:'add'   → adds/subtracts a fixed number (e.g., +2S means SM = {add,2})
  *   - kind:'fixed' → replaces the model's characteristic entirely (e.g., IM:-3)
+ *   - kind:'mult'  → multiplies by a fixed number (e.g., x2S means SM = {mult,2})
  */
 export type CharModifier =
   | { kind: 'none' }
   | { kind: 'add'; value: number }
-  | { kind: 'fixed'; value: number };
+  | { kind: 'fixed'; value: number }
+  | { kind: 'mult'; value: number};
 
 /**
  * Named type aliases to distinguish the three modifier slots; they share the

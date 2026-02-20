@@ -86,11 +86,12 @@ function resolveAttackSequence(
 
   let atkWS = attackerChar.stats.WS + mods.wsDelta;
 
-  // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n)
+  // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n, 'mult' = S*n)
   const sm = profile.strengthModifier;
   let atkS = attackerChar.stats.S;
   if (sm.kind === 'add')   atkS += sm.value;
   if (sm.kind === 'fixed') atkS  = sm.value;
+  if (sm.kind === 'mult')  atkS *= sm.value;
 
   // Apply weapon profile Attacks modifier, then gambit delta/override
   const am = profile.attacksModifier;

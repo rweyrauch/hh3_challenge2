@@ -177,6 +177,7 @@ function populateWeaponSelect(
 function resolveStrength(baseS: number, mod: CharModifier): number {
   if (mod.kind === 'none')  return baseS;
   if (mod.kind === 'add')   return baseS + mod.value;
+  if (mod.kind === 'mult')  return baseS * mod.value;
   return mod.value;
 }
 
