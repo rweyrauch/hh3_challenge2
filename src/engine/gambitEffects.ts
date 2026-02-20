@@ -190,7 +190,7 @@ export function getFocusDiceModification(
       return base;
   }
 
-  // Suppress TS unreachable warning
+  // Suppress TS unused-variable warnings (variables captured in switch cases above)
   void round; void currentWounds; void enemyBulkyValue;
 }
 
@@ -444,7 +444,7 @@ export function getStrikeModifiers(
       return base;
   }
 
-  // Suppress TS unreachable warning
+  // Suppress TS unused-variable warnings (variables captured in switch cases above)
   void attacker; void defender;
 }
 

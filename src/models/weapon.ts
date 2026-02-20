@@ -32,7 +32,7 @@ export type SpecialRule =
   | { name: 'LightningBlows' }                        // no direct effect in Challenge
   | { name: 'Hatred';           target: string }      // +1 to Wound Tests vs target
   | { name: 'Fear';             value: number }       // out of scope for Challenge
-  | { name: 'Shred';            threshold: number }   // re-roll wound tests below threshold
+  | { name: 'Shred';            threshold: number }   // +1 Damage on wound roll ≥ threshold
   | { name: 'Breaching';        threshold: number }   // ignore armour on roll ≥ threshold
   | { name: 'Precision';        threshold: number }   // allocate wound to specific model
   | { name: 'Bulky';            value: number }       // counts as X models; used by Angelic Descent

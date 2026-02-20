@@ -248,7 +248,8 @@ export class ChallengeEngine {
   // ── strike-player ─────────────────────────────────────────────────────────
 
   private advanceStrikePlayer(state: CombatState): AdvanceResult {
-    // Full strike resolution (both attackers in one go)
+    // resolveStrikeStep sequences both attack sequences in one call, ordered by
+    // state.challengeAdvantage — the advantage holder strikes first.
     const strikeResult = resolveStrikeStep(
       this.dice, state,
       this.playerChar, this.aiChar,
@@ -387,7 +388,7 @@ export class ChallengeEngine {
     }
 
     return bestProfile ?? char.weapons[0].profiles[0];
-    void round;
+    void round; // suppress unused-variable warning (round reserved for future round-1 CI preference)
   }
 
   private resolveStrength(baseS: number, profile: WeaponProfile): number {

@@ -175,7 +175,9 @@ export function selectAIGambit(
     return 'seize-the-initiative';
   }
 
-  // Score each available gambit and add ±20% random noise
+  // Score each available gambit and add ±20% random noise.
+  // (Math.random() * 2 - 1) produces a value in [-1, +1], so noise is ±20% of base score.
+  // This prevents the AI from being perfectly predictable while keeping it challenging.
   const scored = available.map(id => {
     const base  = scoreGambit(id, state, aiChar, playerChar);
     const noise = base * 0.2 * (Math.random() * 2 - 1);

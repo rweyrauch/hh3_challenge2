@@ -341,7 +341,9 @@ function resolveAttackSequence(
   }
   dmgPerWound = Math.max(1, dmgPerWound - ewReduction);
 
-  // Shred: wounds that triggered Shred deal +1 Damage (suppressed when Flurry caps D to 1)
+  // Shred: wounds that triggered Shred deal +1 Damage (suppressed when Flurry caps D to 1).
+  // We don't track which specific unsaved wounds came from Shred rolls, so we approximate:
+  // the fraction (shredTriggers / wounds) of all unsaved wounds are treated as Shred wounds.
   const unsavedShredWounds = wounds > 0 && !mods.damageSetToOne
     ? Math.round((shredTriggers / wounds) * unsavedWounds)
     : 0;
@@ -377,7 +379,7 @@ function resolveAttackSequence(
  * model immediately inflicts one automatic hit on the opponent
  * (S6/AP4/D2, Breaching(5+)).
  */
-function resolveSpitefullDemise(
+function resolveSpitefulDemise(
   dice: DiceRoller,
   attackerName: string,
   defenderState: CombatantState,
@@ -536,7 +538,7 @@ export function resolveStrikeStep(
 
     // Spiteful Demise: AI inflicts auto-hit on player when reduced to 0 wounds
     if (playerResult.defenderIsCasualty && updatedState.ai.selectedGambit === 'spiteful-demise') {
-      const sd = resolveSpitefullDemise(dice, aiChar.name, updatedState.player, playerChar, log);
+      const sd = resolveSpitefulDemise(dice, aiChar.name, updatedState.player, playerChar, log);
       updatedState = {
         ...updatedState,
         player: { ...updatedState.player, currentWounds: sd.newWounds, isCasualty: sd.isCasualty },
@@ -593,7 +595,7 @@ export function resolveStrikeStep(
 
     // Spiteful Demise: player inflicts auto-hit on AI when reduced to 0 wounds
     if (aiResult.defenderIsCasualty && updatedState.player.selectedGambit === 'spiteful-demise') {
-      const sd = resolveSpitefullDemise(dice, playerChar.name, updatedState.ai, aiChar, log);
+      const sd = resolveSpitefulDemise(dice, playerChar.name, updatedState.ai, aiChar, log);
       updatedState = {
         ...updatedState,
         ai: { ...updatedState.ai, currentWounds: sd.newWounds, isCasualty: sd.isCasualty },
