@@ -170,7 +170,25 @@ const CATAPHRACTII_CENTURION: Character = {
     I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
     Sv: 2, Inv: 4,
   },
-  weapons: [THUNDER_HAMMER, POWER_SWORD],
+  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Tartaros Centurion ────────────────────────────────────────────────────
+// Centurion in Tartaros plate. 
+const TARTAROS_CENTURION: Character = {
+  id: 'tartaros-centurion',
+  name: 'Tartaros Centurion',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -184,4 +202,5 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   CHAPLAIN,
   CENTURION,
   CATAPHRACTII_CENTURION,
+  TARTAROS_CENTURION
 ];
