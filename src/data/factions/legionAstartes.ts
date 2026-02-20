@@ -74,7 +74,7 @@ const TARTAROS_PRAETOR: Character = {
   stats: {
     M: 7, WS: 6, BS: 5, S: 4, T: 5, W: 5,
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
-    Sv: 2, Inv: 4,
+    Sv: 2, Inv: 5,
   },
   weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
   factionGambitIds: [],
@@ -335,6 +335,86 @@ const OUTRIDER_CHOSEN_CHAMPION: Character = {
   ],
 };
 
+// ── Saturnine Centurion ───────────────────────────────────────────────────────
+// Centurion in Saturnine Terminator armour; extremely tough (T6 W5) but slow.
+// Stats: M5 WS5 BS5 S4 T6 W5 I4 A3 LD9 CL8 WP8 IN8 Sv2+ Inv4+
+const SATURNINE_CENTURION: Character = {
+  id: 'saturnine-centurion',
+  name: 'Saturnine Centurion',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 5, WS: 5, BS: 5, S: 4, T: 6, W: 5,
+    I: 4, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Cataphractii Legion Champion ──────────────────────────────────────────────
+// Legion Champion in Cataphractii plate; gains T5 W4 Inv4+ at cost of Heavy.
+// Stats: M6 WS6 BS5 S4 T5 W4 I5 A5 LD8 CL8 WP8 IN8 Sv2+ Inv4+
+const CATAPHRACTII_LEGION_CHAMPION: Character = {
+  id: 'cataphractii-legion-champion',
+  name: 'Cataphractii Legion Champion',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 6, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 5, LD: 8, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [PARAGON_BLADE, LIGHTNING_CLAWS_PAIR],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Legion Champion (Jump Pack) ───────────────────────────────────────────────
+// Legion Champion with Jump Pack; M12, retains Inv5+ of standard armour.
+// Stats: M12 WS6 BS5 S4 T4 W3 I5 A5 LD8 CL8 WP8 IN8 Sv2+ Inv5+
+const LEGION_CHAMPION_JUMP_PACK: Character = {
+  id: 'legion-champion-jump-pack',
+  name: 'Legion Champion (Jump Pack)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 6, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 5, LD: 8, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, LIGHTNING_CLAWS_PAIR],
+  factionGambitIds: [],
+  specialRules: [
+    { name: 'Bulky', value: 2 },
+  ],
+};
+
+// ── Saturnine Chosen Champion ─────────────────────────────────────────────────
+// Chosen Champion in Saturnine Terminator armour; T6 W3, but I3 A3 Heavy.
+// Stats: M5 WS5 BS4 S4 T6 W3 I3 A3 LD8 CL8 WP7 IN7 Sv2+ Inv4+
+const SATURNINE_CHOSEN_CHAMPION: Character = {
+  id: 'saturnine-chosen-champion',
+  name: 'Saturnine Chosen Champion',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Champion', 'Heavy'],
+  stats: {
+    M: 5, WS: 5, BS: 4, S: 4, T: 6, W: 3,
+    I: 3, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [SATURNINE_WAR_AXE, SATURNINE_DISRUPTION_FIST, SATURNINE_CONCUSSION_HAMMER, POWER_FIST, CHAINFIST],
+  factionGambitIds: [],
+  specialRules: [
+    { name: 'Bulky', value: 2 },
+  ],
+};
+
 export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   PRAETOR,
   CATAPHRACTII_PRAETOR,
@@ -345,11 +425,15 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   CENTURION,
   CATAPHRACTII_CENTURION,
   TARTAROS_CENTURION,
+  SATURNINE_CENTURION,
+  LEGION_CHAMPION_JUMP_PACK,
+  CATAPHRACTII_LEGION_CHAMPION,
   CHOSEN_CHAMPION,
   CHOSEN_CHAMPION_JUMP_PACK,
   VETERAN_CHAMPION,
   TARTAROS_CHOSEN_CHAMPION,
   CATAPHRACTII_CHOSEN_CHAMPION,
+  SATURNINE_CHOSEN_CHAMPION,
   SCIMITAR_CHOSEN_CHAMPION,
   OUTRIDER_CHOSEN_CHAMPION,
 ];
