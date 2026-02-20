@@ -13,6 +13,7 @@ import { ORK_CHARACTERS }             from './orks.js';
 import { LEGION_ASTARTES_CHARACTERS } from './legionAstartes.js';
 import { LOYALIST_LEGION_CHARACTERS } from './loyalistLegions.js';
 import { TRAITOR_LEGION_CHARACTERS }  from './traitorLegions.js';
+import { DAEMON_CHARACTERS }          from './daemons.js';
 import { CORE_GAMBITS }               from '../gambits/coreGambits.js';
 import { CUSTODES_GAMBITS }           from '../gambits/custodes.js';
 import { ORK_GAMBITS }                from '../gambits/orks.js';
@@ -25,6 +26,7 @@ export const ALL_CHARACTERS: Character[] = [
   ...LEGION_ASTARTES_CHARACTERS,
   ...LOYALIST_LEGION_CHARACTERS,
   ...TRAITOR_LEGION_CHARACTERS,
+  ...DAEMON_CHARACTERS,
 ];
 
 const CHAR_MAP = new Map<string, Character>(
@@ -103,6 +105,8 @@ export function getFactionLabel(faction: string): string {
     'sons-of-horus':     'Sons of Horus (XVI)',
     'word-bearers':      'Word Bearers (XVII)',
     'alpha-legion':      'Alpha Legion (XX)',
+    // Daemons of the Ruinstorm
+    'daemons-of-the-ruinstorm': 'Daemons of the Ruinstorm',
   };
   return labels[faction] ?? faction;
 }
