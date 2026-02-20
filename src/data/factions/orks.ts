@@ -9,7 +9,7 @@
  *   - Blood Axes → Kunnin' but Brutal gambit
  */
 import type { Character } from '../../models/character.js';
-import { CHOPPA, POWER_KLAW, SLUGGA, STIKKBOMBS, BIG_CHOPPA } from '../weapons/orks.js';
+import { CHOPPA, POWER_KLAW, SLUGGA, STIKKBOMBS, BIG_CHOPPA, FORCE_STAFF } from '../weapons/orks.js';
 
 /** Warboss (Goffs) */
 const WARBOSS_GOFFS: Character = {
@@ -110,10 +110,32 @@ const BIGBOSS_BLOOD_AXES: Character = {
   specialRules: [],
 };
 
+// ── Weirdboy ─────────────────────────────────────────────────────────────────
+// An Ork psyker with Champion sub-type.  No faction gambit (Weirdboy is a
+// Champion, not Command — no Goff/Blood Axe tribe gambits apply).
+// Force staff: Force(D) is not simulated.
+// Stats: M6 WS5 BS2 S4 T4 W3 I3 A4 LD7 CL8 WP8 IN4 Sv6+ Inv5+
+const WEIRDBOY: Character = {
+  id: 'weirdboy',
+  name: 'Weirdboy',
+  faction: 'orks',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 6, WS: 5, BS: 2, S: 4, T: 4, W: 3,
+    I: 3, A: 4, LD: 7, CL: 8, WP: 8, IN: 4,
+    Sv: 6, Inv: 5,
+  },
+  weapons: [FORCE_STAFF],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
 export const ORK_CHARACTERS: Character[] = [
   WARBOSS_GOFFS,
   WARBOSS_BLOOD_AXES,
   MEGA_WARBOSS,
   BIGBOSS_GOFFS,
   BIGBOSS_BLOOD_AXES,
+  WEIRDBOY,
 ];

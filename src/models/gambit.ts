@@ -71,7 +71,10 @@ export type GambitId =
   // ── Word Bearers (XVII) ──────────────────────────────────────────────────
   | 'beseech-the-gods'        // all WB: first round; WP check → +1S/+1A, or suffer 1 wound
   // ── Alpha Legion (XX) ────────────────────────────────────────────────────
-  | 'i-am-alpharius';         // all AL: first round; set opponent's CI to 1
+  | 'i-am-alpharius'          // all AL: first round; set opponent's CI to 1
+  // ── Divisio Assassinorum mandatory gambits ───────────────────────────────
+  | 'biological-overload'    // Eversor mandatory: +3 Focus; +3A; self-wound on hit rolls of 1
+  | 'mirror-form';           // Adamus mandatory: hits on 4+; fight after reaching 0W if reactive
 
 /**
  * When within the Challenge procedure a gambit has its primary effect.
@@ -94,4 +97,10 @@ export interface Gambit {
   firstMoverOnly: boolean;
   /** True if the gambit can only be selected once per entire Challenge. */
   oncePerChallenge: boolean;
+  /**
+   * If true, the character's controlling player must always select this gambit;
+   * no other gambit may be chosen, and Feint & Riposte cannot prevent it.
+   * Used by Eversor (biological-overload) and Adamus (mirror-form) assassins.
+   */
+  mandatory?: boolean;
 }

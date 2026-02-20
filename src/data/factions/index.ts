@@ -15,11 +15,13 @@ import { LOYALIST_LEGION_CHARACTERS } from './loyalistLegions.js';
 import { TRAITOR_LEGION_CHARACTERS }  from './traitorLegions.js';
 import { DAEMON_CHARACTERS }          from './daemons.js';
 import { MILITIA_CHARACTERS }         from './militia.js';
+import { ASSASSIN_CHARACTERS }        from './assassins.js';
 import { CORE_GAMBITS }               from '../gambits/coreGambits.js';
 import { CUSTODES_GAMBITS }           from '../gambits/custodes.js';
 import { ORK_GAMBITS }                from '../gambits/orks.js';
 import { LOYALIST_LEGION_GAMBITS }    from '../gambits/loyalistLegions.js';
 import { TRAITOR_LEGION_GAMBITS }     from '../gambits/traitorLegions.js';
+import { ASSASSIN_GAMBITS }           from '../gambits/assassins.js';
 
 export const ALL_CHARACTERS: Character[] = [
   ...CUSTODES_CHARACTERS,
@@ -29,6 +31,7 @@ export const ALL_CHARACTERS: Character[] = [
   ...TRAITOR_LEGION_CHARACTERS,
   ...DAEMON_CHARACTERS,
   ...MILITIA_CHARACTERS,
+  ...ASSASSIN_CHARACTERS,
 ];
 
 const CHAR_MAP = new Map<string, Character>(
@@ -46,6 +49,7 @@ const ALL_GAMBITS: Gambit[] = [
   ...ORK_GAMBITS,
   ...LOYALIST_LEGION_GAMBITS,
   ...TRAITOR_LEGION_GAMBITS,
+  ...ASSASSIN_GAMBITS,
 ];
 const GAMBIT_MAP = new Map<GambitId, Gambit>(
   ALL_GAMBITS.map(g => [g.id, g]),
@@ -111,6 +115,8 @@ export function getFactionLabel(faction: string): string {
     'daemons-of-the-ruinstorm': 'Daemons of the Ruinstorm',
     // Imperialis Militia
     'imperialis-militia': 'Imperialis Militia',
+    // Divisio Assassinorum
+    'divisio-assassinorum': 'Divisio Assassinorum',
   };
   return labels[faction] ?? faction;
 }

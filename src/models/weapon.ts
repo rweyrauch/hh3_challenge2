@@ -35,7 +35,15 @@ export type SpecialRule =
   | { name: 'Shred';            threshold: number }   // re-roll wound tests below threshold
   | { name: 'Breaching';        threshold: number }   // ignore armour on roll ≥ threshold
   | { name: 'Precision';        threshold: number }   // allocate wound to specific model
-  | { name: 'Bulky';            value: number };      // counts as X models; used by Angelic Descent
+  | { name: 'Bulky';            value: number }       // counts as X models; used by Angelic Descent
+  | { name: 'FeelNoPain';       threshold: number }  // ignore unsaved wound on roll ≥ threshold
+  | { name: 'Poisoned';         threshold: number };  // wound always on roll ≥ threshold (ignores S vs T comparison)
+  // Rules intentionally not simulated:
+  //   Force(D)   — Force staff psychic instakill; too complex for Challenge scope
+  //   Bypass(X+) — Phase sword's bypass of all saves; omitted (no Bypass special rule added)
+  //   Phage(S)   — established pattern (daemon weapons); omit from profiles
+  //   Reaping Blow(X) — established pattern; no effect in Challenge
+  //   Aflame(X), Limited(X) — combat rules outside Challenge scope
 
 /** A single attack profile for a melee weapon. */
 export interface WeaponProfile {

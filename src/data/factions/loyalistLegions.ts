@@ -13,6 +13,17 @@
  */
 import type { Character } from '../../models/character.js';
 import {
+  CALIBANITE_CHARGE_BLADE,
+  EXCINDIO_CLAWS,
+  FROST_AXE,
+  FROST_SWORD,
+  FROST_CLAW,
+  GREAT_FROST_BLADE,
+  BLADE_OF_JUDGEMENT,
+  ARGEAN_POWER_SWORD,
+} from '../weapons/legionChampions.js';
+import { POWER_SWORD } from '../weapons/legionAstartes.js';
+import {
   LION_SWORD,
   WOLF_BLADE,
   CORSWAIN_THE_BLADE,
@@ -552,24 +563,189 @@ const SAUL_TARVITZ: Character = {
 };
 
 // ════════════════════════════════════════════════════════════════
+// CHAMPION SUB-TYPE ADDITIONS
+// ════════════════════════════════════════════════════════════════
+
+// ── Firewing Enigmatii (Dark Angels) ─────────────────────────────────────────
+// An elite Dark Angels warrior bearing a Calibanite charge-blade.
+// Bulky(2); infantry despite Jump Pack being typical (modelled as infantry for Challenge).
+// Stats: M12 WS5 BS4 S4 T4 W2 I4 A3 LD8 CL8 WP7 IN7 Sv3+
+const FIREWING_ENIGMATII: Character = {
+  id: 'firewing-enigmatii',
+  name: 'Firewing Enigmatii',
+  faction: 'dark-angels',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 12, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
+    Sv: 3, Inv: null,
+  },
+  weapons: [CALIBANITE_CHARGE_BLADE],
+  factionGambitIds: ['sword-of-the-order'],
+  specialRules: [
+    { name: 'Bulky', value: 2 },
+  ],
+};
+
+// ── Excindio Battle-Automata (Dark Angels) ───────────────────────────────────
+// A slumbering engine of the I Legion; classified as 'Artificia' in the rules
+// but modelled as infantry here since the Challenge mechanics don't differ by type.
+// Exceptionally durable: T7, W8, EternalWarrior(1), Bulky(6).
+// Stats: M7 WS5 BS5 S7 T7 W8 I4 A4 LD10 CL10 WP10 IN10 Sv3+ Inv5+
+const EXCINDIO: Character = {
+  id: 'excindio',
+  name: 'Excindio Battle-Automata',
+  faction: 'dark-angels',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 7, T: 7, W: 8,
+    I: 4, A: 4, LD: 10, CL: 10, WP: 10, IN: 10,
+    Sv: 3, Inv: 5,
+  },
+  weapons: [EXCINDIO_CLAWS],
+  factionGambitIds: ['sword-of-the-order'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 1 },
+    { name: 'Bulky', value: 6 },
+  ],
+};
+
+// ── Thegn (Space Wolves) ─────────────────────────────────────────────────────
+// A champion of the VI Legion in Terminator armour; Heavy, Fear(1), Bulky(2).
+// Carries a selection of frost weapons; player picks one.
+// Stats: M6 WS5 BS4 S4 T5 W2 I4 A4 LD9 CL9 WP7 IN7 Sv2+ Inv4+
+const THEGN: Character = {
+  id: 'thegn',
+  name: 'Thegn',
+  faction: 'space-wolves',
+  type: 'infantry',
+  subTypes: ['Champion', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 4, S: 4, T: 5, W: 2,
+    I: 4, A: 4, LD: 9, CL: 9, WP: 7, IN: 7,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE],
+  factionGambitIds: ['no-prey-escapes'],
+  specialRules: [
+    { name: 'Fear',  value: 1 },
+    { name: 'Bulky', value: 2 },
+  ],
+};
+
+// ── Templar Champion (Imperial Fists) ────────────────────────────────────────
+// A duelling expert of the Black Templars (VII Legion).
+// Stats: M7 WS5 BS4 S4 T4 W2 I4 A3 LD9 CL8 WP8 IN8 Sv2+
+const TEMPLAR_CHAMPION: Character = {
+  id: 'templar-champion',
+  name: 'Templar Champion',
+  faction: 'imperial-fists',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: null,
+  },
+  weapons: [POWER_SWORD],
+  factionGambitIds: ['a-wall-unyielding'],
+  specialRules: [],
+};
+
+// ── Ofanim (Blood Angels) ────────────────────────────────────────────────────
+// Shadows of Judgement: while engaged in a Challenge this model has
+// FeelNoPain(5+) and DuellistsEdge(1).  These are encoded as character-level
+// special rules; the weapon gains the DuellistsEdge effect via the character rule
+// (which stacks with any weapon DuellistsEdge at the engine level).
+// Stats: M7 WS5 BS4 S4 T4 W2 I4 A3 LD9 CL8 WP8 IN7 Sv2+
+const OFANIM: Character = {
+  id: 'ofanim',
+  name: 'Ofanim',
+  faction: 'blood-angels',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 9, CL: 8, WP: 8, IN: 7,
+    Sv: 2, Inv: null,
+  },
+  weapons: [BLADE_OF_JUDGEMENT],
+  factionGambitIds: ['thrall-of-the-red-thirst'],
+  specialRules: [
+    { name: 'FeelNoPain',    threshold: 5 }, // Shadows of Judgement
+    { name: 'DuellistsEdge', value: 1 },     // Shadows of Judgement
+  ],
+};
+
+// ── Ofanim (Jump Pack) ───────────────────────────────────────────────────────
+// As Ofanim but with Jump Pack; Bulky(2).
+const OFANIM_JUMP_PACK: Character = {
+  id: 'ofanim-jump-pack',
+  name: 'Ofanim (Jump Pack)',
+  faction: 'blood-angels',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 9, CL: 8, WP: 8, IN: 7,
+    Sv: 2, Inv: null,
+  },
+  weapons: [BLADE_OF_JUDGEMENT],
+  factionGambitIds: ['thrall-of-the-red-thirst'],
+  specialRules: [
+    { name: 'FeelNoPain',    threshold: 5 }, // Shadows of Judgement
+    { name: 'DuellistsEdge', value: 1 },     // Shadows of Judgement
+    { name: 'Bulky',         value: 2 },
+  ],
+};
+
+// ── Locutarus Strike Leader (Ultramarines) ───────────────────────────────────
+// An Ultramarines void-assault specialist; Bulky(2).
+// Stats: M12 WS5 BS4 S4 T4 W2 I4 A3 LD8 CL8 WP7 IN7 Sv2+
+const LOCUTARUS_STRIKE_LEADER: Character = {
+  id: 'locutarus-strike-leader',
+  name: 'Locutarus Strike Leader',
+  faction: 'ultramarines',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 12, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
+    Sv: 2, Inv: null,
+  },
+  weapons: [ARGEAN_POWER_SWORD],
+  factionGambitIds: ['aegis-of-wisdom'],
+  specialRules: [
+    { name: 'Bulky', value: 2 },
+  ],
+};
+
+// ════════════════════════════════════════════════════════════════
 // Exports
 // ════════════════════════════════════════════════════════════════
 
 export const LOYALIST_LEGION_CHARACTERS: Character[] = [
   // Dark Angels
   LION_EL_JONSON, CORSWAIN, MARDUK_SEDRAS,
+  FIREWING_ENIGMATII, EXCINDIO,
   // White Scars
   JAGHATAI_KHAN, QIN_XA, HIBOU_KHAN,
   // Space Wolves
   LEMAN_RUSS, HVARL_RED_BLADE, GEIGOR_FELL_HAND,
+  THEGN,
   // Imperial Fists
   ROGAL_DORN, SIGISMUND, FAFNIR_RANN, EVANDER_GARRIUS, CAMBA_DIAZ, ALEXIS_POLUX,
+  TEMPLAR_CHAMPION,
   // Blood Angels
   SANGUINIUS, RALDORON, DOMINION_ZEPHON, ASTER_CROHNE,
+  OFANIM, OFANIM_JUMP_PACK,
   // Iron Hands
   FERRUS_MANUS, SHADRAK_MEDUSON, IRON_FATHER,
   // Ultramarines
   ROBOUTE_GUILLIMAN, REMUS_VENTANUS,
+  LOCUTARUS_STRIKE_LEADER,
   // Salamanders
   VULKAN,
   // Raven Guard

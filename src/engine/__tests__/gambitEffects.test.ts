@@ -129,3 +129,39 @@ describe('getTauntAndBaitCRPBonus', () => {
     expect(getTauntAndBaitCRPBonus(0, true)).toBe(0);
   });
 });
+
+describe('Biological Overload gambit', () => {
+  const state = buildInitialState(VALDOR, WARBOSS);
+
+  it('Focus: +3 flat bonus', () => {
+    const mod = getFocusDiceModification('biological-overload');
+    expect(mod.flatBonus).toBe(3);
+    expect(mod.extraDice).toBe(0);
+    expect(mod.discardLowest).toBe(false);
+  });
+
+  it('Strike: +3 attacks delta', () => {
+    const mods = getStrikeModifiers('biological-overload', state, true);
+    expect(mods.attacksDelta).toBe(3);
+    expect(mods.damageSetToOne).toBe(false);
+    expect(mods.singleAttackCap).toBe(false);
+  });
+});
+
+describe('Mirror-Form gambit', () => {
+  const state = buildInitialState(VALDOR, WARBOSS);
+
+  it('Focus: no modification (hits on 4+ is a Strike step effect)', () => {
+    const mod = getFocusDiceModification('mirror-form');
+    expect(mod.extraDice).toBe(0);
+    expect(mod.flatBonus).toBe(0);
+    expect(mod.discardLowest).toBe(false);
+  });
+
+  it('Strike: returns base (hit override handled in strikeStep.ts)', () => {
+    const mods = getStrikeModifiers('mirror-form', state, true);
+    expect(mods.wsDelta).toBe(0);
+    expect(mods.attacksDelta).toBe(0);
+    expect(mods.singleAttackCap).toBe(false);
+  });
+});

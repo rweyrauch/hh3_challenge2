@@ -181,6 +181,11 @@ export function getFocusDiceModification(
       // Opponent's CI is set to 1.
       return { ...base, setOpponentCIToOne: true };
 
+    // ── Divisio Assassinorum ─────────────────────────────────────────────────
+    case 'biological-overload':
+      // Mandatory (Eversor): +3 to Focus Roll.
+      return { ...base, flatBonus: 3 };
+
     default:
       return base;
   }
@@ -418,6 +423,22 @@ export function getStrikeModifiers(
         ...base,
         attacksDelta: +1,
       };
+
+    // ── Divisio Assassinorum ─────────────────────────────────────────────────
+    case 'biological-overload':
+      // Mandatory (Eversor): +3 Attacks. Self-wounds from hit rolls of 1 handled
+      // in strikeStep.ts using AttackResult.hitRollOnes.
+      return {
+        ...base,
+        attacksDelta: +3,
+      };
+
+    case 'mirror-form':
+      // Mandatory (Adamus): hits always on 4+ (handled in strikeStep.ts via
+      // mirrorFormActive flag). No additional strike modifiers returned here.
+      // Mirror-Form reactive fight is a complex state interaction handled by
+      // the engine: if reactive player, allows attacks after reaching 0W.
+      return base;
 
     default:
       return base;

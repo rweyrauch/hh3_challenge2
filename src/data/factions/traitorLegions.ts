@@ -13,6 +13,15 @@
  */
 import type { Character } from '../../models/character.js';
 import {
+  PHOENIX_POWER_SPEAR,
+  PALATINE_BLADE,
+  METEOR_HAMMER,
+  EXCORIATOR_CHAINAXE,
+  PAIRED_FALAX_BLADES,
+  BARB_HOOK_LASH,
+  ANAKATIS_BLADE,
+} from '../weapons/legionChampions.js';
+import {
   LAERAN_BLADE,
   BLADES_OF_LUCIUS,
   LOGOS_ARRAY,
@@ -430,18 +439,130 @@ const ARMILLUS_DYNAT: Character = {
 };
 
 // ════════════════════════════════════════════════════════════════
+// CHAMPION SUB-TYPE ADDITIONS
+// ════════════════════════════════════════════════════════════════
+
+// ── Phoenix Champion (Emperor's Children) ────────────────────────────────────
+// An elite Phoenix Guard duellist bearing a power spear.
+// T5, Inv5+, Bulky(2).
+// Stats: M7 WS5 BS4 S4 T5 W2 I4 A3 LD9 CL9 WP7 IN7 Sv2+ Inv5+
+const PHOENIX_CHAMPION: Character = {
+  id: 'phoenix-champion',
+  name: 'Phoenix Champion',
+  faction: 'emperors-children',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 4, T: 5, W: 2,
+    I: 4, A: 3, LD: 9, CL: 9, WP: 7, IN: 7,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PHOENIX_POWER_SPEAR],
+  factionGambitIds: ['paragon-of-excellence'],
+  specialRules: [
+    { name: 'Bulky', value: 2 },
+  ],
+};
+
+// ── Palatine Prefector (Emperor's Children) ──────────────────────────────────
+// An elite duelling champion bearing a Palatine blade (DuellistsEdge(1)).
+// Stats: M7 WS5 BS4 S4 T4 W2 I4 A3 LD8 CL8 WP7 IN7 Sv2+
+const PALATINE_PREFECTOR: Character = {
+  id: 'palatine-prefector',
+  name: 'Palatine Prefector',
+  faction: 'emperors-children',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
+    Sv: 2, Inv: null,
+  },
+  weapons: [PALATINE_BLADE],
+  factionGambitIds: ['paragon-of-excellence'],
+  specialRules: [],
+};
+
+// ── Palatine Prefector (Jump Pack) ───────────────────────────────────────────
+// As Palatine Prefector but with Jump Pack; Bulky(2).
+const PALATINE_PREFECTOR_JUMP_PACK: Character = {
+  id: 'palatine-prefector-jump-pack',
+  name: 'Palatine Prefector (Jump Pack)',
+  faction: 'emperors-children',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
+    Sv: 2, Inv: null,
+  },
+  weapons: [PALATINE_BLADE],
+  factionGambitIds: ['paragon-of-excellence'],
+  specialRules: [
+    { name: 'Bulky', value: 2 },
+  ],
+};
+
+// ── Rampager Champion (World Eaters) ─────────────────────────────────────────
+// A berserker duellist of the XII Legion bearing Caedere weapons.
+// Player selects one Caedere weapon option before the challenge.
+// Stats: M7 WS5 BS4 S4 T4 W2 I4 A3 LD9 CL8 WP7 IN7 Sv3+
+const RAMPAGER_CHAMPION: Character = {
+  id: 'rampager-champion',
+  name: 'Rampager Champion',
+  faction: 'world-eaters',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 4, T: 4, W: 2,
+    I: 4, A: 3, LD: 9, CL: 8, WP: 7, IN: 7,
+    Sv: 3, Inv: null,
+  },
+  weapons: [METEOR_HAMMER, EXCORIATOR_CHAINAXE, PAIRED_FALAX_BLADES, BARB_HOOK_LASH],
+  factionGambitIds: ['violent-overkill'],
+  specialRules: [],
+};
+
+// ── Anakatis Kul (Word Bearers) ──────────────────────────────────────────────
+// A mighty Champion of the XVII Legion bearing the cursed Anakatis Blade.
+// FeelNoPain(5+) from the blade's dark blessings; Fear(1); Bulky(2).
+// Phage(S) on the Anakatis Blade is omitted (established pattern).
+// Stats: M8 WS5 BS4 S5 T5 W3 I5 A3 LD10 CL9 WP4 IN4 Sv3+
+const ANAKATIS_KUL: Character = {
+  id: 'anakatis-kul',
+  name: 'Anakatis Kul',
+  faction: 'word-bearers',
+  type: 'infantry',
+  subTypes: ['Champion'],
+  stats: {
+    M: 8, WS: 5, BS: 4, S: 5, T: 5, W: 3,
+    I: 5, A: 3, LD: 10, CL: 9, WP: 4, IN: 4,
+    Sv: 3, Inv: null,
+  },
+  weapons: [ANAKATIS_BLADE],
+  factionGambitIds: ['beseech-the-gods'],
+  specialRules: [
+    { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Fear',       value: 1 },
+    { name: 'Bulky',      value: 2 },
+  ],
+};
+
+// ════════════════════════════════════════════════════════════════
 // Exports
 // ════════════════════════════════════════════════════════════════
 
 export const TRAITOR_LEGION_CHARACTERS: Character[] = [
   // Emperor's Children
   FULGRIM, CAPTAIN_LUCIUS,
+  PHOENIX_CHAMPION, PALATINE_PREFECTOR, PALATINE_PREFECTOR_JUMP_PACK,
   // Iron Warriors
   PERTURABO,
   // Night Lords
   KONRAD_CURZE, SEVATAR,
   // World Eaters
   ANGRON, KHARN_THE_BLOODY,
+  RAMPAGER_CHAMPION,
   // Death Guard
   MORTARION, CALAS_TYPHON,
   // Thousand Sons
@@ -450,6 +571,7 @@ export const TRAITOR_LEGION_CHARACTERS: Character[] = [
   HORUS_LUPERCAL, EZEKYLE_ABADDON, HORUS_AXIMAND,
   // Word Bearers
   LORGAR, KOR_PHAERON, EREBUS, ARGEL_TAL,
+  ANAKATIS_KUL,
   // Alpha Legion
   ALPHARIUS, ARMILLUS_DYNAT,
 ];

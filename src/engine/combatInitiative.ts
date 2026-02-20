@@ -26,7 +26,7 @@ export function calculateCombatInitiative(
   const baseI = stats.I;
   const im    = profile.initiativeModifier;
 
-  let ci: number;
+  let ci: number = baseI;
   switch (im.kind) {
     case 'none':
       ci = baseI;
@@ -36,6 +36,9 @@ export function calculateCombatInitiative(
       break;
     case 'fixed':
       ci = im.value;
+      break;
+    case 'mult':
+      ci = Math.round(baseI * im.value);
       break;
   }
 

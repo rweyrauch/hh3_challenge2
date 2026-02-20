@@ -77,6 +77,25 @@ export const SLUGGA: Weapon = {
   ],
 };
 
+/**
+ * Force staff (Weirdboy). IM+1/AM—/SM+2/AP4/D1.
+ * Force(D) — psychic instakill — is NOT simulated; too complex for Challenge scope.
+ */
+export const FORCE_STAFF: Weapon = {
+  name: 'Force Staff',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Force Staff',
+      initiativeModifier: { kind: 'add', value: 1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 2 },
+      ap: 4, damage: 1,
+      specialRules: [],  // Force(D) not simulated
+    },
+  ],
+};
+
 /** Stikkbombs — ranged, not used in Challenge */
 export const STIKKBOMBS: Weapon = {
   name: 'Stikkbombs',

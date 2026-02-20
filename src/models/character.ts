@@ -52,4 +52,10 @@ export interface Character {
   factionGambitIds: GambitId[];
   /** Model-level special rules relevant to Challenge resolution. */
   specialRules: SpecialRule[];
+  /**
+   * If set, this gambit is always selected in the Face-Off step; no other
+   * gambit is allowed, and Feint & Riposte cannot prevent it.
+   * Used by the Eversor ('biological-overload') and Adamus ('mirror-form') assassins.
+   */
+  mandatoryGambitId?: GambitId;
 }

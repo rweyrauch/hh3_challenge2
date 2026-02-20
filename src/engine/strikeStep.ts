@@ -30,6 +30,8 @@ export interface AttackResult {
   defenderWoundsRemaining: number;
   /** True if the defender was reduced to 0 Wounds. */
   defenderIsCasualty: boolean;
+  /** Number of unmodified hit rolls of 1 (used for Biological Overload self-wound). */
+  hitRollOnes: number;
   log: string[];
 }
 
@@ -138,12 +140,18 @@ function resolveAttackSequence(
   );
 
   // ── Hit Tests ────────────────────────────────────────────────────────────
-  const hitTN = getHitTargetNumber(atkWS, defWS);
+  // Mirror-Form: Adamus hits always on 4+ regardless of WS comparison
+  const mirrorFormActive = attacker.selectedGambit === 'mirror-form';
+  const hitTN = mirrorFormActive ? 4 : getHitTargetNumber(atkWS, defWS);
   const hitRolls = dice.rollNd6(atkA);
   let hits = 0;
   let guardUpMissCount = 0;
+  let hitRollOnes = 0; // for Biological Overload self-wound tracking
 
   for (const roll of hitRolls) {
+    // Track unmodified 1s for Biological Overload
+    if (roll === 1) hitRollOnes++;
+
     const isHit = hitTN <= 6 && roll >= hitTN;
 
     // Check for Critical Hit special rule (extra wound on high roll)
@@ -174,13 +182,20 @@ function resolveAttackSequence(
       woundRolls: [], wounds: 0,
       saveRolls: [], unsavedWounds: 0,
       totalDamage: 0, defenderWoundsRemaining: defWounds,
-      defenderIsCasualty: false, log,
+      defenderIsCasualty: false, hitRollOnes, log,
     };
   }
 
   // ── Wound Tests ──────────────────────────────────────────────────────────
   // Base wound TN uses effectiveDefT (may be overridden by Steadfast Resilience / Tempered by War)
   const baseWoundTN = getWoundTargetNumber(effectiveS, effectiveDefT);
+
+  // Poisoned: if the weapon has Poisoned(X+), wounds always on the *better* of table TN or X
+  let poisonedTN: number | null = null;
+  for (const sr of profile.specialRules) {
+    if (sr.name === 'Poisoned') poisonedTN = sr.threshold;
+  }
+
   const woundRolls = dice.rollNd6(hits);
   let wounds          = 0;
   let breachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
@@ -190,9 +205,14 @@ function resolveAttackSequence(
 
   for (const roll of woundRolls) {
     // With Phage(T), recompute the wound TN each time as T decreases
-    const woundTN = mods.phageToughness
+    const tableWoundTN = mods.phageToughness
       ? getWoundTargetNumber(effectiveS, currentDefT)
       : baseWoundTN;
+
+    // Poisoned: use whichever TN is easier (lower number = easier to wound)
+    const woundTN = poisonedTN !== null
+      ? Math.min(tableWoundTN, poisonedTN)
+      : tableWoundTN;
 
     let isWound = woundTN <= 6 && roll >= woundTN;
     for (const sr of profile.specialRules) {
@@ -211,8 +231,10 @@ function resolveAttackSequence(
     }
   }
 
-  const phageNote = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
-  log.push(`Wound rolls [${woundRolls.join(',')}] vs TN${baseWoundTN}${phageNote} → ${wounds} wound(s)`);
+  const phageNote    = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
+  const poisonNote   = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
+  const effectiveWoundTN = poisonedTN !== null ? Math.min(baseWoundTN, poisonedTN) : baseWoundTN;
+  log.push(`Wound rolls [${woundRolls.join(',')}] vs TN${effectiveWoundTN}${poisonNote}${phageNote} → ${wounds} wound(s)`);
 
   if (wounds === 0) {
     return {
@@ -221,7 +243,7 @@ function resolveAttackSequence(
       woundRolls, wounds: 0,
       saveRolls: [], unsavedWounds: 0,
       totalDamage: 0, defenderWoundsRemaining: defender.currentWounds,
-      defenderIsCasualty: false, log,
+      defenderIsCasualty: false, hitRollOnes, log,
     };
   }
 
@@ -278,7 +300,20 @@ function resolveAttackSequence(
     log.push(`No save available (AP${weaponAP ?? '-'} vs Sv${defSv}+/Inv${defInv ?? '-'})`);
   }
 
-  const unsavedWounds = wounds - saved;
+  let unsavedWounds = wounds - saved;
+
+  // ── Feel No Pain ─────────────────────────────────────────────────────────
+  // After failed saves, the defender may roll Feel No Pain to cancel wounds.
+  let fnpThreshold: number | null = null;
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name === 'FeelNoPain') fnpThreshold = sr.threshold;
+  }
+  if (fnpThreshold !== null && unsavedWounds > 0) {
+    const fnpRolls = dice.rollNd6(unsavedWounds);
+    const fnpSaved = fnpRolls.filter(r => r >= fnpThreshold!).length;
+    log.push(`Feel No Pain ${fnpThreshold}+: rolls [${fnpRolls.join(',')}] → ${fnpSaved} wound(s) cancelled`);
+    unsavedWounds -= fnpSaved;
+  }
 
   if (unsavedWounds === 0) {
     return {
@@ -287,7 +322,7 @@ function resolveAttackSequence(
       woundRolls, wounds,
       saveRolls, unsavedWounds: 0,
       totalDamage: 0, defenderWoundsRemaining: defender.currentWounds,
-      defenderIsCasualty: false, log,
+      defenderIsCasualty: false, hitRollOnes, log,
     };
   }
 
@@ -333,7 +368,7 @@ function resolveAttackSequence(
     woundRolls, wounds,
     saveRolls, unsavedWounds,
     totalDamage, defenderWoundsRemaining,
-    defenderIsCasualty, log,
+    defenderIsCasualty, hitRollOnes, log,
   };
 }
 
@@ -526,7 +561,7 @@ export function resolveStrikeStep(
         woundRolls: [], wounds: 0,
         saveRolls: [], unsavedWounds: 0,
         totalDamage: 0, defenderWoundsRemaining: updatedState.player.currentWounds,
-        defenderIsCasualty: false, log: ['AI did not attack — already a casualty.'],
+        defenderIsCasualty: false, hitRollOnes: 0, log: ['AI did not attack — already a casualty.'],
       };
       log.push('AI did not attack — AI was removed as a casualty.');
     }
@@ -582,7 +617,7 @@ export function resolveStrikeStep(
         woundRolls: [], wounds: 0,
         saveRolls: [], unsavedWounds: 0,
         totalDamage: 0, defenderWoundsRemaining: updatedState.ai.currentWounds,
-        defenderIsCasualty: false, log: ['Player did not attack — already a casualty.'],
+        defenderIsCasualty: false, hitRollOnes: 0, log: ['Player did not attack — already a casualty.'],
       };
       log.push('Player did not attack — Player was removed as a casualty.');
     }
@@ -616,6 +651,33 @@ export function resolveStrikeStep(
         woundsInflictedThisChallenge:
           updatedState.player.woundsInflictedThisChallenge + playerResult!.totalDamage,
       },
+    };
+  }
+
+  // ── Biological Overload self-wounds (Eversor Assassin) ───────────────────
+  // For each unmodified hit roll of 1 in the Eversor's own attack sequence,
+  // the Eversor suffers 1 wound (AP2, D1, allocated after Strike Step).
+  // Self-wound cannot be prevented by invulnerable save (per rules text).
+  const playerBioOverload = state.player.selectedGambit === 'biological-overload';
+  const aiBioOverload     = state.ai.selectedGambit === 'biological-overload';
+
+  if (playerBioOverload && playerResult!.hitRollOnes > 0) {
+    const selfWounds = playerResult!.hitRollOnes;
+    log.push(`Biological Overload: ${playerChar.name} suffers ${selfWounds} self-wound(s) (AP2/D1) from hit rolls of 1.`);
+    const newW = Math.max(0, updatedState.player.currentWounds - selfWounds);
+    updatedState = {
+      ...updatedState,
+      player: { ...updatedState.player, currentWounds: newW, isCasualty: newW <= 0 },
+    };
+  }
+
+  if (aiBioOverload && aiResult!.hitRollOnes > 0) {
+    const selfWounds = aiResult!.hitRollOnes;
+    log.push(`Biological Overload: ${aiChar.name} suffers ${selfWounds} self-wound(s) (AP2/D1) from hit rolls of 1.`);
+    const newW = Math.max(0, updatedState.ai.currentWounds - selfWounds);
+    updatedState = {
+      ...updatedState,
+      ai: { ...updatedState.ai, currentWounds: newW, isCasualty: newW <= 0 },
     };
   }
 
