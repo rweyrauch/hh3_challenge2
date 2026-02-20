@@ -3,6 +3,7 @@
  */
 import type { CombatState } from '../../models/combatState.js';
 import type { Character } from '../../models/character.js';
+import { renderCombatLog, scrollLogToBottom } from '../components/combatLog.js';
 
 export function mountResultScreen(
   container: HTMLElement,
@@ -78,7 +79,9 @@ export function mountResultScreen(
         Challenge lasted <strong>${rounds}</strong> round${rounds !== 1 ? 's' : ''}.
       </div>
 
-      <div class="d-flex justify-content-center gap-3">
+      ${renderCombatLog(state.log)}
+
+      <div class="d-flex justify-content-center gap-3 mt-4">
         <button id="rematch-btn" class="btn btn-primary">⚔ Rematch</button>
         <button id="new-chars-btn" class="btn btn-outline-light">🔄 New Characters</button>
       </div>
@@ -89,4 +92,6 @@ export function mountResultScreen(
     .addEventListener('click', onRematch);
   container.querySelector('#new-chars-btn')!
     .addEventListener('click', onNewCharacters);
+
+  scrollLogToBottom();
 }

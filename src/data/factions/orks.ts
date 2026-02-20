@@ -9,6 +9,7 @@
  *   - Blood Axes → Kunnin' but Brutal gambit
  */
 import type { Character } from '../../models/character.js';
+import { CHAINSWORD, POWER_SWORD } from '../weapons/legionAstartes.js';
 import { CHOPPA, POWER_KLAW, SLUGGA, STIKKBOMBS, BIG_CHOPPA, FORCE_STAFF } from '../weapons/orks.js';
 
 /** Warboss (Goffs) */
@@ -24,7 +25,7 @@ const WARBOSS_GOFFS: Character = {
     I: 4, A: 6, LD: 9, CL: 10, WP: 9, IN: 7,
     Sv: 4, Inv: 4,
   },
-  weapons: [CHOPPA, SLUGGA, STIKKBOMBS],
+  weapons: [CHOPPA, SLUGGA, BIG_CHOPPA, POWER_KLAW, CHAINSWORD, POWER_SWORD, STIKKBOMBS],
   factionGambitIds: ['brutal-but-kunnin'],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
@@ -45,7 +46,7 @@ const WARBOSS_BLOOD_AXES: Character = {
     I: 4, A: 6, LD: 9, CL: 10, WP: 9, IN: 7,
     Sv: 4, Inv: 4,
   },
-  weapons: [CHOPPA, SLUGGA, STIKKBOMBS],
+  weapons: [CHOPPA, SLUGGA, BIG_CHOPPA, POWER_KLAW, CHAINSWORD, POWER_SWORD, STIKKBOMBS],
   factionGambitIds: ['kunnin-but-brutal'],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
@@ -87,7 +88,7 @@ const BIGBOSS_GOFFS: Character = {
     I: 3, A: 4, LD: 8, CL: 9, WP: 8, IN: 6,
     Sv: 4, Inv: 5,
   },
-  weapons: [BIG_CHOPPA, CHOPPA, SLUGGA],
+  weapons: [BIG_CHOPPA, CHOPPA, SLUGGA, BIG_CHOPPA, POWER_KLAW, CHAINSWORD, POWER_SWORD],
   factionGambitIds: ['brutal-but-kunnin'],
   specialRules: [],
 };
@@ -105,9 +106,27 @@ const BIGBOSS_BLOOD_AXES: Character = {
     I: 3, A: 4, LD: 8, CL: 9, WP: 8, IN: 6,
     Sv: 4, Inv: 5,
   },
-  weapons: [BIG_CHOPPA, CHOPPA, SLUGGA],
+  weapons: [BIG_CHOPPA, CHOPPA, SLUGGA, BIG_CHOPPA, POWER_KLAW, CHAINSWORD, POWER_SWORD],
   factionGambitIds: ['kunnin-but-brutal'],
   specialRules: [],
+};
+
+const FREEBOOTER_KAPTIN: Character = {
+ id: 'freebooter-kaptin',
+  name: 'Freebooter Kaptin',
+  faction: 'orks',
+  subFaction: 'freebooters',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 3, S: 4, T: 4, W: 3,
+    I: 3, A: 3, LD: 9, CL: 8, WP: 8, IN: 6,
+    Sv: 3, Inv: 5,
+  },
+  weapons: [BIG_CHOPPA, CHOPPA, SLUGGA, BIG_CHOPPA, POWER_KLAW, CHAINSWORD, POWER_SWORD],
+  factionGambitIds: ['kunnin-but-brutal'],
+  specialRules: [],
+
 };
 
 // ── Weirdboy ─────────────────────────────────────────────────────────────────
@@ -137,5 +156,6 @@ export const ORK_CHARACTERS: Character[] = [
   MEGA_WARBOSS,
   BIGBOSS_GOFFS,
   BIGBOSS_BLOOD_AXES,
+  FREEBOOTER_KAPTIN,
   WEIRDBOY,
 ];
