@@ -25,15 +25,15 @@ import { TRAITOR_LEGION_GAMBITS }     from '../gambits/traitorLegions.js';
 import { ASSASSIN_GAMBITS }           from '../gambits/assassins.js';
 
 export const ALL_CHARACTERS: Character[] = [
-  ...CUSTODES_CHARACTERS,
-  ...ORK_CHARACTERS,
   ...LEGION_ASTARTES_CHARACTERS,
   ...LOYALIST_LEGION_CHARACTERS,
   ...TRAITOR_LEGION_CHARACTERS,
+  ...CUSTODES_CHARACTERS,
   ...DAEMON_CHARACTERS,
   ...MILITIA_CHARACTERS,
   ...ASSASSIN_CHARACTERS,
   ...MECHANICUM_CHARACTERS,
+  ...ORK_CHARACTERS,  
 ];
 
 const CHAR_MAP = new Map<string, Character>(
