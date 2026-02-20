@@ -74,7 +74,7 @@ const TARTAROS_PRAETOR: Character = {
   stats: {
     M: 7, WS: 6, BS: 5, S: 4, T: 5, W: 5,
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
-    Sv: 2, Inv: 5,
+    Sv: 2, Inv: 4, // Tartaros Praetor really do have a 4+ Inv.
   },
   weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
   factionGambitIds: [],
