@@ -267,8 +267,9 @@ export class ChallengeEngine {
   // ── strike-ai ────────────────────────────────────────────────────────────
 
   private advanceStrikeAi(state: CombatState, _input?: PlayerInput): AdvanceResult {
-    // Already handled inside advanceStrikePlayer; this is a no-op pass-through.
-    return { state: { ...state, phase: 'glory' }, waitingForInput: false };
+    // resolveStrikeStep uses state.challengeAdvantage to determine who attacks
+    // first, so the same resolution path handles both advantage holders.
+    return this.advanceStrikePlayer(state);
   }
 
   // ── glory ─────────────────────────────────────────────────────────────────
