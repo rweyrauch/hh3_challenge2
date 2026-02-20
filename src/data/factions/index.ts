@@ -16,6 +16,7 @@ import { TRAITOR_LEGION_CHARACTERS }  from './traitorLegions.js';
 import { DAEMON_CHARACTERS }          from './daemons.js';
 import { MILITIA_CHARACTERS }         from './militia.js';
 import { ASSASSIN_CHARACTERS }        from './assassins.js';
+import { MECHANICUM_CHARACTERS }      from './mechanicum.js';
 import { CORE_GAMBITS }               from '../gambits/coreGambits.js';
 import { CUSTODES_GAMBITS }           from '../gambits/custodes.js';
 import { ORK_GAMBITS }                from '../gambits/orks.js';
@@ -32,6 +33,7 @@ export const ALL_CHARACTERS: Character[] = [
   ...DAEMON_CHARACTERS,
   ...MILITIA_CHARACTERS,
   ...ASSASSIN_CHARACTERS,
+  ...MECHANICUM_CHARACTERS,
 ];
 
 const CHAR_MAP = new Map<string, Character>(
@@ -117,6 +119,8 @@ export function getFactionLabel(faction: string): string {
     'imperialis-militia': 'Imperialis Militia',
     // Divisio Assassinorum
     'divisio-assassinorum': 'Divisio Assassinorum',
+    // Mechanicum
+    'mechanicum': 'Mechanicum',
   };
   return labels[faction] ?? faction;
 }
