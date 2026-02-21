@@ -12,6 +12,7 @@ A browser-based simulator for the **Challenge Sub-Phase** from *Horus Heresy 3rd
 - **50+ playable characters** across Legio Custodes, Legion Astartes, Loyalist & Traitor Legions, Orks, Daemons, Mechanicum, and Divisio Assassinorum
 - **Faction-specific Gambits** — 30+ gambits beyond the 9 core ones, with unique mechanics per faction
 - **Heuristic AI opponent** — scores and selects Gambits based on combat state; beatable but not trivial
+- **Simulate mode** — automatically tests every opening Gambit over hundreds of simulated challenges and ranks them; the top Gambit can be carried straight into a real match with a visual highlight
 - **Real-time combat log** — color-coded rolls and results for every phase
 - **Immutable state engine** — pure functional core with a dice abstraction layer for full testability
 - **88 passing unit tests**
@@ -30,6 +31,27 @@ Each round of a Challenge plays out in four steps:
 | **Glory** | Calculate Combat Resolution Points (CRP); decide to continue or withdraw |
 
 The challenge ends when one combatant is slain (casualty) or a fighter successfully uses **Withdraw**.
+
+---
+
+## Simulate Mode
+
+The **Simulate** button on the character selection screen runs a fully automated batch analysis before you start a match.
+
+1. **Select both characters** as normal, then click **Simulate** instead of Begin.
+2. The simulator plays out **500 full challenges per Gambit** (all Gambits available to your character), advancing every phase automatically — the AI drives both sides using heuristic selection.
+3. A **ranked results table** is shown once all simulations finish:
+
+   | Rank | Gambit | Win% | CRP Δ | Score |
+   |------|--------|------|-------|-------|
+   | 1 | *best gambit* | 72% | +2.1 | 0.73 |
+   | 2 | … | … | … | … |
+
+   - **Win%** — percentage of simulations won outright (casualty or CRP)
+   - **CRP Δ** — average (player CRP − AI CRP) across all simulations
+   - **Score** — composite metric: `Win% × 0.7 + clamp(CRP Δ / total wounds, 0, 1) × 0.3`
+
+4. Click **Play with best Gambit** to launch a real match. The top-ranked Gambit is highlighted with a ★ badge in the Face-Off panel for Round 1, then the highlight clears automatically.
 
 ---
 
@@ -99,7 +121,8 @@ src/
 │   ├── gloryStep.ts         # CRP calculation & challenge end
 │   ├── gambitEffects.ts     # All Gambit modifier functions
 │   ├── tables.ts            # Rulebook Hit/Wound look-up tables
-│   └── dice.ts              # DiceRoller interface (real + fake for tests)
+│   ├── dice.ts              # DiceRoller interface (real + fake for tests)
+│   └── simulationRunner.ts  # Batch gambit analysis (Simulate mode)
 ├── ai/
 │   └── heuristicAI.ts       # Gambit scoring & selection
 ├── data/
@@ -107,7 +130,7 @@ src/
 │   └── gambits/             # Core & faction-specific Gambit definitions
 ├── ui/
 │   ├── app.ts               # Screen router
-│   └── screens/             # Selection, Combat, and Result screens
+│   └── screens/             # Selection, Combat, Result, and Simulation screens
 └── models/                  # Shared TypeScript interfaces
 ```
 
