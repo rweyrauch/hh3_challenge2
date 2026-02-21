@@ -8,12 +8,13 @@ import type { Gambit, GambitId } from '../../models/gambit.js';
 import type { ChallengePhase } from '../../models/combatState.js';
 
 /**
- * @param gambits         - available gambits for this character
- * @param phase           - current phase (buttons active only in faceOff)
- * @param selectedGambit  - currently selected gambit (if any)
- * @param bannedGambit    - gambit banned by Feint and Riposte
- * @param usedOnce        - set of once-per-challenge gambits already used
- * @param isFirstMover    - whether this player is the first mover (needed for F&R)
+ * @param gambits            - available gambits for this character
+ * @param phase              - current phase (buttons active only in faceOff)
+ * @param selectedGambit     - currently selected gambit (if any)
+ * @param bannedGambit       - gambit banned by Feint and Riposte
+ * @param usedOnce           - set of once-per-challenge gambits already used
+ * @param isFirstMover       - whether this player is the first mover (needed for F&R)
+ * @param recommendedGambit  - gambit suggested by the simulator (highlighted on round 1 only)
  */
 export function renderGambitsPanel(
   gambits: Gambit[],
@@ -22,29 +23,37 @@ export function renderGambitsPanel(
   bannedGambit: GambitId | null,
   usedOnce: Set<GambitId>,
   isFirstMover: boolean,
+  recommendedGambit: GambitId | null = null,
 ): string {
   const active = phase === 'faceOff';
 
   const buttons = gambits.map(g => {
-    const isBanned    = g.id === bannedGambit;
-    const isUsed      = g.oncePerChallenge && usedOnce.has(g.id);
-    const needFirst   = g.firstMoverOnly && !isFirstMover;
-    const isSelected  = g.id === selectedGambit;
-    const disabled    = !active || isBanned || isUsed || needFirst;
+    const isBanned       = g.id === bannedGambit;
+    const isUsed         = g.oncePerChallenge && usedOnce.has(g.id);
+    const needFirst      = g.firstMoverOnly && !isFirstMover;
+    const isSelected     = g.id === selectedGambit;
+    const isRecommended  = recommendedGambit !== null && g.id === recommendedGambit && !isSelected;
+    const disabled       = !active || isBanned || isUsed || needFirst;
 
     let btnClass = 'btn btn-sm gambit-btn ';
-    if (isSelected)       btnClass += 'btn-primary';
-    else if (isBanned)    btnClass += 'btn-outline-danger';
-    else if (isUsed)      btnClass += 'btn-outline-secondary';
-    else if (disabled)    btnClass += 'btn-outline-secondary';
-    else                  btnClass += 'btn-outline-light';
+    if (isSelected)         btnClass += 'btn-primary';
+    else if (isBanned)      btnClass += 'btn-outline-danger';
+    else if (isUsed)        btnClass += 'btn-outline-secondary';
+    else if (disabled)      btnClass += 'btn-outline-secondary';
+    else if (isRecommended) btnClass += 'btn-outline-warning gambit-recommended';
+    else                    btnClass += 'btn-outline-light';
 
     const title = [
       g.description,
-      isBanned  ? '⛔ Banned by Feint and Riposte' : '',
-      isUsed    ? '✓ Already used this Challenge'  : '',
-      needFirst ? '🔒 First-mover only'             : '',
+      isBanned       ? '⛔ Banned by Feint and Riposte' : '',
+      isUsed         ? '✓ Already used this Challenge'  : '',
+      needFirst      ? '🔒 First-mover only'             : '',
+      isRecommended  ? '★ Recommended by simulator'      : '',
     ].filter(Boolean).join('\n');
+
+    const badge = isRecommended
+      ? '<span class="badge bg-warning text-dark ms-1" style="font-size:0.6rem">★ Best</span>'
+      : '';
 
     return `
       <div class="col-6 col-sm-4 col-lg-3 mb-2">
@@ -54,7 +63,7 @@ export function renderGambitsPanel(
           ${disabled ? 'disabled' : ''}
           title="${escapeAttr(title)}"
         >
-          <span class="gambit-name fw-semibold">${g.name}</span>
+          <span class="gambit-name fw-semibold">${g.name}${badge}</span>
           <div class="gambit-desc small text-muted d-none d-sm-block">
             ${g.description.substring(0, 60)}${g.description.length > 60 ? '…' : ''}
           </div>
