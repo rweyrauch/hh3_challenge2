@@ -172,7 +172,7 @@ function resolveAttackSequence(
     }
   }
 
-  log.push(`Hit rolls [${hitRolls.join(',')}] vs TN${hitTN} → ${hits} hit(s)`);
+  log.push(`Hit rolls [${hitRolls.join(',')}] needing ${hitTN}+ → ${hits} hit(s)`);
 
   if (hits === 0) {
     const defWounds = defender.currentWounds;
@@ -234,7 +234,7 @@ function resolveAttackSequence(
   const phageNote    = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
   const poisonNote   = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
   const effectiveWoundTN = poisonedTN !== null ? Math.min(baseWoundTN, poisonedTN) : baseWoundTN;
-  log.push(`Wound rolls [${woundRolls.join(',')}] vs TN${effectiveWoundTN}${poisonNote}${phageNote} → ${wounds} wound(s)`);
+  log.push(`Wound rolls [${woundRolls.join(',')}] needing ${effectiveWoundTN}+${poisonNote}${phageNote} → ${wounds} wound(s)`);
 
   if (wounds === 0) {
     return {
@@ -391,7 +391,7 @@ function resolveSpitefulDemise(
   const woundRoll = dice.rollD6();
   const breaching = woundRoll >= 5;
   const isWound   = (woundTN <= 6 && woundRoll >= woundTN) || breaching;
-  log.push(`Spiteful Demise: Wound roll ${woundRoll} vs TN${woundTN}${breaching ? ' (Breaching)' : ''} → ${isWound ? 'wound' : 'no wound'}`);
+  log.push(`Spiteful Demise: Wound roll ${woundRoll} needing ${woundTN}+${breaching ? ' (Breaching)' : ''} → ${isWound ? 'wound' : 'no wound'}`);
   if (!isWound) return { newWounds: defenderState.currentWounds, isCasualty: false };
 
   const weaponAP = breaching ? 2 : 4;
