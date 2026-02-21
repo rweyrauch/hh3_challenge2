@@ -34,11 +34,12 @@ export function mountCombatScreen(
   playerChar: Character,
   aiChar: Character,
   callbacks: CombatScreenCallbacks,
+  recommendedGambit: GambitId | null = null,
 ): void {
   container.innerHTML = buildShell(playerChar, aiChar);
   container.querySelector('#btn-abandon')
     ?.addEventListener('click', callbacks.onAbandon);
-  updateCombatScreen(container, state, playerChar, aiChar, callbacks);
+  updateCombatScreen(container, state, playerChar, aiChar, callbacks, recommendedGambit);
 }
 
 /** Re-render only the dynamic portions of the combat screen. */
@@ -48,6 +49,7 @@ export function updateCombatScreen(
   playerChar: Character,
   aiChar: Character,
   callbacks: CombatScreenCallbacks,
+  recommendedGambit: GambitId | null = null,
 ): void {
   // ── Stat blocks ──────────────────────────────────────────────────────────
   const playerStatEl = container.querySelector<HTMLElement>('#cs-player-stat');
@@ -93,6 +95,7 @@ export function updateCombatScreen(
       gambits, state.phase,
       state.player.selectedGambit,
       bannedGambit, usedOnce, isFirstMover,
+      state.round === 1 ? recommendedGambit : null,
     );
 
     // Attach gambit click listeners

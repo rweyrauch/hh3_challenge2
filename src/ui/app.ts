@@ -16,8 +16,9 @@ import { RealDiceRoller } from '../engine/dice.js';
 import { mountSelectionScreen } from './screens/selectionScreen.js';
 import { mountCombatScreen, updateCombatScreen } from './screens/combatScreen.js';
 import { mountResultScreen } from './screens/resultScreen.js';
+import { mountSimulationScreen } from './screens/simulationScreen.js';
 
-type AppScreen = 'selection' | 'combat' | 'result';
+type AppScreen = 'selection' | 'combat' | 'result' | 'simulation';
 
 interface AppState {
   screen: AppScreen;
@@ -25,8 +26,9 @@ interface AppState {
   aiChar:     Character | null;
   engine:     ChallengeEngine | null;
   combatState: CombatState | null;
-  playerWeaponIndex:  number;
-  playerProfileIndex: number;
+  playerWeaponIndex:   number;
+  playerProfileIndex:  number;
+  recommendedOpeningGambit: GambitId | null;
 }
 
 /** Boot the application. */
@@ -37,23 +39,52 @@ export function startApp(container: HTMLElement): void {
     aiChar:     null,
     engine:     null,
     combatState: null,
-    playerWeaponIndex:  0,
-    playerProfileIndex: 0,
+    playerWeaponIndex:        0,
+    playerProfileIndex:       0,
+    recommendedOpeningGambit: null,
   };
 
   function goToSelection(): void {
-    app.screen      = 'selection';
-    app.playerChar  = null;
-    app.aiChar      = null;
-    app.engine      = null;
-    app.combatState = null;
-    mountSelectionScreen(container, ({ playerCharId, aiCharId, playerWeaponIndex, playerProfileIndex }) => {
-      app.playerChar          = getCharacterById(playerCharId) ?? null;
-      app.aiChar              = getCharacterById(aiCharId) ?? null;
-      app.playerWeaponIndex   = playerWeaponIndex;
-      app.playerProfileIndex  = playerProfileIndex;
-      if (app.playerChar && app.aiChar) goToCombat();
-    });
+    app.screen                   = 'selection';
+    app.playerChar               = null;
+    app.aiChar                   = null;
+    app.engine                   = null;
+    app.combatState              = null;
+    app.recommendedOpeningGambit = null;
+    mountSelectionScreen(
+      container,
+      ({ playerCharId, aiCharId, playerWeaponIndex, playerProfileIndex }) => {
+        app.playerChar          = getCharacterById(playerCharId) ?? null;
+        app.aiChar              = getCharacterById(aiCharId) ?? null;
+        app.playerWeaponIndex   = playerWeaponIndex;
+        app.playerProfileIndex  = playerProfileIndex;
+        if (app.playerChar && app.aiChar) goToCombat();
+      },
+      ({ playerCharId, aiCharId, playerWeaponIndex, playerProfileIndex }) => {
+        app.playerChar          = getCharacterById(playerCharId) ?? null;
+        app.aiChar              = getCharacterById(aiCharId) ?? null;
+        app.playerWeaponIndex   = playerWeaponIndex;
+        app.playerProfileIndex  = playerProfileIndex;
+        if (app.playerChar && app.aiChar) goToSimulation();
+      },
+    );
+  }
+
+  function goToSimulation(): void {
+    if (!app.playerChar || !app.aiChar) { goToSelection(); return; }
+    app.screen = 'simulation';
+    mountSimulationScreen(
+      container,
+      app.playerChar,
+      app.aiChar,
+      app.playerWeaponIndex,
+      app.playerProfileIndex,
+      () => goToSelection(),
+      (gambitId) => {
+        app.recommendedOpeningGambit = gambitId;
+        goToCombat();
+      },
+    );
   }
 
   function goToCombat(reuseSameChars = false): void {
@@ -96,7 +127,10 @@ export function startApp(container: HTMLElement): void {
       },
     };
 
-    mountCombatScreen(container, state, app.playerChar, app.aiChar, callbacks);
+    mountCombatScreen(
+      container, state, app.playerChar, app.aiChar, callbacks,
+      app.recommendedOpeningGambit,
+    );
 
     // Kick off first advance (AI has no input needed until faceOff)
     // The engine will wait for player input at faceOff.
@@ -132,6 +166,7 @@ export function startApp(container: HTMLElement): void {
         onWithdraw:  () => advanceWith({ useWithdraw: true }),
         onAbandon:   () => goToSelection(),
       },
+      app.combatState.round === 1 ? app.recommendedOpeningGambit : null,
     );
   }
 
