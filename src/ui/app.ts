@@ -17,8 +17,9 @@ import { mountSelectionScreen } from './screens/selectionScreen.js';
 import { mountCombatScreen, updateCombatScreen } from './screens/combatScreen.js';
 import { mountResultScreen } from './screens/resultScreen.js';
 import { mountSimulationScreen } from './screens/simulationScreen.js';
+import { mountAboutScreen } from './screens/aboutScreen.js';
 
-type AppScreen = 'selection' | 'combat' | 'result' | 'simulation';
+type AppScreen = 'selection' | 'combat' | 'result' | 'simulation' | 'about';
 
 interface AppState {
   screen: AppScreen;
@@ -67,7 +68,13 @@ export function startApp(container: HTMLElement): void {
         app.playerProfileIndex  = playerProfileIndex;
         if (app.playerChar && app.aiChar) goToSimulation();
       },
+      () => goToAbout(),
     );
+  }
+
+  function goToAbout(): void {
+    app.screen = 'about';
+    mountAboutScreen(container, () => goToSelection());
   }
 
   function goToSimulation(): void {

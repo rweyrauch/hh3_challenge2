@@ -61,9 +61,10 @@ export function mountSelectionScreen(
   container: HTMLElement,
   onBegin: (result: SelectionResult) => void,
   onSimulate: (result: SelectionResult) => void,
+  onAbout: () => void,
 ): void {
   container.innerHTML = buildHTML();
-  attachListeners(container, onBegin, onSimulate);
+  attachListeners(container, onBegin, onSimulate, onAbout);
 }
 
 function buildHTML(): string {
@@ -145,6 +146,7 @@ function buildHTML(): string {
 
       <div class="mt-5 text-center text-muted small">
         <p>Rules based on <em>Warhammer: The Horus Heresy — Age of Darkness</em> (3rd Edition)</p>
+        <button id="about-btn" class="btn btn-link btn-sm text-muted p-0">ℹ About &amp; How to Play</button>
       </div>
     </div>
   `;
@@ -154,6 +156,7 @@ function attachListeners(
   container: HTMLElement,
   onBegin: (result: SelectionResult) => void,
   onSimulate: (result: SelectionResult) => void,
+  onAbout: () => void,
 ): void {
   const playerSelect  = container.querySelector<HTMLSelectElement>('#player-char-select')!;
   const weaponSection = container.querySelector<HTMLElement>('#player-weapon-section')!;
@@ -249,6 +252,8 @@ function attachListeners(
   simulateBtn.addEventListener('click', () => {
     if (playerSelect.value && aiSelect.value) onSimulate(buildResult());
   });
+
+  container.querySelector('#about-btn')!.addEventListener('click', onAbout);
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
