@@ -163,6 +163,25 @@ const CATAPHRACTII_LIBRARIAN: Character = {
   specialRules: [{ name: 'Bulky', value: 2 }],
 };
 
+// ── Tartaros Librarian ────────────────────────────────────────────────────────
+// As Cataphractii Librarian but in Tartaros plate: faster (M7), lighter save
+// (Inv5+ vs 4+), and no Heavy sub-type penalty on Focus Rolls.
+const TARTAROS_LIBRARIAN: Character = {
+  id: 'tartaros-librarian',
+  name: 'Tartaros Librarian',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
 // ── Centurion ─────────────────────────────────────────────────────────────────
 // Mid-ranking officer.  Lower WS and Wounds than a Praetor but still a
 // competent challenger.
@@ -471,6 +490,7 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   SATURNINE_CENTURION,
   LIBRARIAN,
   CATAPHRACTII_LIBRARIAN,
+  TARTAROS_LIBRARIAN,
   LEGION_CHAMPION_JUMP_PACK,
   CATAPHRACTII_LEGION_CHAMPION,
   CHOSEN_CHAMPION,
