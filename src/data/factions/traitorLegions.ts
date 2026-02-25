@@ -213,6 +213,7 @@ const MORTARION: Character = {
   specialRules: [
     { name: 'EternalWarrior', value: 3 },
     { name: 'Bulky', value: 5 },
+    { name: 'PraeternaturalResilience' },
   ],
 };
 
