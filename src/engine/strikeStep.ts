@@ -236,6 +236,7 @@ function resolveAttackSequence(
     if (sr.name === 'Shred'     && 6 >= sr.threshold) critShredTriggers   += critHits;
   }
   critBreachingWounds = Math.min(critBreachingWounds, critHits);
+  critShredTriggers   = Math.min(critShredTriggers, critHits);
   const critWounds = critHits;
 
   // Normal hits go through the wound test as usual
@@ -454,30 +455,39 @@ function resolveAttackSequence(
     : Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
 
   // Shred: wounds that triggered Shred deal +1 Damage (suppressed when Flurry caps D to 1).
-  // Applied only to normal (non-critical) unsaved wounds; crit wounds already get +1D.
-  // We don't track which specific unsaved normal wounds came from Shred rolls, so approximate
-  // with the fraction (normalShredTriggers / normalWounds) of normal unsaved wounds.
+  // Normal hits: approximate shred-triggering unsaved wounds via fraction of wound rolls.
+  // Critical hits count as a roll of 6, so they also trigger Shred when 6 ≥ threshold;
+  // such wounds stack both bonuses and deal +2D total (CriticalHit +1 and Shred +1).
   const unsavedNormalWounds = unsavedWounds - unsavedCritWounds;
   const unsavedShredWounds = normalWounds > 0 && !mods.damageSetToOne
     ? Math.round((normalShredTriggers / normalWounds) * unsavedNormalWounds)
     : 0;
-  const shredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
+  const unsavedCritShredWounds = critHits > 0 && !mods.damageSetToOne
+    ? Math.round((critShredTriggers / critHits) * unsavedCritWounds)
+    : 0;
+  const shredDmgPerWound     = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
+  const critShredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 2) - ewReduction);
   const totalDamage =
-    unsavedCritWounds * critDmgPerWound +
+    (unsavedCritWounds - unsavedCritShredWounds) * critDmgPerWound +
+    unsavedCritShredWounds * critShredDmgPerWound +
     (unsavedNormalWounds - unsavedShredWounds) * dmgPerWound +
     unsavedShredWounds * shredDmgPerWound;
 
   const defenderWoundsRemaining = Math.max(0, defender.currentWounds - totalDamage);
   const defenderIsCasualty = defenderWoundsRemaining <= 0;
 
-  const critDmgNote = unsavedCritWounds > 0
-    ? ` (${unsavedCritWounds} critical × D${critDmgPerWound})`
+  const critNonShredCount = unsavedCritWounds - unsavedCritShredWounds;
+  const critDmgNote = critNonShredCount > 0
+    ? ` (${critNonShredCount} critical × D${critDmgPerWound})`
+    : '';
+  const critShredNote = unsavedCritShredWounds > 0
+    ? ` (${unsavedCritShredWounds} Crit+Shred × D${critShredDmgPerWound})`
     : '';
   const shredNote = unsavedShredWounds > 0
     ? ` (${unsavedShredWounds} Shred wound(s) at +1 dmg)`
     : '';
   log.push(
-    `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg${critDmgNote}${shredNote} = ${totalDamage} damage. ` +
+    `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg${critDmgNote}${critShredNote}${shredNote} = ${totalDamage} damage. ` +
     `${defenderChar.name}: ${defender.currentWounds} → ${defenderWoundsRemaining} wounds` +
     (defenderIsCasualty ? ' (CASUALTY)' : ''),
   );

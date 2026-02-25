@@ -733,6 +733,65 @@ describe('resolveStrikeStep', () => {
     expect(result.playerResult.attacks).toBe(7);
   });
 
+  it('CriticalHit+Shred: critical hits that trigger Shred deal +2D (CritHit+1 and Shred+1)', () => {
+    // Weapon: CriticalHit(5+), Shred(5+), D1, AP null.
+    // Attacker WS7, S4, A2 + advantage = 3 attacks. Defender WS2, T3, Sv7, Inv4+, W10.
+    // Hit rolls [5,5,5]: all hit (≥2+) and crit (≥5+) → critHits=3, critShredTriggers=3.
+    // Crits count as roll 6 → Shred(5+) triggers: 6 ≥ 5+.
+    // No wound dice (all crits). Save: getEffectiveSave(7,4,null)=4+; rolls [1,1,1] → all fail.
+    // unsavedCritShredWounds = round(3/3 × 3) = 3.
+    // critShredDmgPerWound = max(1, 1+0+2−0) = 3.
+    // totalDamage = 0 × critDmg(2) + 3 × critShredDmg(3) = 9.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'crit-shred-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 4, A: 2, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const defender: Character = {
+      ...WARBOSS,
+      id: 'crit-shred-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 3, Sv: 7, Inv: 4, W: 10 },
+      specialRules: [],
+    };
+    const critShredWeapon = {
+      profileName: 'CritShred Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: null, damage: 1,
+      specialRules: [
+        { name: 'CriticalHit' as const, threshold: 5 },
+        { name: 'Shred'       as const, threshold: 5 },
+      ],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, defender),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, defender).player,
+        selectedWeaponProfile: critShredWeapon,
+      },
+      ai: {
+        ...makeState(attacker, defender).ai,
+        selectedWeaponProfile: defender.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5, 5,         // 3 hits (≥2+) and crits (≥5+) → critShredTriggers=3 (6 ≥ Shred 5+)
+      // no wound dice (all crits)
+      1, 1, 1,         // 3 save rolls (Inv4+, all fail) → 3 unsaved crit wounds
+      1,1,1,1,1,1,     // 6 AI hit rolls (WS2 vs WS7 = 6+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, defender, 'player');
+    expect(result.playerResult.hits).toBe(3);
+    expect(result.playerResult.wounds).toBe(3);         // 3 crit auto-wounds
+    expect(result.playerResult.unsavedWounds).toBe(3);
+    // Before fix: 3 × D(1+1)=2 = 6 damage  (Shred not applied to crits).
+    // After fix:  3 × D(1+2)=3 = 9 damage  (CriticalHit +1 and Shred +1 both applied).
+    expect(result.playerResult.totalDamage).toBe(9);
+  });
+
   it('Mirror-Form: hits always on 4+ regardless of WS comparison', () => {
     // Adamus (WS5, A4, +1 advantage=5 attacks) vs Warboss (WS6).
     // Normally hit TN = WS5 vs WS6 = 5+. With mirror-form: always 4+.
