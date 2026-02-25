@@ -39,17 +39,14 @@ function makeState(
 
 describe('resolveStrikeStep', () => {
   it('player attacks first when player has advantage', () => {
-    // Player (VALDOR, A=6+1bonus=7) rolls all 6s for hits (WS7 vs WS6 = 2+)
-    // Warboss saves: Sv4+ vs AP2 → penetrated; inv4+ available (not affected by AP)
-    // getEffectiveSave(4, 4, 2): AP2 ≤ Sv4 (penetrated), inv4+ available → 4+
-    // Provide: 7 hit dice, 7 wound dice (S7 vs T5 = 2+), 7 save dice (inv4+, all 1)
-    // EternalWarrior(1) on WARBOSS: D=max(1, 2-1)=1; 7 unsaved × 1 = 7 > W4 → casualty
-    // AI then has no attack (casualty)
+    // Player (VALDOR, A=6+1bonus=7) rolls 7 dice of 5 for hits (WS7 vs WS6 = 2+, 5 ≥ 2).
+    // Apollonian Spear has CriticalHit(5+): roll 5 ≥ 5 → every hit is a Critical Hit.
+    // Critical Hits auto-wound — no wound dice rolled.
+    // 7 unsaved crit wounds × D(2+1)−EW(1) = D2 each → 14 damage > W4 → casualty.
+    // AI then has no attack (casualty).
     const dice = new FakeDiceRoller([
-      1,              // d3 (getStrikeModifiers call; no flurry-of-blows)
-      6,6,6,6,6,6,6,  // 7 hit dice
-      6,6,6,6,6,6,6,  // 7 wound dice
-      1,1,1,1,1,1,1,  // 7 save dice (all fail vs inv4+)
+      5,5,5,5,5,5,5,  // 7 hit dice (5 ≥ hitTN 2+; 5 ≥ critThreshold 5+ → all Critical Hits)
+      1,1,1,1,1,1,1,  // 7 save dice (all fail vs Inv 4+)
     ]);
 
     const state = makeState();
@@ -63,17 +60,16 @@ describe('resolveStrikeStep', () => {
   });
 
   it('Flurry of Blows: damage capped at 1 per wound', () => {
-    // Player uses Flurry of Blows; d3=3, so +3 attacks (total 6+1+3=10 on advantage)
-    // But damage must be set to 1 regardless of weapon D2.
-    // d3 is only consumed for flurry-of-blows gambits.
-    // VALDOR vs WARBOSS: AP2 penetrates Sv4+; Inv4+ available (not AP-affected) → saves at 4+
+    // Player uses Flurry of Blows; raw d3=5 → d3Result=3, so +3 attacks (6+1+3=10).
+    // Apollonian Spear CriticalHit(5+): all hit rolls of 5 are Critical Hits → auto-wound.
+    // No wound dice rolled (all hits are Critical).
+    // Flurry caps damage to 1 even for Critical Hits, so totalDamage === unsavedWounds.
+    // VALDOR vs WARBOSS: AP2 penetrates Sv4+; Inv4+ available → saves at 4+.
     const dice = new FakeDiceRoller([
-      3,              // d3 = 3 extra attacks (player has flurry-of-blows)
-      6,6,6,6,6,6,6,6,6,6, // 10 hit dice (all hit, WS7 vs WS6 = 2+)
-      6,6,6,6,6,6,6,6,6,6, // 10 wound dice (S7 vs T5 = 2+, all wound)
-      1,1,1,1,1,1,1,1,1,1, // 10 save dice (inv4+, roll 1s → all fail)
-      // AI (6 attacks, no flurry, no d3 consumed): WS6 vs WS7 → 5+; roll 1s → miss
-      1,1,1,1,1,1, // AI 6 attack hit dice
+      5,              // d3 raw=5 → d3Result=3 extra attacks (flurry-of-blows)
+      5,5,5,5,5,5,5,5,5,5, // 10 hit dice (5 ≥ hitTN 2+; 5 ≥ critThreshold 5+ → all crits)
+      // No wound dice — all hits are Critical Hits (auto-wound)
+      1,1,1,1,1,1,1,1,1,1, // 10 save dice (Inv4+, roll 1s → all fail)
     ]);
 
     const state = makeState(VALDOR, WARBOSS, {
@@ -172,12 +168,11 @@ describe('resolveStrikeStep', () => {
   });
 
   it('model becomes a casualty when wounds reach 0', () => {
-    // Force Warboss to take more damage than his 4 wounds
+    // Apollonian Spear CriticalHit(5+): rolls of 5 hit (WS7 vs WS6 = 2+) and are crits.
+    // Critical Hits auto-wound — no wound dice. 7 crit unsaved wounds × D2 = 14 > W4 → casualty.
     const dice = new FakeDiceRoller([
-      1,                          // d3
-      6,6,6,6,6,6,6,              // 7 hits
-      6,6,6,6,6,6,6,              // 7 wounds
-      1,1,1,1,1,1,1,              // 7 failed saves
+      5,5,5,5,5,5,5,              // 7 hits (5 ≥ 2+) and crits (5 ≥ 5+) — no wound rolls
+      1,1,1,1,1,1,1,              // 7 failed saves (Inv 4+)
     ]);
     const state = makeState();
     const result = resolveStrikeStep(dice, state, VALDOR, WARBOSS, 'player');
@@ -186,14 +181,12 @@ describe('resolveStrikeStep', () => {
   });
 
   it('FeelNoPain(5+): cancels some wounds, remainder cause damage and kill AI', () => {
-    // VALDOR (WS7, A6, +1 advantage=7 attacks) vs Warboss+FNP(5+) (W4, EW1, Sv4, Inv4).
-    // VALDOR uses Apollonian Spear: SM+2 → S6, AP2, D2, CriticalHit(5+).
-    // No d3 consumed (no flurry-of-blows).
-    // Hit TN: WS7 vs WS6 = 2+. 7 rolls of 6 → 7 hits.
-    // Wound TN: S6 vs T5 = 3+. 7 rolls of 6 → 7 wounds.
-    // Save: AP2 negates Sv4; Inv4+ used. 7 rolls of 1 → all fail.
-    // FNP(5+): 5,5,5,1,1,1,1 → 3 cancelled, 4 fail.
-    // Damage: D2 - EW(1) = max(1,1) = 1 per wound. 4 × 1 = 4 damage. W4→0 → CASUALTY.
+    // VALDOR (WS7, A6+1adv=7 attacks) vs Warboss+FNP(5+) (W4, EW1, Sv4, Inv4).
+    // Apollonian Spear: CriticalHit(5+), D2. Rolls of 6 hit (≥2+) and crit (≥5+).
+    // Critical Hits auto-wound (no wound dice). 7 crit wounds, saves at Inv4+.
+    // 7 save rolls of 1 → all fail → 7 unsaved crit wounds.
+    // FNP(5+): 5,5,5,1,1,1,1 → 3 cancelled (proportional), 4 remain.
+    // Damage: crit D(2+1)−EW(1)=D2 per wound. 4 × 2 = 8 > W4 → CASUALTY.
     // AI doesn't attack.
     const defenderWithFNP: Character = {
       ...WARBOSS,
@@ -205,11 +198,10 @@ describe('resolveStrikeStep', () => {
     };
     const state = makeState(VALDOR, defenderWithFNP);
     const dice = new FakeDiceRoller([
-      // No d3 (gambit is null, not flurry-of-blows)
-      6,6,6,6,6,6,6,  // 7 hit rolls (TN 2+, all hit)
-      6,6,6,6,6,6,6,  // 7 wound rolls (TN 3+, all wound)
+      6,6,6,6,6,6,6,  // 7 hit rolls (TN 2+, all hit; 6 ≥ critThreshold 5+ → all Critical Hits)
+      // No wound dice — Critical Hits auto-wound without dice
       1,1,1,1,1,1,1,  // 7 save rolls (Inv4+, all fail)
-      5,5,5,1,1,1,1,  // 7 FNP rolls: 3 succeed → 4 through
+      5,5,5,1,1,1,1,  // 7 FNP rolls: 3 succeed → 4 unsaved
     ]);
     const result = resolveStrikeStep(dice, state, VALDOR, defenderWithFNP, 'player');
     expect(result.playerResult.unsavedWounds).toBe(4);
@@ -345,6 +337,76 @@ describe('resolveStrikeStep', () => {
     expect(result.updatedState.ai.isCasualty).toBe(true);
     expect(result.playerResult.hitRollOnes).toBe(1);
     expect(result.updatedState.player.currentWounds).toBe(2); // W3 - 1 self-wound = 2
+  });
+
+  it('CriticalHit: auto-wounds on crit, +1 Damage, no crit on a miss', () => {
+    // Use a custom attacker (WS7, S4, A2+1bonus=3) with a CriticalHit(5+)/D2 weapon
+    // vs a custom defender (WS2, T4, Sv7 = no armour, Inv4+, W6, no EW).
+    // hitTN = WS7 vs WS2 = 2+.
+    //
+    // Hit dice: [6, 3, 1]
+    //   6: 6 ≥ 2+ → hit; 6 ≥ 5+ → Critical Hit  (auto-wound, D2+1=3)
+    //   3: 3 ≥ 2+ → hit; 3 <  5  → normal hit    (goes through wound test)
+    //   1: 1 < 2  → miss; Critical Hit rule CANNOT apply on a miss
+    //
+    // Wound dice (1 die for the single normal hit): [5]
+    //   S4 vs T4 = 4+. Roll 5 ≥ 4+ → wound.
+    //
+    // Saves: no armour (Sv7), Inv4+. effectiveSave = 4+.
+    //   Pool 1 (crit wound at weapon AP): [1] → fail → unsavedCritWounds=1
+    //   Pool 2 (normal wound at weapon AP): [1] → fail
+    //
+    // Damage:
+    //   critDmgPerWound = max(1, (2+0+1)−0) = 3   (D2 + Critical Hit +1, no EW)
+    //   dmgPerWound     = max(1, (2+0)−0)   = 2   (D2 normal)
+    //   totalDamage = 1×3 + 1×2 = 5
+    const attacker = {
+      ...WARBOSS,
+      id: 'crit-test-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 4, A: 2, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const defender = {
+      ...WARBOSS,
+      id: 'crit-test-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 4, Sv: 7, Inv: 4, W: 6 },
+      specialRules: [],
+    };
+    const critWeapon = {
+      profileName: 'Crit Test Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: null, damage: 2,
+      specialRules: [{ name: 'CriticalHit' as const, threshold: 5 }],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, defender),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, defender).player,
+        selectedWeaponProfile: critWeapon,
+      },
+      ai: {
+        ...makeState(attacker, defender).ai,
+        selectedWeaponProfile: defender.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      6, 3, 1,   // 3 hit rolls: crit hit, normal hit, miss
+      5,         // 1 wound roll for the normal hit (S4 vs T4 = 4+, roll 5 → wound)
+      1,         // crit wound save (Inv4+, fail)
+      1,         // normal wound save (Inv4+, fail)
+      // AI doesn't kill player (defender has no meaningful attack — all 1s)
+      1,1,1,1,1,1, // 6 AI hit rolls, all miss
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, defender, 'player');
+
+    expect(result.playerResult.hits).toBe(2);        // crit hit + normal hit; miss is NOT a hit
+    expect(result.playerResult.wounds).toBe(2);      // 1 crit auto-wound + 1 normal wound
+    expect(result.playerResult.unsavedWounds).toBe(2);
+    // Critical Hit deals +1D: crit wound = D3, normal wound = D2. Total = 3+2 = 5.
+    expect(result.playerResult.totalDamage).toBe(5);
   });
 
   it('Mirror-Form: hits always on 4+ regardless of WS comparison', () => {
