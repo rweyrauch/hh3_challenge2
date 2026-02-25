@@ -39,9 +39,9 @@ export type SpecialRule =
   | { name: 'FeelNoPain';       threshold: number }  // ignore unsaved wound on roll ≥ threshold
   | { name: 'Poisoned';         threshold: number }   // wound always on roll ≥ threshold (ignores S vs T comparison)
   | { name: 'PraeternaturalResilience' }              // CriticalHit(X) attacks against this model use X=6 (raises threshold to 6+)
-  | { name: 'SublimeSwordsman' };                     // +1A per point this model's Base I exceeds opponent's, when this model has Challenge Advantage
+  | { name: 'SublimeSwordsman' }                      // +1A per point this model's Base I exceeds opponent's, when this model has Challenge Advantage
+  | { name: 'Force'; characteristic: 'S' | 'A' | 'D' | 'AP' | 'I' | 'WS' };  // WP check (2d6≤WP): doubles characteristic X; doubles trigger Perils of the Warp
   // Rules intentionally not simulated:
-  //   Force(D)   — Force staff psychic instakill; too complex for Challenge scope
   //   Bypass(X+) — Phase sword's bypass of all saves; omitted (no Bypass special rule added)
   //   Phage(S)   — established pattern (daemon weapons); omit from profiles
   //   Reaping Blow(X) — established pattern; no effect in Challenge

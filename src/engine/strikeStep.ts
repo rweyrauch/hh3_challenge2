@@ -71,6 +71,7 @@ function resolveAttackSequence(
   isForPlayer: boolean,
   state: CombatState,
   everyStrikeActive: boolean,
+  forceBoost: string | null = null,
 ): AttackResult {
   const log: string[] = [];
 
@@ -86,18 +87,26 @@ function resolveAttackSequence(
     defender.selectedGambit, state, !isForPlayer, 1, attackerChar.stats.WS,
   );
 
-  let atkWS = attackerChar.stats.WS + mods.wsDelta;
+  // Force: log boost before computing stats
+  if (forceBoost !== null) {
+    const boostDesc = forceBoost === 'AP' ? 'AP → AP2'
+      : forceBoost === 'I' ? 'I (attack order already resolved)'
+      : `${forceBoost}×2`;
+    log.push(`Force: WP check succeeded — ${boostDesc}`);
+  }
+
+  let atkWS = (forceBoost === 'WS' ? attackerChar.stats.WS * 2 : attackerChar.stats.WS) + mods.wsDelta;
 
   // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n, 'mult' = S*n)
   const sm = profile.strengthModifier;
-  let atkS = attackerChar.stats.S;
+  let atkS = forceBoost === 'S' ? attackerChar.stats.S * 2 : attackerChar.stats.S;
   if (sm.kind === 'add')   atkS += sm.value;
   if (sm.kind === 'fixed') atkS  = sm.value;
   if (sm.kind === 'mult')  atkS *= sm.value;
 
   // Apply weapon profile Attacks modifier, then gambit delta/override
   const am = profile.attacksModifier;
-  let baseA = attackerChar.stats.A;
+  let baseA = forceBoost === 'A' ? attackerChar.stats.A * 2 : attackerChar.stats.A;
   if (am.kind === 'add')   baseA += am.value;
   if (am.kind === 'fixed') baseA  = am.value;
 
@@ -142,12 +151,15 @@ function resolveAttackSequence(
   // Effective Strength and Damage for wound/damage calc
   const effectiveS = Math.max(1, atkS + mods.strengthDelta);
 
-  // Weapon AP, possibly improved by Abyssal Strike
+  // Weapon AP, possibly improved by Abyssal Strike or Force(AP)
   let weaponAP = profile.ap;
   if (mods.apImprovement > 0 && weaponAP !== null) {
     weaponAP = Math.max(2, weaponAP - mods.apImprovement);
   }
-  const baseDmg = profile.damage;
+  if (forceBoost === 'AP') weaponAP = 2;
+
+  // Force(D) doubles the Damage Characteristic
+  const baseDmg = forceBoost === 'D' ? profile.damage * 2 : profile.damage;
 
   const tNote = effectiveDefT !== defT ? ` (effective T${effectiveDefT})` : '';
   log.push(
@@ -580,6 +592,46 @@ function applyDutyIsSacrificeWounds(
 }
 
 /**
+ * Resolve a Force(X) Willpower Check for a model about to attack with a Force weapon.
+ *
+ * Rules:
+ *  - Roll 2d6. If total ≤ WP the check succeeds and characteristic X is doubled
+ *    (or set to AP2 when X is 'AP').
+ *  - If both dice show the same value (doubles), the attacker suffers Perils of the
+ *    Warp regardless of pass/fail — D3 unsaveable wounds allocated before attacks.
+ *
+ * Returns immediately (consuming no dice) when the weapon profile has no Force rule.
+ */
+function resolveForceCheck(
+  dice: DiceRoller,
+  attackerChar: Character,
+  profile: WeaponProfile,
+  log: string[],
+): { forceBoost: string | null; perilsWounds: number } {
+  const forceRule = profile.specialRules.find(sr => sr.name === 'Force');
+  if (!forceRule || forceRule.name !== 'Force') return { forceBoost: null, perilsWounds: 0 };
+
+  const wp       = attackerChar.stats.WP;
+  const [d1, d2] = dice.rollNd6(2);
+  const total     = d1 + d2;
+  const isDoubles = d1 === d2;
+  const isSuccess = total <= wp;
+
+  log.push(
+    `Force(${forceRule.characteristic}) WP check: 2d6 [${d1},${d2}] = ${total} vs WP${wp} — ` +
+    (isSuccess ? 'SUCCESS' : 'FAIL') + (isDoubles ? ' (DOUBLES — Perils of the Warp!)' : ''),
+  );
+
+  let perilsWounds = 0;
+  if (isDoubles) {
+    perilsWounds = dice.rollD3();
+    log.push(`Perils of the Warp: ${attackerChar.name} suffers D3 = ${perilsWounds} unsaveable wound(s)!`);
+  }
+
+  return { forceBoost: isSuccess ? forceRule.characteristic : null, perilsWounds };
+}
+
+/**
  * Resolve the full Strike Step.
  *
  * The model that won Challenge Advantage attacks first.  If they kill the
@@ -628,6 +680,30 @@ export function resolveStrikeStep(
     };
   }
 
+  // ── Force WP checks: resolve at the start of the Strike Step ─────────────
+  // Each model makes a WP check if their selected weapon has the Force(X) rule.
+  // On success, characteristic X is doubled for the attack sequence.
+  // If doubles are rolled the attacker suffers Perils of the Warp (D3 wounds).
+  const playerForceResult = resolveForceCheck(dice, playerChar, playerProfile, log);
+  const playerForceBoost  = playerForceResult.forceBoost;
+  if (playerForceResult.perilsWounds > 0) {
+    const newW = Math.max(0, updatedState.player.currentWounds - playerForceResult.perilsWounds);
+    updatedState = {
+      ...updatedState,
+      player: { ...updatedState.player, currentWounds: newW, isCasualty: newW <= 0 },
+    };
+  }
+
+  const aiForceResult = resolveForceCheck(dice, aiChar, aiProfile, log);
+  const aiForceBoost  = aiForceResult.forceBoost;
+  if (aiForceResult.perilsWounds > 0) {
+    const newW = Math.max(0, updatedState.ai.currentWounds - aiForceResult.perilsWounds);
+    updatedState = {
+      ...updatedState,
+      ai: { ...updatedState.ai, currentWounds: newW, isCasualty: newW <= 0 },
+    };
+  }
+
   if (advantage === 'player') {
     // Player attacks first
     playerResult = resolveAttackSequence(
@@ -637,6 +713,7 @@ export function resolveStrikeStep(
       playerProfile, playerAttackBonus,
       true, state,
       everyStrikeForeseenForPlayer,
+      playerForceBoost,
     );
     log.push(...playerResult.log);
 
@@ -682,6 +759,7 @@ export function resolveStrikeStep(
         aiProfile, aiAttackBonus,
         false, updatedState,
         everyStrikeForeseenForAI,
+        aiForceBoost,
       );
       log.push(...aiResult.log);
     } else {
@@ -704,6 +782,7 @@ export function resolveStrikeStep(
       aiProfile, aiAttackBonus,
       false, state,
       everyStrikeForeseenForAI,
+      aiForceBoost,
     );
     log.push(...aiResult.log);
 
@@ -738,6 +817,7 @@ export function resolveStrikeStep(
         playerProfile, playerAttackBonus,
         true, updatedState,
         everyStrikeForeseenForPlayer,
+        playerForceBoost,
       );
       log.push(...playerResult.log);
     } else {

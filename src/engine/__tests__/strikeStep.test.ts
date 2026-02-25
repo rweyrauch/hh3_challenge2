@@ -10,9 +10,10 @@ import { TRAITOR_LEGION_CHARACTERS } from '../../data/factions/traitorLegions.js
 import type { CombatState } from '../../models/combatState.js';
 import type { Character } from '../../models/character.js';
 
-const VALDOR  = CUSTODES_CHARACTERS.find(c => c.id === 'constantin-valdor')!;
-const WARBOSS = ORK_CHARACTERS.find(c => c.id === 'warboss-goffs')!;
-const MEGA    = ORK_CHARACTERS.find(c => c.id === 'mega-warboss')!;
+const VALDOR    = CUSTODES_CHARACTERS.find(c => c.id === 'constantin-valdor')!;
+const WARBOSS   = ORK_CHARACTERS.find(c => c.id === 'warboss-goffs')!;
+const MEGA      = ORK_CHARACTERS.find(c => c.id === 'mega-warboss')!;
+const WEIRDBOY_CHAR = ORK_CHARACTERS.find(c => c.id === 'weirdboy')!;
 const EVERSOR = ASSASSIN_CHARACTERS.find(c => c.id === 'eversor-assassin')!;
 const ADAMUS  = ASSASSIN_CHARACTERS.find(c => c.id === 'adamus-assassin')!;
 const DORN      = LOYALIST_LEGION_CHARACTERS.find(c => c.id === 'rogal-dorn')!;
@@ -824,5 +825,130 @@ describe('resolveStrikeStep', () => {
     const result = resolveStrikeStep(dice, mirrorState, ADAMUS, WARBOSS, 'player');
     expect(result.playerResult.hits).toBe(3);
     expect(result.playerResult.wounds).toBe(0);
+  });
+
+  // ── Force(X) tests ───────────────────────────────────────────────────────
+
+  // Shared helper for Force tests.
+  // Weirdboy: WP8, WS5, S4, A4, Inv5+.  Force Staff: SM+2, AP4, D1, Force(D).
+  // Dummy defender: WS2, T3, Sv7, Inv-, W5.
+  // Attack calc: A4 + 1 advantage = 5. WS5 vs WS2 = 2+. S4+2=6 vs T3 = 2+. No save (AP4 ≤ Sv7).
+  function makeForceState(): CombatState {
+    const dummyDef: Character = {
+      ...WARBOSS,
+      id: 'force-test-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 3, Sv: 7, Inv: null, W: 5 },
+      specialRules: [],
+    };
+    return {
+      ...makeState(WEIRDBOY_CHAR, dummyDef),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(WEIRDBOY_CHAR, dummyDef).player,
+        selectedWeaponProfile: WEIRDBOY_CHAR.weapons[0].profiles[0], // Force Staff
+      },
+      ai: {
+        ...makeState(WEIRDBOY_CHAR, dummyDef).ai,
+        selectedWeaponProfile: dummyDef.weapons[0].profiles[0],
+      },
+    };
+  }
+
+  it('Force(D): WP check success doubles Damage Characteristic', () => {
+    // Force dice [3,5]: sum=8 ≤ WP8 → SUCCESS, no doubles. D1 → D2.
+    // 5 attacks (A4 + advantage): all hit (TN 2+), all wound (TN 2+), no save.
+    // 5 unsaved wounds × D2 (boosted) = 10 damage → opponent W5 = casualty.
+    // Note: Pool 2 save rolls are always consumed (even with effectiveSave=null).
+    const aiChar: Character = {
+      ...WARBOSS,
+      id: 'force-test-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 3, Sv: 7, Inv: null, W: 5 },
+      specialRules: [],
+    };
+    const state = makeForceState();
+    const dice = new FakeDiceRoller([
+      3, 5,             // Force WP check: [3,5]=8 ≤ WP8 → success, not doubles
+      // AI weapon has no Force — no Force dice consumed
+      6, 6, 6, 6, 6,   // 5 hit rolls (TN 2+, all hit)
+      6, 6, 6, 6, 6,   // 5 wound rolls (TN 2+, all wound)
+      1, 1, 1, 1, 1,   // Pool 2 save rolls (effectiveSave=null → not checked but still consumed)
+      // AI is casualty — no AI attacks
+    ]);
+    const result = resolveStrikeStep(dice, state, WEIRDBOY_CHAR, aiChar, 'player');
+    expect(result.playerResult.hits).toBe(5);
+    expect(result.playerResult.wounds).toBe(5);
+    expect(result.playerResult.totalDamage).toBe(10);  // 5 × D2 (Force boost)
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+  });
+
+  it('Force(D): WP check failure — no damage boost', () => {
+    // Force dice [4,5]: sum=9 > WP8 → FAIL, no doubles. D1 (no boost).
+    // 5 wounds × D1 = 5 damage → opponent W5 = casualty.
+    const aiChar: Character = {
+      ...WARBOSS,
+      id: 'force-test-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 3, Sv: 7, Inv: null, W: 5 },
+      specialRules: [],
+    };
+    const state = makeForceState();
+    const dice = new FakeDiceRoller([
+      4, 5,             // Force WP check: [4,5]=9 > WP8 → fail, not doubles
+      6, 6, 6, 6, 6,   // 5 hit rolls (TN 2+, all hit)
+      6, 6, 6, 6, 6,   // 5 wound rolls (TN 2+, all wound)
+      1, 1, 1, 1, 1,   // Pool 2 save rolls (consumed but effectiveSave=null)
+    ]);
+    const result = resolveStrikeStep(dice, state, WEIRDBOY_CHAR, aiChar, 'player');
+    expect(result.playerResult.totalDamage).toBe(5);   // 5 × D1 (no boost)
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+  });
+
+  it('Force(D): doubles → Perils of the Warp wounds attacker (fail, no boost)', () => {
+    // Force dice [5,5]: sum=10 > WP8 → FAIL + doubles → Perils.
+    // D3 raw 3 → D3=2 Perils wounds: Weirdboy W3 → W1.
+    // Attack with D1 (no boost): 5 wounds × D1 = 5 damage → opponent W5 = casualty.
+    // Final: player.currentWounds = 1 (only Perils; AI doesn't attack).
+    const aiChar: Character = {
+      ...WARBOSS,
+      id: 'force-test-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 3, Sv: 7, Inv: null, W: 5 },
+      specialRules: [],
+    };
+    const state = makeForceState();
+    const dice = new FakeDiceRoller([
+      5, 5,             // Force WP check: [5,5]=10 > WP8 → fail + DOUBLES
+      3,                // D3 raw=3 → D3=2 Perils wounds (Weirdboy W3 → W1)
+      6, 6, 6, 6, 6,   // 5 hit rolls (TN 2+, all hit)
+      6, 6, 6, 6, 6,   // 5 wound rolls (TN 2+, all wound)
+      1, 1, 1, 1, 1,   // Pool 2 save rolls (consumed but effectiveSave=null)
+    ]);
+    const result = resolveStrikeStep(dice, state, WEIRDBOY_CHAR, aiChar, 'player');
+    expect(result.playerResult.totalDamage).toBe(5);   // D1, no boost
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.updatedState.player.currentWounds).toBe(1); // W3 − 2 Perils
+  });
+
+  it('Force(D): doubles + success → Perils wounds attacker AND damage is doubled', () => {
+    // Force dice [4,4]: sum=8 ≤ WP8 → SUCCESS + doubles → Perils.
+    // D3 raw 2 → D3=1 Perils wound: Weirdboy W3 → W2.
+    // Attack with D2 (boost): 5 wounds × D2 = 10 damage → opponent W5 = casualty.
+    // Final: player.currentWounds = 2.
+    const aiChar: Character = {
+      ...WARBOSS,
+      id: 'force-test-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 3, Sv: 7, Inv: null, W: 5 },
+      specialRules: [],
+    };
+    const state = makeForceState();
+    const dice = new FakeDiceRoller([
+      4, 4,             // Force WP check: [4,4]=8 ≤ WP8 → SUCCESS + DOUBLES
+      2,                // D3 raw=2 → D3=1 Perils wound (Weirdboy W3 → W2)
+      6, 6, 6, 6, 6,   // 5 hit rolls (TN 2+, all hit)
+      6, 6, 6, 6, 6,   // 5 wound rolls (TN 2+, all wound)
+      1, 1, 1, 1, 1,   // Pool 2 save rolls (consumed but effectiveSave=null)
+    ]);
+    const result = resolveStrikeStep(dice, state, WEIRDBOY_CHAR, aiChar, 'player');
+    expect(result.playerResult.totalDamage).toBe(10);  // 5 × D2 (Force boost)
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.updatedState.player.currentWounds).toBe(2); // W3 − 1 Perils
   });
 });
