@@ -116,6 +116,21 @@ function resolveAttackSequence(
   // Minimum 1 attack
   atkA = Math.max(1, atkA + attackBonus);
 
+  // Sublime Swordsman: +1A per point this model's Base I exceeds the opponent's,
+  // but only when this model has Challenge Advantage (attackBonus > 0).
+  if (attackBonus > 0) {
+    const hasSublimeSwordsman = attackerChar.specialRules.some(
+      sr => sr.name === 'SublimeSwordsman',
+    );
+    if (hasSublimeSwordsman) {
+      const iBonus = Math.max(0, attackerChar.stats.I - defenderChar.stats.I);
+      if (iBonus > 0) {
+        log.push(`Sublime Swordsman: +${iBonus} Attacks (I${attackerChar.stats.I} vs I${defenderChar.stats.I})`);
+        atkA += iBonus;
+      }
+    }
+  }
+
   // Single-attack cap (Guard Up / Withdraw)
   if (mods.singleAttackCap) atkA = 1;
 

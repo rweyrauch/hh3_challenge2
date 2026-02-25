@@ -17,6 +17,7 @@ const EVERSOR = ASSASSIN_CHARACTERS.find(c => c.id === 'eversor-assassin')!;
 const ADAMUS  = ASSASSIN_CHARACTERS.find(c => c.id === 'adamus-assassin')!;
 const DORN      = LOYALIST_LEGION_CHARACTERS.find(c => c.id === 'rogal-dorn')!;
 const MORTARION = TRAITOR_LEGION_CHARACTERS.find(c => c.id === 'mortarion')!;
+const FULGRIM   = TRAITOR_LEGION_CHARACTERS.find(c => c.id === 'fulgrim')!;
 
 function makeState(
   playerChar = VALDOR,
@@ -641,6 +642,95 @@ describe('resolveStrikeStep', () => {
     expect(result.playerResult.wounds).toBe(1);
     expect(result.playerResult.unsavedWounds).toBe(1);
     expect(result.updatedState.ai.currentWounds).toBe(6); // W7 − 1 = 6
+  });
+
+  it('Sublime Swordsman: +1A per point I exceeds opponent\'s I when having advantage', () => {
+    // Fulgrim: I=8, A=6. Opponent I=4 → I diff = 4 → +4 Attacks via Sublime Swordsman.
+    // With advantage: total = A6 + 1 (advantage) + 4 (I diff) = 11 attacks.
+    // All hit rolls of 1 → miss (WS8 vs WS4 = 2+; roll 1 < 2). AI misses back.
+    const opponent: Character = {
+      ...WARBOSS,
+      id: 'sublime-test-opponent',
+      stats: { ...WARBOSS.stats, WS: 4, I: 4, A: 2, Inv: null },
+      specialRules: [],
+    };
+    const state: CombatState = {
+      ...makeState(FULGRIM, opponent),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(FULGRIM, opponent).player,
+        selectedWeaponProfile: FULGRIM.weapons[0].profiles[0],
+      },
+      ai: {
+        ...makeState(FULGRIM, opponent).ai,
+        selectedWeaponProfile: opponent.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      1,1,1,1,1,1,1,1,1,1,1, // 11 Fulgrim hit rolls (A6 + 1 advantage + 4 I-diff = 11; all miss)
+      1,1,                    // 2 opponent hit rolls (A2, no advantage bonus; all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, FULGRIM, opponent, 'player');
+    expect(result.playerResult.attacks).toBe(11);
+  });
+
+  it('Sublime Swordsman: no bonus when this model does NOT have Challenge Advantage', () => {
+    // Fulgrim attacks second (AI has advantage). No Sublime Swordsman bonus.
+    // Fulgrim total = A6 + 0 (no advantage) + 0 (no Sublime Swordsman) = 6 attacks.
+    // Opponent: A2 + 1 advantage = 3 attacks, WS4 vs Fulgrim WS8 → TN 6+, all miss.
+    const opponent: Character = {
+      ...WARBOSS,
+      id: 'sublime-test-opponent-2',
+      stats: { ...WARBOSS.stats, WS: 4, I: 4, A: 2, Inv: null },
+      specialRules: [],
+    };
+    const state: CombatState = {
+      ...makeState(FULGRIM, opponent),
+      challengeAdvantage: 'ai',
+      player: {
+        ...makeState(FULGRIM, opponent).player,
+        selectedWeaponProfile: FULGRIM.weapons[0].profiles[0],
+      },
+      ai: {
+        ...makeState(FULGRIM, opponent).ai,
+        selectedWeaponProfile: opponent.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      1,1,1,          // 3 opponent hit rolls (A2 + 1 advantage = 3; TN 6+, all miss)
+      1,1,1,1,1,1,    // 6 Fulgrim hit rolls (A6, no bonus; TN 2+, all miss on 1)
+    ]);
+    const result = resolveStrikeStep(dice, state, FULGRIM, opponent, 'ai');
+    expect(result.playerResult.attacks).toBe(6);
+  });
+
+  it('Sublime Swordsman: no bonus when opponent I equals or exceeds Fulgrim\'s I', () => {
+    // Opponent I=8 (same as Fulgrim I=8): diff = 0 → no Sublime Swordsman bonus.
+    // Fulgrim total = A6 + 1 (advantage) + 0 = 7 attacks.
+    const opponent: Character = {
+      ...WARBOSS,
+      id: 'sublime-test-high-i',
+      stats: { ...WARBOSS.stats, WS: 4, I: 8, A: 2, Inv: null },
+      specialRules: [],
+    };
+    const state: CombatState = {
+      ...makeState(FULGRIM, opponent),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(FULGRIM, opponent).player,
+        selectedWeaponProfile: FULGRIM.weapons[0].profiles[0],
+      },
+      ai: {
+        ...makeState(FULGRIM, opponent).ai,
+        selectedWeaponProfile: opponent.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      1,1,1,1,1,1,1, // 7 Fulgrim hit rolls (A6 + 1 advantage + 0 I-diff = 7; all miss)
+      1,1,           // 2 opponent hit rolls (A2, no advantage; all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, FULGRIM, opponent, 'player');
+    expect(result.playerResult.attacks).toBe(7);
   });
 
   it('Mirror-Form: hits always on 4+ regardless of WS comparison', () => {
