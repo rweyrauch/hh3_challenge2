@@ -70,17 +70,15 @@ describe('ChallengeEngine', () => {
     const dice = new FakeDiceRoller([
       // Seize focus: player [6,6] keep highest = 6; ai [1]
       6, 6, 1,
-      // strike: d3=1, 7 hits (all 6), 7 wounds (all 6), 7 saves (all 1)
-      1,
-      6,6,6,6,6,6,6,
-      6,6,6,6,6,6,6,
+      // strike: 7 hits of 5 (5 ≥ hitTN 2+; 5 ≥ critThreshold 5+ → all Critical Hits)
+      // Critical Hits auto-wound, no wound dice. 7 crit saves (all 1s → fail Inv 4+).
+      // 7 unsaved crit wounds × D(2+1)−EW(1)=D2 = 14 > W4 → casualty.
+      5,5,5,5,5,5,5,
       1,1,1,1,1,1,1,
     ]);
 
     const state = runToEnd(dice);
     expect(state.phase).toBe('ended');
-    // Warboss W=4; total dmg after EW(1): min 1 per wound
-    // 7 unsaved × 1 dmg = 7 > 4 → casualty
     expect(state.ai.isCasualty).toBe(true);
     expect(state.playerCRP).toBeGreaterThan(0);
   });

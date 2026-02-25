@@ -145,6 +145,7 @@ function resolveAttackSequence(
   const hitTN = mirrorFormActive ? 4 : getHitTargetNumber(atkWS, defWS);
   const hitRolls = dice.rollNd6(atkA);
   let hits = 0;
+  let critHits = 0;
   let guardUpMissCount = 0;
   let hitRollOnes = 0; // for Biological Overload self-wound tracking
 
@@ -154,25 +155,30 @@ function resolveAttackSequence(
 
     const isHit = hitTN <= 6 && roll >= hitTN;
 
-    // Check for Critical Hit special rule (extra wound on high roll)
-    // Sources: weapon special rules AND gambit modifiers (e.g., Executioner's Tax, Death's Champion)
-    let critHit = false;
-    for (const sr of profile.specialRules) {
-      if (sr.name === 'CriticalHit' && roll >= sr.threshold) critHit = true;
-    }
-    if (mods.criticalHitThreshold !== null && roll >= mods.criticalHitThreshold) {
-      critHit = true;
+    // Critical Hit only applies when a hit is actually inflicted by this Hit Test
+    // (rule: "if a Hit is inflicted by that Hit Test, that Hit becomes a Critical Hit")
+    let isCrit = false;
+    if (isHit) {
+      for (const sr of profile.specialRules) {
+        if (sr.name === 'CriticalHit' && roll >= sr.threshold) isCrit = true;
+      }
+      if (mods.criticalHitThreshold !== null && roll >= mods.criticalHitThreshold) {
+        isCrit = true;
+      }
     }
 
-    if (isHit || critHit) {
+    if (isHit) {
       hits++;
+      if (isCrit) critHits++;
     } else {
       // Missed – Guard Up bonus for next Focus Roll
       if (defender.selectedGambit === 'guard-up') guardUpMissCount++;
     }
   }
 
-  log.push(`Hit rolls [${hitRolls.join(',')}] needing ${hitTN}+ → ${hits} hit(s)`);
+  const normalHits = hits - critHits;
+  const critHitNote = critHits > 0 ? ` (${critHits} critical)` : '';
+  log.push(`Hit rolls [${hitRolls.join(',')}] needing ${hitTN}+ → ${hits} hit(s)${critHitNote}`);
 
   if (hits === 0) {
     const defWounds = defender.currentWounds;
@@ -196,10 +202,23 @@ function resolveAttackSequence(
     if (sr.name === 'Poisoned') poisonedTN = sr.threshold;
   }
 
-  const woundRolls = dice.rollNd6(hits);
-  let wounds          = 0;
-  let breachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
-  let shredTriggers   = 0;  // wounds that deal +1 Damage (Shred rule)
+  // Critical hits automatically inflict a wound without any dice being rolled,
+  // counting as a roll of 6 for variable special rules (Breaching, Shred) triggered
+  // by the Wound Test.
+  let critBreachingWounds = 0;
+  let critShredTriggers   = 0;
+  for (const sr of profile.specialRules) {
+    if (sr.name === 'Breaching' && 6 >= sr.threshold) critBreachingWounds += critHits;
+    if (sr.name === 'Shred'     && 6 >= sr.threshold) critShredTriggers   += critHits;
+  }
+  critBreachingWounds = Math.min(critBreachingWounds, critHits);
+  const critWounds = critHits;
+
+  // Normal hits go through the wound test as usual
+  const woundRolls = dice.rollNd6(normalHits);
+  let normalWounds          = 0;
+  let normalBreachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
+  let normalShredTriggers   = 0;  // wounds that deal +1 Damage (Shred rule)
   // Phage(T): Merciless Strike reduces defender T by 1 per unsaved wound
   let currentDefT = effectiveDefT;
 
@@ -220,21 +239,29 @@ function resolveAttackSequence(
       if (sr.name === 'Rending' && roll >= sr.threshold) isWound = true;
     }
     if (isWound) {
-      wounds++;
+      normalWounds++;
       if (mods.phageToughness) currentDefT = Math.max(1, currentDefT - 1);
       for (const sr of profile.specialRules) {
         // Breaching: wound roll ≥ threshold → this wound ignores normal armour (AP2)
-        if (sr.name === 'Breaching' && roll >= sr.threshold) breachingWounds++;
+        if (sr.name === 'Breaching' && roll >= sr.threshold) normalBreachingWounds++;
         // Shred: wound roll ≥ threshold → this wound gains +1 Damage
-        if (sr.name === 'Shred'     && roll >= sr.threshold) shredTriggers++;
+        if (sr.name === 'Shred'     && roll >= sr.threshold) normalShredTriggers++;
       }
     }
   }
 
+  const wounds               = critWounds + normalWounds;
+  const totalBreachingWounds = critBreachingWounds + normalBreachingWounds;
+
   const phageNote    = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
   const poisonNote   = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
   const effectiveWoundTN = poisonedTN !== null ? Math.min(baseWoundTN, poisonedTN) : baseWoundTN;
-  log.push(`Wound rolls [${woundRolls.join(',')}] needing ${effectiveWoundTN}+${poisonNote}${phageNote} → ${wounds} wound(s)`);
+  if (critWounds > 0) {
+    log.push(`${critHits} Critical Hit(s) → ${critWounds} automatic wound(s) (counts as roll of 6)`);
+  }
+  if (normalHits > 0) {
+    log.push(`Wound rolls [${woundRolls.join(',')}] needing ${effectiveWoundTN}+${poisonNote}${phageNote} → ${normalWounds} wound(s)`);
+  }
 
   if (wounds === 0) {
     return {
@@ -250,16 +277,38 @@ function resolveAttackSequence(
   // ── Saving Throws ────────────────────────────────────────────────────────
   const defSv  = defenderChar.stats.Sv;
   const defInv = defenderChar.stats.Inv;
-  const normalWounds  = wounds - breachingWounds;
+  // Split wounds into four save pools: (crit | normal) × (weapon AP | AP2 breaching)
+  const critNormalCount = critWounds - critBreachingWounds;
+  const normNormalCount = normalWounds - normalBreachingWounds;
   const effectiveSave = getEffectiveSave(defSv, defInv, weaponAP);
   // Breaching wounds are always treated as AP2 for saves regardless of weapon AP
-  const breachSave    = breachingWounds > 0 ? getEffectiveSave(defSv, defInv, 2) : null;
+  const breachSave    = totalBreachingWounds > 0 ? getEffectiveSave(defSv, defInv, 2) : null;
 
-  let saved    = 0;
-  let evsfUsed = false; // Every Strike Foreseen may only re-roll ONE failed save
+  let saved             = 0;
+  let unsavedCritWounds = 0;
+  let evsfUsed          = false; // Every Strike Foreseen may only re-roll ONE failed save
 
-  // Normal wounds — saved against weapon AP
-  const normalSaveRolls = dice.rollNd6(normalWounds);
+  // Pool 1: crit wounds at weapon AP — track each failure as an unsaved crit wound
+  const critNormSaveRolls = dice.rollNd6(critNormalCount);
+  if (effectiveSave !== null) {
+    for (let i = 0; i < critNormSaveRolls.length; i++) {
+      let roll = critNormSaveRolls[i];
+      if (everyStrikeActive && !evsfUsed && roll < effectiveSave) {
+        const reroll = dice.rollD6();
+        log.push(`Every Strike Foreseen: re-roll save ${roll} → ${reroll}`);
+        critNormSaveRolls[i] = reroll;
+        roll = reroll;
+        evsfUsed = true;
+      }
+      if (roll >= effectiveSave) saved++;
+      else unsavedCritWounds++;
+    }
+  } else {
+    unsavedCritWounds += critNormalCount;
+  }
+
+  // Pool 2: normal wounds at weapon AP
+  const normalSaveRolls = dice.rollNd6(normNormalCount);
   if (effectiveSave !== null) {
     for (let i = 0; i < normalSaveRolls.length; i++) {
       let roll = normalSaveRolls[i];
@@ -274,15 +323,34 @@ function resolveAttackSequence(
     }
   }
 
-  // Breaching wounds — always AP2
-  const breachSaveRolls = dice.rollNd6(breachingWounds);
+  // Pool 3: crit breaching wounds at AP2 — track failures as unsaved crit wounds
+  const critBreachSaveRolls = dice.rollNd6(critBreachingWounds);
   if (breachSave !== null) {
-    for (let i = 0; i < breachSaveRolls.length; i++) {
-      let roll = breachSaveRolls[i];
+    for (let i = 0; i < critBreachSaveRolls.length; i++) {
+      let roll = critBreachSaveRolls[i];
       if (everyStrikeActive && !evsfUsed && roll < breachSave) {
         const reroll = dice.rollD6();
         log.push(`Every Strike Foreseen: re-roll save ${roll} → ${reroll}`);
-        breachSaveRolls[i] = reroll;
+        critBreachSaveRolls[i] = reroll;
+        roll = reroll;
+        evsfUsed = true;
+      }
+      if (roll >= breachSave) saved++;
+      else unsavedCritWounds++;
+    }
+  } else {
+    unsavedCritWounds += critBreachingWounds;
+  }
+
+  // Pool 4: normal breaching wounds at AP2
+  const normBreachSaveRolls = dice.rollNd6(normalBreachingWounds);
+  if (breachSave !== null) {
+    for (let i = 0; i < normBreachSaveRolls.length; i++) {
+      let roll = normBreachSaveRolls[i];
+      if (everyStrikeActive && !evsfUsed && roll < breachSave) {
+        const reroll = dice.rollD6();
+        log.push(`Every Strike Foreseen: re-roll save ${roll} → ${reroll}`);
+        normBreachSaveRolls[i] = reroll;
         roll = reroll;
         evsfUsed = true;
       }
@@ -290,11 +358,13 @@ function resolveAttackSequence(
     }
   }
 
-  const saveRolls = [...normalSaveRolls, ...breachSaveRolls];
+  const saveRolls = [...critNormSaveRolls, ...normalSaveRolls, ...critBreachSaveRolls, ...normBreachSaveRolls];
   if (effectiveSave !== null || breachSave !== null) {
-    const saveLine = breachingWounds > 0
-      ? `Normal saves [${normalSaveRolls.join(',')}] vs ${effectiveSave ?? '-'}+, Breaching saves [${breachSaveRolls.join(',')}] vs ${breachSave ?? '-'}+ → ${saved} saved`
-      : `Save rolls [${normalSaveRolls.join(',')}] vs ${effectiveSave}+ → ${saved} saved`;
+    const allNormRolls   = [...critNormSaveRolls, ...normalSaveRolls];
+    const allBreachRolls = [...critBreachSaveRolls, ...normBreachSaveRolls];
+    const saveLine = totalBreachingWounds > 0
+      ? `Normal saves [${allNormRolls.join(',')}] vs ${effectiveSave ?? '-'}+, Breaching saves [${allBreachRolls.join(',')}] vs ${breachSave ?? '-'}+ → ${saved} saved`
+      : `Save rolls [${allNormRolls.join(',')}] vs ${effectiveSave}+ → ${saved} saved`;
     log.push(saveLine);
   } else {
     log.push(`No save available (AP${weaponAP ?? '-'} vs Sv${defSv}+/Inv${defInv ?? '-'})`);
@@ -312,7 +382,14 @@ function resolveAttackSequence(
     const fnpRolls = dice.rollNd6(unsavedWounds);
     const fnpSaved = fnpRolls.filter(r => r >= fnpThreshold!).length;
     log.push(`Feel No Pain ${fnpThreshold}+: rolls [${fnpRolls.join(',')}] → ${fnpSaved} wound(s) cancelled`);
+    // Distribute FNP cancels proportionally between crit and normal unsaved wounds
+    const fnpCritCancelled = unsavedWounds > 0
+      ? Math.min(unsavedCritWounds, Math.round((unsavedCritWounds / unsavedWounds) * fnpSaved))
+      : 0;
+    unsavedCritWounds = Math.max(0, unsavedCritWounds - fnpCritCancelled);
     unsavedWounds -= fnpSaved;
+    // Clamp for rounding safety
+    unsavedCritWounds = Math.min(unsavedCritWounds, unsavedWounds);
   }
 
   if (unsavedWounds === 0) {
@@ -341,25 +418,37 @@ function resolveAttackSequence(
   }
   dmgPerWound = Math.max(1, dmgPerWound - ewReduction);
 
+  // Critical Hit wounds increase the Damage Characteristic by +1 (before EW reduction).
+  // When Flurry of Blows caps damage to 1, the crit bonus is suppressed by the cap.
+  const critDmgPerWound = mods.damageSetToOne
+    ? 1
+    : Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
+
   // Shred: wounds that triggered Shred deal +1 Damage (suppressed when Flurry caps D to 1).
-  // We don't track which specific unsaved wounds came from Shred rolls, so we approximate:
-  // the fraction (shredTriggers / wounds) of all unsaved wounds are treated as Shred wounds.
-  const unsavedShredWounds = wounds > 0 && !mods.damageSetToOne
-    ? Math.round((shredTriggers / wounds) * unsavedWounds)
+  // Applied only to normal (non-critical) unsaved wounds; crit wounds already get +1D.
+  // We don't track which specific unsaved normal wounds came from Shred rolls, so approximate
+  // with the fraction (normalShredTriggers / normalWounds) of normal unsaved wounds.
+  const unsavedNormalWounds = unsavedWounds - unsavedCritWounds;
+  const unsavedShredWounds = normalWounds > 0 && !mods.damageSetToOne
+    ? Math.round((normalShredTriggers / normalWounds) * unsavedNormalWounds)
     : 0;
   const shredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
   const totalDamage =
-    (unsavedWounds - unsavedShredWounds) * dmgPerWound +
+    unsavedCritWounds * critDmgPerWound +
+    (unsavedNormalWounds - unsavedShredWounds) * dmgPerWound +
     unsavedShredWounds * shredDmgPerWound;
 
   const defenderWoundsRemaining = Math.max(0, defender.currentWounds - totalDamage);
   const defenderIsCasualty = defenderWoundsRemaining <= 0;
 
+  const critDmgNote = unsavedCritWounds > 0
+    ? ` (${unsavedCritWounds} critical × D${critDmgPerWound})`
+    : '';
   const shredNote = unsavedShredWounds > 0
     ? ` (${unsavedShredWounds} Shred wound(s) at +1 dmg)`
     : '';
   log.push(
-    `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg${shredNote} = ${totalDamage} damage. ` +
+    `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg${critDmgNote}${shredNote} = ${totalDamage} damage. ` +
     `${defenderChar.name}: ${defender.currentWounds} → ${defenderWoundsRemaining} wounds` +
     (defenderIsCasualty ? ' (CASUALTY)' : ''),
   );

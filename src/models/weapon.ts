@@ -25,7 +25,7 @@ export type AttacksModifier    = CharModifier;
 /** Special rules that directly affect challenge combat resolution. */
 export type SpecialRule =
   | { name: 'DuellistsEdge';    value: number }      // +X to Focus Roll
-  | { name: 'CriticalHit';      threshold: number }  // extra wound on roll ≥ threshold
+  | { name: 'CriticalHit';      threshold: number }  // hit becomes a Critical Hit when roll ≥ threshold (auto-wounds, +1D)
   | { name: 'EternalWarrior';   value: number }      // reduce unsaved wound damage by X (min 1)
   | { name: 'Rending';          threshold: number }  // AP 2 on roll ≥ threshold
   | { name: 'Impact';           modifier: CharModifier } // bonus attacks on charge (out of scope for Challenge)
