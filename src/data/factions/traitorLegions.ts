@@ -68,6 +68,7 @@ const FULGRIM: Character = {
   specialRules: [
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
+    { name: 'SublimeSwordsman' },
   ],
 };
 
