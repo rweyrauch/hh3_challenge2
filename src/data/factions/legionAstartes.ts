@@ -182,6 +182,25 @@ const TARTAROS_LIBRARIAN: Character = {
   specialRules: [{ name: 'Bulky', value: 2 }],
 };
 
+// ── Librarian (Jump Pack) ─────────────────────────────────────────────────────
+// Standard Librarian mounted on a jump pack; same stats as the base Librarian
+// but with M12 and the Antigrav/Deep Strike movement rules.
+const LIBRARIAN_JUMP_PACK: Character = {
+  id: 'librarian-jump-pack',
+  name: 'Librarian (Jump Pack)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
 // ── Centurion ─────────────────────────────────────────────────────────────────
 // Mid-ranking officer.  Lower WS and Wounds than a Praetor but still a
 // competent challenger.
@@ -491,6 +510,7 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   LIBRARIAN,
   CATAPHRACTII_LIBRARIAN,
   TARTAROS_LIBRARIAN,
+  LIBRARIAN_JUMP_PACK,
   LEGION_CHAMPION_JUMP_PACK,
   CATAPHRACTII_LEGION_CHAMPION,
   CHOSEN_CHAMPION,
