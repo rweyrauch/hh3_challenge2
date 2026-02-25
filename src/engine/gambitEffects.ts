@@ -480,6 +480,13 @@ export function getStrikeModifiers(
       // the engine: if reactive player, allows attacks after reaching 0W.
       return base;
 
+    // ── Legion Astartes Psychic Discipline gambits ───────────────────────────
+    case 'divination-every-strike-foreseen':
+      // WP check logic handled in strikeStep.ts (before hit rolls).
+      // On success, sets hitTNOverride = 2 so all hits succeed on 2+.
+      // No strike modifiers returned here.
+      return { ...base };
+
     default:
       return base;
   }

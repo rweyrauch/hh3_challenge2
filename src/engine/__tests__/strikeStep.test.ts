@@ -952,3 +952,260 @@ describe('resolveStrikeStep', () => {
     expect(result.updatedState.player.currentWounds).toBe(2); // W3 − 1 Perils
   });
 });
+
+// ── Psychic Discipline mechanic tests ─────────────────────────────────────────
+
+describe('Psychic Discipline mechanics (Conflagration, Every Strike Foreseen, Hatred, Deflagrate)', () => {
+  // Shared inline weapon profiles
+  const conflagrationProfile = {
+    profileName: 'Conflagration',
+    initiativeModifier: { kind: 'add'   as const, value: -1 },
+    attacksModifier:    { kind: 'fixed' as const, value: 6  },
+    strengthModifier:   { kind: 'fixed' as const, value: 5  },
+    ap: 4 as number | null,
+    damage: 1,
+    attacksExtraD3: true as boolean | undefined,
+    specialRules: [{ name: 'Deflagrate' as const, value: 5 }],
+  };
+
+  const simpleMeleeProfile = {
+    profileName: 'Simple Weapon',
+    initiativeModifier: { kind: 'none' as const },
+    attacksModifier:    { kind: 'none' as const },
+    strengthModifier:   { kind: 'none' as const },
+    ap: 4 as number | null,
+    damage: 1,
+    specialRules: [] as typeof conflagrationProfile.specialRules,
+  };
+
+  // Librarian-like attacker: WS5, S4, A4, WP9, Sv2+, Inv5+
+  const makeLibrarian = (extra: Partial<Character> = {}): Character => ({
+    id: 'test-librarian',
+    name: 'Librarian',
+    faction: 'legion-astartes',
+    type: 'infantry',
+    subTypes: ['Command'],
+    stats: { M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3, I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8, Sv: 2, Inv: 5 },
+    weapons: [],
+    factionGambitIds: [],
+    specialRules: [],
+    ...extra,
+  });
+
+  // Dummy defender: WS2, T4, A4, W5, Sv7+ (no armour save), no Inv
+  const makeDummy = (extra: Partial<Character> = {}): Character => ({
+    id: 'test-dummy',
+    name: 'Dummy',
+    faction: 'legion-astartes',
+    type: 'infantry',
+    subTypes: ['Command'],
+    stats: { M: 7, WS: 2, BS: 5, S: 4, T: 4, W: 5, I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8, Sv: 7, Inv: null },
+    weapons: [],
+    factionGambitIds: [],
+    specialRules: [],
+    ...extra,
+  });
+
+  it('Conflagration: attack count = 6 + D3 + attackBonus (attacksExtraD3 flag)', () => {
+    // weaponD3 raw=1 → D3=1 (consumed FIRST). AM fixed=6 → baseA=7. +1 advantage → atkA=8.
+    // All 8 hit rolls miss (WS5 vs WS6 = 5+, roll 1s). AI 4 attacks also miss.
+    const lib   = makeLibrarian();
+    const dummy = makeDummy({ stats: { ...makeDummy().stats, WS: 6, A: 4 } });
+    const s = buildInitialState(lib, dummy);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: null, selectedWeaponProfile: conflagrationProfile },
+      ai:     { ...s.ai,     selectedGambit: null, selectedWeaponProfile: simpleMeleeProfile  },
+    };
+    const dice = new FakeDiceRoller([
+      1,              // weaponD3 raw=1 → D3=1 → baseA=6+1=7, atkA=8
+      1,1,1,1,1,1,1,1, // 8 hit rolls (WS5 vs WS6 = 5+; roll 1 < 5 → all miss)
+      // AI: WS6 vs WS5 (lib) = 3+ (HIT_TABLE[5][4]=3); 4 attacks, roll 1s
+      1,1,1,1,        // 4 AI hit rolls (all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
+    expect(result.playerResult.attacks).toBe(8);   // 6 (fixed AM) + 1 (D3) + 1 (advantage)
+    expect(result.playerResult.hits).toBe(0);       // all missed at TN 5+
+  });
+
+  it('Deflagrate: unsaved wounds generate additional S5/AP-/D1 hits', () => {
+    // Conflagration on dummy WS2 T4 W16 (Sv7+, Inv-):
+    // weaponD3 raw=1 → D3=1 → baseA=7, atkA=8 (with advantage).
+    // 8 hits (TN 2+), 8 wounds (S5 vs T4 = 3+), effectiveSave=null (AP4 vs Sv7).
+    // Pool 2: 8 save dice consumed (even with null save). deflagrateUnsavedCount=8.
+    // Main damage: 8 × D1 = 8. Defender W16 → W8 (not a casualty yet).
+    // Deflagrate(5): 8 extra hits at S5/T4=TN3+: all 8 wound; AP- best save=7+ (d6 max 6): all fail.
+    // Deflagrate damage: 8 × D1 = 8. W8 − 8 = 0 → casualty. AI does not attack.
+    const lib   = makeLibrarian();
+    const dummy = makeDummy({ stats: { ...makeDummy().stats, WS: 2, T: 4, W: 16, Sv: 7, Inv: null } });
+    const s = buildInitialState(lib, dummy);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: null, selectedWeaponProfile: conflagrationProfile },
+      ai:     { ...s.ai,     selectedGambit: null, selectedWeaponProfile: simpleMeleeProfile  },
+    };
+    const dice = new FakeDiceRoller([
+      1,                    // weaponD3 raw=1 → D3=1
+      2,2,2,2,2,2,2,2,     // 8 hit rolls (TN 2+, all hit)
+      3,3,3,3,3,3,3,3,     // 8 wound rolls (S5 vs T4 = 3+, all wound)
+      1,1,1,1,1,1,1,1,     // Pool 2: 8 save rolls consumed (effectiveSave=null)
+      3,3,3,3,3,3,3,3,     // Deflagrate: 8 wound rolls (S5 vs T4 = 3+, all wound)
+      1,1,1,1,1,1,1,1,     // Deflagrate: 8 save rolls (AP- best=Sv7; 1 < 7 → all fail)
+    ]);
+    const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
+    expect(result.playerResult.totalDamage).toBe(16);  // 8 main + 8 deflagrate
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.playerResult.log.some(l => l.includes('Deflagrate'))).toBe(true);
+  });
+
+  it('Every Strike Foreseen: WP check success → all hits on 2+', () => {
+    // Without ESF, WS5 vs WS8 = 5+ (hard to hit). ESF WP check [1,3]=4 ≤ WP9 → SUCCESS.
+    // hitTNOverride = 2. 5 attacks (A4 + 1 advantage), rolls of 5 ≥ 2 → all 5 hit.
+    // Wound: S4 vs T4 = 4+; rolls 4 → all 5 wound. AP3 vs Sv7 → penetrated, no inv → no save.
+    // Pool 2: 5 dice consumed. 5 × D1 = 5. W5 → 0 → casualty.
+    const lib   = makeLibrarian({ stats: { ...makeLibrarian().stats, WP: 9 } });
+    const dummy = makeDummy({ stats: { ...makeDummy().stats, WS: 8, T: 4, W: 5, Sv: 7, Inv: null } });
+    const s = buildInitialState(lib, dummy);
+    const esfProfile = {
+      profileName: 'Power Sword',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 3 as number | null,
+      damage: 1,
+      specialRules: [] as typeof conflagrationProfile.specialRules,
+    };
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: 'divination-every-strike-foreseen', selectedWeaponProfile: esfProfile },
+      ai:     { ...s.ai,     selectedGambit: null, selectedWeaponProfile: simpleMeleeProfile },
+    };
+    const dice = new FakeDiceRoller([
+      1, 3,           // ESF WP check [1+3=4] ≤ WP9 → SUCCESS → hitTN override = 2
+      5,5,5,5,5,      // 5 hit rolls (override TN 2+; 5 ≥ 2 → all hit)
+      4,4,4,4,4,      // 5 wound rolls (S4 vs T4 = TN 4+; 4 ≥ 4 → all wound)
+      1,1,1,1,1,      // Pool 2 save rolls (AP3 vs Sv7: penetrated, null save; consumed)
+    ]);
+    const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
+    expect(result.playerResult.hits).toBe(5);     // all 5 hit at TN 2+ (override)
+    expect(result.playerResult.wounds).toBe(5);
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    const hitLogLine = result.playerResult.log.find(l => l.includes('needing 2+'));
+    expect(hitLogLine).toBeDefined();
+  });
+
+  it('Every Strike Foreseen: WP check failure → normal hit TN applies', () => {
+    // ESF WP check [5,6]=11 > WP9 → FAIL. Normal hitTN: WS5 vs WS8 = 5+.
+    // 5 attacks roll 4 → all miss (4 < 5+). AI 4 attacks also miss.
+    const lib   = makeLibrarian({ stats: { ...makeLibrarian().stats, WP: 9 } });
+    const dummy = makeDummy({ stats: { ...makeDummy().stats, WS: 8, T: 4, W: 5, Sv: 7, Inv: null } });
+    const s = buildInitialState(lib, dummy);
+    const esfProfile = {
+      profileName: 'Power Sword',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 3 as number | null,
+      damage: 1,
+      specialRules: [] as typeof conflagrationProfile.specialRules,
+    };
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: 'divination-every-strike-foreseen', selectedWeaponProfile: esfProfile },
+      ai:     { ...s.ai,     selectedGambit: null, selectedWeaponProfile: simpleMeleeProfile },
+    };
+    const dice = new FakeDiceRoller([
+      5, 6,           // ESF WP check [5+6=11] > WP9 → FAIL → normal TN
+      4,4,4,4,4,      // 5 hit rolls (normal TN 5+: WS5 vs WS8; 4 < 5 → all miss)
+      1,1,1,1,        // 4 AI hit rolls (WS2 vs WS5 = 6+; all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
+    expect(result.playerResult.hits).toBe(0);    // all missed at normal TN 5+
+    expect(result.playerResult.log.some(l => l.includes('normal hits'))).toBe(true);
+  });
+
+  it('Hatred(Psykers): wound TN reduced by 1 when defender has Psyker rule', () => {
+    // Attacker has Hatred(Psykers). Defender has Psyker rule.
+    // S4 vs T4 = normal TN 4+. Wound rolls of 3: 3 < 4 → fail without Hatred.
+    // With Hatred: TN = max(2, 4-1) = 3+. 3 ≥ 3 → all 5 wound.
+    // AP3 vs Sv7: penetrated; effectiveSave=null; Pool 2 saves consumed.
+    // 5 unsaved wounds × D1 = 5. Defender W5 → 0 → casualty.
+    const lib = makeLibrarian({
+      specialRules: [{ name: 'Hatred', target: 'Psykers' }],
+    });
+    const dummy = makeDummy({
+      stats: { ...makeDummy().stats, WS: 5, T: 4, W: 5, Sv: 7, Inv: null },
+      specialRules: [{ name: 'Psyker' }],
+    });
+    const powerSwordProfile = {
+      profileName: 'Power Sword',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 3 as number | null,
+      damage: 1,
+      specialRules: [] as typeof conflagrationProfile.specialRules,
+    };
+    const s = buildInitialState(lib, dummy);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: null, selectedWeaponProfile: powerSwordProfile },
+      ai:     { ...s.ai,     selectedGambit: null, selectedWeaponProfile: simpleMeleeProfile },
+    };
+    // WS5 vs WS5 = TN 4+ (HIT_TABLE[4][4]=4). Hit rolls of 4 → all 5 hit.
+    // Wound rolls of 3: with Hatred TN=max(2,4-1)=3+ → all 5 wound; without TN 4+: 3 < 4 → fail.
+    const dice = new FakeDiceRoller([
+      4,4,4,4,4,    // 5 hit rolls (TN 4+, all hit)
+      3,3,3,3,3,    // 5 wound rolls (with Hatred TN 3+: all wound; without TN 4+: all fail)
+      1,1,1,1,1,    // Pool 2 save rolls (AP3 vs Sv7: penetrated → effectiveSave=null; consumed)
+    ]);
+    const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
+    expect(result.playerResult.wounds).toBe(5);   // wound TN = 2+ due to Hatred
+    expect(result.playerResult.unsavedWounds).toBe(5);
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.playerResult.log.some(l => l.includes('Hatred'))).toBe(true);
+  });
+
+  it('Hatred(Psykers): no wound bonus when defender lacks Psyker rule', () => {
+    // Same setup but defender has no Psyker rule.
+    // Wound rolls of 3: normal TN 4+ → 3 < 4 → all fail. No damage.
+    const lib = makeLibrarian({
+      specialRules: [{ name: 'Hatred', target: 'Psykers' }],
+    });
+    const dummy = makeDummy({
+      stats: { ...makeDummy().stats, WS: 5, T: 4, W: 5, Sv: 7, Inv: null },
+      specialRules: [], // NO Psyker rule
+    });
+    const powerSwordProfile = {
+      profileName: 'Power Sword',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 3 as number | null,
+      damage: 1,
+      specialRules: [] as typeof conflagrationProfile.specialRules,
+    };
+    const s = buildInitialState(lib, dummy);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: null, selectedWeaponProfile: powerSwordProfile },
+      ai:     { ...s.ai,     selectedGambit: null, selectedWeaponProfile: simpleMeleeProfile },
+    };
+    // Hit rolls of 4 → all 5 hit (WS5 vs WS5 = TN 4+).
+    // Wound rolls of 3: normal TN 4+ → 3 < 4 → all fail (no Hatred bonus).
+    // No wounds → AI attacks (4 dice, all miss).
+    const dice = new FakeDiceRoller([
+      4,4,4,4,4,    // 5 hit rolls (TN 4+, all hit)
+      3,3,3,3,3,    // 5 wound rolls (TN 4+: 3 < 4 → all fail; no Hatred bonus)
+      1,1,1,1,1,    // AI hit rolls (WS5 vs WS5 = 4+; all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
+    expect(result.playerResult.wounds).toBe(0);   // no Hatred bonus → all fail
+  });
+});

@@ -76,6 +76,9 @@ function resolveAttackSequence(
   const log: string[] = [];
 
   // ── Compute effective stats ──────────────────────────────────────────────
+  // Roll D3 for weapons with 6+D3 attacks (e.g. Conflagration) before anything else.
+  const weaponD3 = (profile.attacksExtraD3 ?? false) ? dice.rollD3() : 0;
+
   // Only roll D3 when the gambit actually needs it (Flurry of Blows).
   // Calling rollD3() unconditionally would make the dice sequence
   // non-deterministic for every other gambit.
@@ -109,6 +112,8 @@ function resolveAttackSequence(
   let baseA = forceBoost === 'A' ? attackerChar.stats.A * 2 : attackerChar.stats.A;
   if (am.kind === 'add')   baseA += am.value;
   if (am.kind === 'fixed') baseA  = am.value;
+  // Conflagration: weapon has 6+D3 attacks (attacksExtraD3 flag)
+  if (profile.attacksExtraD3 ?? false) baseA += weaponD3;
 
   let atkA = mods.attacksOverride !== null
     ? mods.attacksOverride
@@ -166,10 +171,30 @@ function resolveAttackSequence(
     `${attackerChar.name} attacks: ${atkA} attacks, WS${atkWS} vs WS${defWS}, S${effectiveS} vs T${defT}${tNote}, AP${weaponAP ?? '-'}`,
   );
 
+  // Armourbane: no glancing-hit distinction for infantry; log only
+  if (profile.specialRules.some(sr => sr.name === 'Armourbane')) {
+    log.push('Armourbane: no glancing-hit distinction for infantry — rule has no effect here');
+  }
+
   // ── Hit Tests ────────────────────────────────────────────────────────────
   // Mirror-Form: Adamus hits always on 4+ regardless of WS comparison
   const mirrorFormActive = attacker.selectedGambit === 'mirror-form';
   const hitTN = mirrorFormActive ? 4 : getHitTargetNumber(atkWS, defWS);
+
+  // Divination — Every Strike Foreseen: WP check (no Perils).
+  // If successful, all Hit Tests succeed on 2+ for this attack sequence.
+  let hitTNOverride: number | null = null;
+  if (attacker.selectedGambit === 'divination-every-strike-foreseen') {
+    const [d1, d2] = dice.rollNd6(2);
+    const total   = d1 + d2;
+    const success = total <= attackerChar.stats.WP;
+    log.push(
+      `Every Strike Foreseen: ${d1}+${d2}=${total} vs WP${attackerChar.stats.WP} — ` +
+      (success ? 'hit on 2+' : 'normal hits'),
+    );
+    if (success) hitTNOverride = 2;
+  }
+
   const hitRolls = dice.rollNd6(atkA);
   let hits = 0;
   let critHits = 0;
@@ -185,7 +210,8 @@ function resolveAttackSequence(
     // Track unmodified 1s for Biological Overload
     if (roll === 1) hitRollOnes++;
 
-    const isHit = hitTN <= 6 && roll >= hitTN;
+    const effectiveHitTN = hitTNOverride ?? hitTN;
+    const isHit = effectiveHitTN <= 6 && roll >= effectiveHitTN;
 
     // Critical Hit only applies when a hit is actually inflicted by this Hit Test
     // (rule: "if a Hit is inflicted by that Hit Test, that Hit becomes a Critical Hit")
@@ -214,7 +240,7 @@ function resolveAttackSequence(
 
   const normalHits = hits - critHits;
   const critHitNote = critHits > 0 ? ` (${critHits} critical)` : '';
-  log.push(`Hit rolls [${hitRolls.join(',')}] needing ${hitTN}+ → ${hits} hit(s)${critHitNote}`);
+  log.push(`Hit rolls [${hitRolls.join(',')}] needing ${hitTNOverride ?? hitTN}+ → ${hits} hit(s)${critHitNote}`);
 
   if (hits === 0) {
     const defWounds = defender.currentWounds;
@@ -229,6 +255,13 @@ function resolveAttackSequence(
   }
 
   // ── Wound Tests ──────────────────────────────────────────────────────────
+  // Hatred(Psykers): +1 to wound tests when the defender has the Psyker rule
+  const attackerHatredPsykers = attackerChar.specialRules.some(
+    sr => sr.name === 'Hatred' && sr.target === 'Psykers',
+  );
+  const defenderIsPsyker = defenderChar.specialRules.some(sr => sr.name === 'Psyker');
+  const woundTestBonus = (attackerHatredPsykers && defenderIsPsyker) ? 1 : 0;
+
   // Base wound TN uses effectiveDefT (may be overridden by Steadfast Resilience / Tempered by War)
   const baseWoundTN = getWoundTargetNumber(effectiveS, effectiveDefT);
 
@@ -266,9 +299,12 @@ function resolveAttackSequence(
       : baseWoundTN;
 
     // Poisoned: use whichever TN is easier (lower number = easier to wound)
-    const woundTN = poisonedTN !== null
+    let woundTN = poisonedTN !== null
       ? Math.min(tableWoundTN, poisonedTN)
       : tableWoundTN;
+
+    // Hatred(Psykers): +1 to wound tests (lower TN by 1, minimum 2)
+    if (woundTestBonus > 0) woundTN = Math.max(2, woundTN - woundTestBonus);
 
     let isWound = woundTN <= 6 && roll >= woundTN;
     for (const sr of profile.specialRules) {
@@ -297,12 +333,15 @@ function resolveAttackSequence(
 
   const phageNote    = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
   const poisonNote   = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
-  const effectiveWoundTN = poisonedTN !== null ? Math.min(baseWoundTN, poisonedTN) : baseWoundTN;
+  const hatredNote   = woundTestBonus > 0 ? ` (Hatred +1 wound bonus)` : '';
+  const effectiveWoundTN = poisonedTN !== null
+    ? Math.max(2, Math.min(baseWoundTN, poisonedTN) - woundTestBonus)
+    : Math.max(2, baseWoundTN - woundTestBonus);
   if (critWounds > 0) {
     log.push(`${critHits} Critical Hit(s) → ${critWounds} automatic wound(s) (counts as roll of 6)`);
   }
   if (normalHits > 0) {
-    log.push(`Wound rolls [${woundRolls.join(',')}] needing ${effectiveWoundTN}+${poisonNote}${phageNote} → ${normalWounds} wound(s)`);
+    log.push(`Wound rolls [${woundRolls.join(',')}] needing ${effectiveWoundTN}+${poisonNote}${hatredNote}${phageNote} → ${normalWounds} wound(s)`);
   }
 
   if (wounds === 0) {
@@ -328,6 +367,8 @@ function resolveAttackSequence(
 
   let saved             = 0;
   let unsavedCritWounds = 0;
+  // Tracks wounds that fail saves (before FNP) for Deflagrate triggering
+  let deflagrateUnsavedCount = 0;
   let evsfUsed          = false; // Every Strike Foreseen may only re-roll ONE failed save
 
   // Pool 1: crit wounds at weapon AP — track each failure as an unsaved crit wound
@@ -343,10 +384,11 @@ function resolveAttackSequence(
         evsfUsed = true;
       }
       if (roll >= effectiveSave) saved++;
-      else unsavedCritWounds++;
+      else { unsavedCritWounds++; deflagrateUnsavedCount++; }
     }
   } else {
     unsavedCritWounds += critNormalCount;
+    deflagrateUnsavedCount += critNormalCount;
   }
 
   // Pool 2: normal wounds at weapon AP
@@ -362,7 +404,10 @@ function resolveAttackSequence(
         evsfUsed = true;
       }
       if (roll >= effectiveSave) saved++;
+      else deflagrateUnsavedCount++;
     }
+  } else {
+    deflagrateUnsavedCount += normNormalCount;
   }
 
   // Pool 3: crit breaching wounds at AP2 — track failures as unsaved crit wounds
@@ -378,10 +423,11 @@ function resolveAttackSequence(
         evsfUsed = true;
       }
       if (roll >= breachSave) saved++;
-      else unsavedCritWounds++;
+      else { unsavedCritWounds++; deflagrateUnsavedCount++; }
     }
   } else {
     unsavedCritWounds += critBreachingWounds;
+    deflagrateUnsavedCount += critBreachingWounds;
   }
 
   // Pool 4: normal breaching wounds at AP2
@@ -397,7 +443,10 @@ function resolveAttackSequence(
         evsfUsed = true;
       }
       if (roll >= breachSave) saved++;
+      else deflagrateUnsavedCount++;
     }
+  } else {
+    deflagrateUnsavedCount += normalBreachingWounds;
   }
 
   const saveRolls = [...critNormSaveRolls, ...normalSaveRolls, ...critBreachSaveRolls, ...normBreachSaveRolls];
@@ -434,7 +483,9 @@ function resolveAttackSequence(
     unsavedCritWounds = Math.min(unsavedCritWounds, unsavedWounds);
   }
 
-  if (unsavedWounds === 0) {
+  // Check if Deflagrate can still trigger (uses pre-FNP count)
+  const deflagrateRule = profile.specialRules.find(sr => sr.name === 'Deflagrate');
+  if (unsavedWounds === 0 && !(deflagrateRule && deflagrateUnsavedCount > 0)) {
     return {
       attackerName: attackerChar.name,
       attacks: atkA, hitRolls, hits,
@@ -479,14 +530,14 @@ function resolveAttackSequence(
     : 0;
   const shredDmgPerWound     = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
   const critShredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 2) - ewReduction);
-  const totalDamage =
+  let totalDamage =
     (unsavedCritWounds - unsavedCritShredWounds) * critDmgPerWound +
     unsavedCritShredWounds * critShredDmgPerWound +
     (unsavedNormalWounds - unsavedShredWounds) * dmgPerWound +
     unsavedShredWounds * shredDmgPerWound;
 
-  const defenderWoundsRemaining = Math.max(0, defender.currentWounds - totalDamage);
-  const defenderIsCasualty = defenderWoundsRemaining <= 0;
+  let defenderWoundsRemaining = Math.max(0, defender.currentWounds - totalDamage);
+  let defenderIsCasualty = defenderWoundsRemaining <= 0;
 
   const critNonShredCount = unsavedCritWounds - unsavedCritShredWounds;
   const critDmgNote = critNonShredCount > 0
@@ -498,11 +549,34 @@ function resolveAttackSequence(
   const shredNote = unsavedShredWounds > 0
     ? ` (${unsavedShredWounds} Shred wound(s) at +1 dmg)`
     : '';
-  log.push(
-    `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg${critDmgNote}${critShredNote}${shredNote} = ${totalDamage} damage. ` +
-    `${defenderChar.name}: ${defender.currentWounds} → ${defenderWoundsRemaining} wounds` +
-    (defenderIsCasualty ? ' (CASUALTY)' : ''),
-  );
+  if (unsavedWounds > 0) {
+    log.push(
+      `${unsavedWounds} unsaved wound(s) × ${dmgPerWound} dmg${critDmgNote}${critShredNote}${shredNote} = ${totalDamage} damage. ` +
+      `${defenderChar.name}: ${defender.currentWounds} → ${defenderWoundsRemaining} wounds` +
+      (defenderIsCasualty ? ' (CASUALTY)' : ''),
+    );
+  }
+
+  // ── Deflagrate ──────────────────────────────────────────────────────────
+  // Unsaved wounds from a weapon with Deflagrate(X) generate additional
+  // automatic hits at S(X) AP- D1 against the same target.
+  if (deflagrateRule && deflagrateUnsavedCount > 0 && !defenderIsCasualty) {
+    const extra = resolveDeflagrateGroup(
+      dice, deflagrateUnsavedCount, deflagrateRule.value,
+      defenderChar, effectiveDefT, log,
+    );
+    if (extra.damage > 0) {
+      const prevWounds = defenderWoundsRemaining;
+      defenderWoundsRemaining = Math.max(0, defenderWoundsRemaining - extra.damage);
+      defenderIsCasualty = defenderWoundsRemaining <= 0;
+      log.push(
+        `Deflagrate: ${extra.damage} extra damage. ` +
+        `${defenderChar.name}: ${prevWounds} → ${defenderWoundsRemaining} wounds` +
+        (defenderIsCasualty ? ' (CASUALTY)' : ''),
+      );
+      totalDamage += extra.damage;
+    }
+  }
 
   return {
     attackerName: attackerChar.name,
@@ -589,6 +663,74 @@ function applyDutyIsSacrificeWounds(
   }
   if (current <= 0) log.push(`  ${selfChar.name} is removed as a Casualty!`);
   return { newWounds: current, isCasualty: current <= 0 };
+}
+
+/**
+ * Resolve Deflagrate extra hits.
+ *
+ * For each unsaved wound caused by a weapon with Deflagrate(X), one extra
+ * automatic hit is inflicted at Strength X, AP -, D1.  The defender always
+ * benefits from their best available save (armour or invulnerable, whichever
+ * is better) since the hit is AP-.
+ *
+ * @param hits          - number of extra hits (= unsaved wounds that triggered Deflagrate)
+ * @param strength      - the Deflagrate Strength value
+ * @param defenderChar  - full character record of the defender
+ * @param effectiveDefT - defender's effective Toughness
+ * @param log           - log array to append messages to
+ */
+function resolveDeflagrateGroup(
+  dice: DiceRoller,
+  hits: number,
+  strength: number,
+  defenderChar: Character,
+  effectiveDefT: number,
+  log: string[],
+): { damage: number } {
+  const woundTN = getWoundTargetNumber(strength, effectiveDefT);
+  const woundRolls = dice.rollNd6(hits);
+  let wounds = 0;
+  for (const roll of woundRolls) {
+    if (woundTN <= 6 && roll >= woundTN) wounds++;
+  }
+  log.push(
+    `Deflagrate(${strength}): ${hits} extra hit(s) → wound rolls [${woundRolls.join(',')}] needing ${woundTN}+ → ${wounds} wound(s)`,
+  );
+  if (wounds === 0) return { damage: 0 };
+
+  // AP -: defender always gets their best save (lower number = better)
+  const defSv  = defenderChar.stats.Sv;
+  const defInv = defenderChar.stats.Inv;
+  const bestSave = defInv !== null ? Math.min(defSv, defInv) : defSv;
+  const saveRolls = dice.rollNd6(wounds);
+  let saved = 0;
+  for (const roll of saveRolls) {
+    if (roll >= bestSave) saved++;
+  }
+  log.push(`Deflagrate saves [${saveRolls.join(',')}] vs ${bestSave}+ → ${saved} saved`);
+  let unsaved = wounds - saved;
+
+  // Feel No Pain applies to Deflagrate wounds
+  let fnpThreshold: number | null = null;
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name === 'FeelNoPain') fnpThreshold = sr.threshold;
+  }
+  if (fnpThreshold !== null && unsaved > 0) {
+    const fnpRolls = dice.rollNd6(unsaved);
+    const fnpSaved = fnpRolls.filter(r => r >= fnpThreshold!).length;
+    log.push(`Deflagrate FNP ${fnpThreshold}+: rolls [${fnpRolls.join(',')}] → ${fnpSaved} cancelled`);
+    unsaved -= fnpSaved;
+  }
+
+  if (unsaved === 0) return { damage: 0 };
+
+  // D1 damage per unsaved wound, reduced by Eternal Warrior (minimum 1)
+  let ewReduction = 0;
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name === 'EternalWarrior') ewReduction = sr.value;
+  }
+  const dmgPerWound = Math.max(1, 1 - ewReduction);
+  return { damage: unsaved * dmgPerWound };
 }
 
 /**

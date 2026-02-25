@@ -222,6 +222,19 @@ export const RAVEN_GUARD_GAMBITS: Gambit[] = [
   },
 ];
 
+// ── Legion Astartes Psychic Discipline gambits ────────────────────────────────
+
+export const LEGION_ASTARTES_PSYCHIC_GAMBITS: Gambit[] = [
+  {
+    id: 'divination-every-strike-foreseen',
+    name: 'Every Strike Foreseen',
+    description: 'Divination: make a Willpower check (2d6 ≤ WP, no Perils). If successful, all Hit Tests for this model succeed on a roll of 2+ this Strike Step.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
+];
+
 // ── Combined export ──────────────────────────────────────────────────────────
 
 export const LOYALIST_LEGION_GAMBITS: Gambit[] = [
@@ -234,4 +247,5 @@ export const LOYALIST_LEGION_GAMBITS: Gambit[] = [
   ...ULTRAMARINES_GAMBITS,
   ...SALAMANDERS_GAMBITS,
   ...RAVEN_GUARD_GAMBITS,
+  ...LEGION_ASTARTES_PSYCHIC_GAMBITS,
 ];

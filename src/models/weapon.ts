@@ -40,7 +40,10 @@ export type SpecialRule =
   | { name: 'Poisoned';         threshold: number }   // wound always on roll ≥ threshold (ignores S vs T comparison)
   | { name: 'PraeternaturalResilience' }              // CriticalHit(X) attacks against this model use X=6 (raises threshold to 6+)
   | { name: 'SublimeSwordsman' }                      // +1A per point this model's Base I exceeds opponent's, when this model has Challenge Advantage
-  | { name: 'Force'; characteristic: 'S' | 'A' | 'D' | 'AP' | 'I' | 'WS' };  // WP check (2d6≤WP): doubles characteristic X; doubles trigger Perils of the Warp
+  | { name: 'Force'; characteristic: 'S' | 'A' | 'D' | 'AP' | 'I' | 'WS' }  // WP check (2d6≤WP): doubles characteristic X; doubles trigger Perils of the Warp
+  | { name: 'Armourbane' }              // AP 1 vs vehicles; infantry get no benefit — logged only
+  | { name: 'Deflagrate'; value: number }  // unsaved wounds generate extra S(X)/AP-/D1 hits
+  | { name: 'Psyker' };               // marks model as a Psyker for Hatred(Psykers) targeting
   // Rules intentionally not simulated:
   //   Bypass(X+) — Phase sword's bypass of all saves; omitted (no Bypass special rule added)
   //   Phage(S)   — established pattern (daemon weapons); omit from profiles
@@ -57,6 +60,12 @@ export interface WeaponProfile {
   ap: number | null;
   damage: number;
   specialRules: SpecialRule[];
+  /**
+   * If true, roll a D3 at the start of the attack sequence and add it to
+   * the Attacks total (after applying the attacksModifier).
+   * Used by Conflagration (6+D3 attacks).
+   */
+  attacksExtraD3?: boolean;
 }
 
 /** A weapon, which may have multiple profiles (e.g., melee + ranged). */
