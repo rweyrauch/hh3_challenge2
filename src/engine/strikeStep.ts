@@ -238,6 +238,11 @@ function resolveAttackSequence(
       // Rending: high hit roll auto-wounds (approximated on wound roll here)
       if (sr.name === 'Rending' && roll >= sr.threshold) isWound = true;
     }
+    // Bulwark of the Imperium: unmodified wound rolls below the minimum always fail,
+    // regardless of Strength, Toughness comparisons, Poisoned, or Rending.
+    if (defenderMods.minimumWoundRoll !== null && roll < defenderMods.minimumWoundRoll) {
+      isWound = false;
+    }
     if (isWound) {
       normalWounds++;
       if (mods.phageToughness) currentDefT = Math.max(1, currentDefT - 1);

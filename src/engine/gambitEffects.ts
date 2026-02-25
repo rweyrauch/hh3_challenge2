@@ -253,6 +253,14 @@ export interface StrikeModifiers {
    * Number of self-wounds is tracked separately via dutyIsSacrificeWounds.
    */
   dutyIsSacrificeWounds: number;
+  /**
+   * If not null, unmodified Wound Test dice results strictly below this value
+   * always fail, regardless of Strength, Toughness comparisons, or any Special
+   * Rules that set the Target Number for Wound Tests (e.g. Poisoned).
+   * Set on the *defender's* gambit modifiers (Bulwark of the Imperium: value 5).
+   * Critical hits, which auto-wound without a dice roll, are unaffected.
+   */
+  minimumWoundRoll: number | null;
 }
 
 /**
@@ -285,6 +293,7 @@ export function getStrikeModifiers(
     overrideDefenderToughness: null,
     phageToughness: false,
     dutyIsSacrificeWounds: 0,
+    minimumWoundRoll: null,
   };
 
   const attacker = forPlayer ? state.player : state.ai;
@@ -367,6 +376,15 @@ export function getStrikeModifiers(
       return {
         ...base,
         criticalHitThreshold: 6,
+      };
+
+    case 'bulwark-of-the-imperium':
+      // Wound rolls of 1-4 against this model always fail.
+      // Set on the *defender's* modifiers; read by the attack engine in
+      // strikeStep.ts after all other wound TN logic is resolved.
+      return {
+        ...base,
+        minimumWoundRoll: 5,
       };
 
     // ── Blood Angels ────────────────────────────────────────────────────────

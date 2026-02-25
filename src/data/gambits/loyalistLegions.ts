@@ -84,6 +84,14 @@ export const SPACE_WOLVES_GAMBITS: Gambit[] = [
 
 export const IMPERIAL_FISTS_GAMBITS: Gambit[] = [
   {
+    id: 'bulwark-of-the-imperium',
+    name: 'Bulwark of the Imperium',
+    description: 'Wound Tests made against this model with an unmodified result of 1, 2, 3 or 4 are never successful, regardless of the Strength Characteristic or any Special Rules that set the Target Number for Wound Tests (e.g. Poisoned). Critical Hits, which inflict automatic wounds without a dice roll, are unaffected.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
+  {
     id: 'a-wall-unyielding',
     name: 'A Wall Unyielding',
     description: 'This model does not add its Combat Initiative to the Focus Roll, but gains Eternal Warrior(1) for the duration of the following Strike Step.',

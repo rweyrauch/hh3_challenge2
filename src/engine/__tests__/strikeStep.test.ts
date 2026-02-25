@@ -5,6 +5,7 @@ import { buildInitialState } from '../challengeEngine.js';
 import { CUSTODES_CHARACTERS } from '../../data/factions/custodes.js';
 import { ORK_CHARACTERS } from '../../data/factions/orks.js';
 import { ASSASSIN_CHARACTERS } from '../../data/factions/assassins.js';
+import { LOYALIST_LEGION_CHARACTERS } from '../../data/factions/loyalistLegions.js';
 import type { CombatState } from '../../models/combatState.js';
 import type { Character } from '../../models/character.js';
 
@@ -13,6 +14,7 @@ const WARBOSS = ORK_CHARACTERS.find(c => c.id === 'warboss-goffs')!;
 const MEGA    = ORK_CHARACTERS.find(c => c.id === 'mega-warboss')!;
 const EVERSOR = ASSASSIN_CHARACTERS.find(c => c.id === 'eversor-assassin')!;
 const ADAMUS  = ASSASSIN_CHARACTERS.find(c => c.id === 'adamus-assassin')!;
+const DORN    = LOYALIST_LEGION_CHARACTERS.find(c => c.id === 'rogal-dorn')!;
 
 function makeState(
   playerChar = VALDOR,
@@ -407,6 +409,139 @@ describe('resolveStrikeStep', () => {
     expect(result.playerResult.unsavedWounds).toBe(2);
     // Critical Hit deals +1D: crit wound = D3, normal wound = D2. Total = 3+2 = 5.
     expect(result.playerResult.totalDamage).toBe(5);
+  });
+
+  it('Bulwark of the Imperium: wound rolls 1-4 always fail regardless of S vs T', () => {
+    // Custom attacker WS7 (hitTN 4+ vs DORN WS7), S8 (wound TN 3+ vs T6 normally).
+    // Bulwark forces minimum wound roll of 5: rolls 2,3,4 are blocked despite TN 3+.
+    // Wound rolls [2,3,4,5] → normally 3 wounds (≥ 3+), but Bulwark leaves only 1 (roll 5).
+    // AP2 negates DORN Sv2 → Inv4+ save. D2 - EW2 = max(1,0) = 1 damage per wound.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'bulwark-test-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 8, A: 3, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const bulwarkWeapon = {
+      profileName: 'Bulwark Test Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 2, damage: 2,
+      specialRules: [],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, DORN),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, DORN).player,
+        selectedWeaponProfile: bulwarkWeapon,
+      },
+      ai: {
+        ...makeState(attacker, DORN).ai,
+        selectedGambit: 'bulwark-of-the-imperium',
+        selectedWeaponProfile: DORN.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5, 5, 5,   // 4 hit rolls (A3 + advantage = 4 attacks; TN 4+, all hit)
+      2, 3, 4, 5,   // 4 wound rolls: Bulwark blocks 2,3,4; only 5 passes (normal TN 3+)
+      1,            // 1 save roll (AP2 → Inv4+, fail)
+      1,1,1,1,1,1,  // 6 DORN hit rolls (all miss, TN 4+)
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, DORN, 'player');
+    // Normally rolls 2,3,4 all wound at TN 3+, but Bulwark blocks any roll < 5
+    expect(result.playerResult.wounds).toBe(1);
+    expect(result.playerResult.unsavedWounds).toBe(1);
+    expect(result.updatedState.ai.isCasualty).toBe(false);
+    expect(result.updatedState.ai.currentWounds).toBe(5); // W6 − 1 damage = 5
+  });
+
+  it('Bulwark of the Imperium: overrides Poisoned(2+) special rule', () => {
+    // S1 vs T6 = 6+ normally; Poisoned(2+) lowers effective TN to 2+.
+    // Bulwark still blocks rolls < 5, so rolls 2,3,4 fail despite Poisoned(2+).
+    // Without Bulwark all four rolls (2,3,4,5) would wound; with Bulwark only roll 5 passes.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'bulwark-poison-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 1, A: 3, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const poisonedWeapon = {
+      profileName: 'Bulwark Poison Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 2, damage: 1,
+      specialRules: [{ name: 'Poisoned' as const, threshold: 2 }],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, DORN),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, DORN).player,
+        selectedWeaponProfile: poisonedWeapon,
+      },
+      ai: {
+        ...makeState(attacker, DORN).ai,
+        selectedGambit: 'bulwark-of-the-imperium',
+        selectedWeaponProfile: DORN.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5, 5, 5,   // 4 hit rolls (TN 4+, all hit)
+      2, 3, 4, 5,   // 4 wound rolls: Poisoned gives TN 2+, Bulwark still blocks 2,3,4
+      1,            // 1 save roll (AP2 → Inv4+, fail)
+      1,1,1,1,1,1,  // 6 DORN hit rolls (all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, DORN, 'player');
+    expect(result.playerResult.wounds).toBe(1);
+    expect(result.playerResult.unsavedWounds).toBe(1);
+  });
+
+  it('Bulwark of the Imperium: Critical Hits auto-wound, bypassing the wound-roll check', () => {
+    // CriticalHit(2+): every hit (TN 4+) rolls ≥ 4 ≥ 2 → Critical Hit → auto-wound.
+    // Auto-wounds bypass the wound-roll test entirely, so Bulwark cannot block them.
+    // critDmg = D1+1=2; EW2 → max(1,2−2)=1 per wound. 4×1=4 total damage. DORN W6−4=2.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'bulwark-crit-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 4, A: 3, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const critWeapon = {
+      profileName: 'Bulwark Crit Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 2, damage: 1,
+      specialRules: [{ name: 'CriticalHit' as const, threshold: 2 }],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, DORN),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, DORN).player,
+        selectedWeaponProfile: critWeapon,
+      },
+      ai: {
+        ...makeState(attacker, DORN).ai,
+        selectedGambit: 'bulwark-of-the-imperium',
+        selectedWeaponProfile: DORN.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5, 5, 5,   // 4 hit rolls (≥ 4+ hit; ≥ 2+ crit → all 4 Critical Hits → auto-wound)
+      // no wound dice — all hits are Critical Hits
+      1, 1, 1, 1,   // 4 save rolls (AP2 → Inv4+, all fail) → 4 unsaved crit wounds
+      1,1,1,1,1,1,  // 6 DORN hit rolls (all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, DORN, 'player');
+    // All 4 crits auto-wound even with Bulwark active (no wound roll = no roll to block)
+    expect(result.playerResult.wounds).toBe(4);
+    expect(result.playerResult.unsavedWounds).toBe(4);
+    expect(result.updatedState.ai.isCasualty).toBe(false);
+    expect(result.updatedState.ai.currentWounds).toBe(2); // W6 − 4 damage = 2
   });
 
   it('Mirror-Form: hits always on 4+ regardless of WS comparison', () => {
