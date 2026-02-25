@@ -149,6 +149,11 @@ function resolveAttackSequence(
   let guardUpMissCount = 0;
   let hitRollOnes = 0; // for Biological Overload self-wound tracking
 
+  // Preternatural Resilience: CriticalHit(X) attacks against this model use X=6
+  const hasPraeternaturalResilience = defenderChar.specialRules.some(
+    sr => sr.name === 'PraeternaturalResilience',
+  );
+
   for (const roll of hitRolls) {
     // Track unmodified 1s for Biological Overload
     if (roll === 1) hitRollOnes++;
@@ -160,10 +165,14 @@ function resolveAttackSequence(
     let isCrit = false;
     if (isHit) {
       for (const sr of profile.specialRules) {
-        if (sr.name === 'CriticalHit' && roll >= sr.threshold) isCrit = true;
+        if (sr.name === 'CriticalHit') {
+          const effectiveCritTN = hasPraeternaturalResilience ? Math.max(sr.threshold, 6) : sr.threshold;
+          if (roll >= effectiveCritTN) isCrit = true;
+        }
       }
-      if (mods.criticalHitThreshold !== null && roll >= mods.criticalHitThreshold) {
-        isCrit = true;
+      if (mods.criticalHitThreshold !== null) {
+        const effectiveCritTN = hasPraeternaturalResilience ? Math.max(mods.criticalHitThreshold, 6) : mods.criticalHitThreshold;
+        if (roll >= effectiveCritTN) isCrit = true;
       }
     }
 

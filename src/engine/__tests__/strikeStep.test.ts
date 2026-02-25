@@ -6,6 +6,7 @@ import { CUSTODES_CHARACTERS } from '../../data/factions/custodes.js';
 import { ORK_CHARACTERS } from '../../data/factions/orks.js';
 import { ASSASSIN_CHARACTERS } from '../../data/factions/assassins.js';
 import { LOYALIST_LEGION_CHARACTERS } from '../../data/factions/loyalistLegions.js';
+import { TRAITOR_LEGION_CHARACTERS } from '../../data/factions/traitorLegions.js';
 import type { CombatState } from '../../models/combatState.js';
 import type { Character } from '../../models/character.js';
 
@@ -14,7 +15,8 @@ const WARBOSS = ORK_CHARACTERS.find(c => c.id === 'warboss-goffs')!;
 const MEGA    = ORK_CHARACTERS.find(c => c.id === 'mega-warboss')!;
 const EVERSOR = ASSASSIN_CHARACTERS.find(c => c.id === 'eversor-assassin')!;
 const ADAMUS  = ASSASSIN_CHARACTERS.find(c => c.id === 'adamus-assassin')!;
-const DORN    = LOYALIST_LEGION_CHARACTERS.find(c => c.id === 'rogal-dorn')!;
+const DORN      = LOYALIST_LEGION_CHARACTERS.find(c => c.id === 'rogal-dorn')!;
+const MORTARION = TRAITOR_LEGION_CHARACTERS.find(c => c.id === 'mortarion')!;
 
 function makeState(
   playerChar = VALDOR,
@@ -542,6 +544,103 @@ describe('resolveStrikeStep', () => {
     expect(result.playerResult.unsavedWounds).toBe(4);
     expect(result.updatedState.ai.isCasualty).toBe(false);
     expect(result.updatedState.ai.currentWounds).toBe(2); // W6 − 4 damage = 2
+  });
+
+  it('PraeternaturalResilience: weapon CriticalHit(5+) threshold raised to 6+', () => {
+    // Custom attacker: WS7 (hitTN 4+ vs MORTARION WS7), A3 + advantage = 4 attacks.
+    // Weapon has CriticalHit(5+). Against normal defender: rolls 5,5,5 → 3 crits.
+    // Against MORTARION (PraeternaturalResilience): effective threshold = max(5,6) = 6.
+    // Hit rolls [6,5,5,4]: only roll 6 crits; rolls 5,5,4 are normal hits.
+    // Normal wound TN: S4 vs T7 = 6+ (from table). Wound rolls [1,1,1] all fail.
+    // 1 crit auto-wound: AP2 → Inv4+, save roll 1 → fail → 1 unsaved crit wound.
+    // critDmg = D2+1=3, EW3 → max(1, 3-3) = 1. 1×1 = 1 damage. W7-1 = 6.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'praetres-test-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 4, A: 3, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const critWeapon = {
+      profileName: 'CritHit5+ Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 2, damage: 2,
+      specialRules: [{ name: 'CriticalHit' as const, threshold: 5 }],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, MORTARION),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, MORTARION).player,
+        selectedWeaponProfile: critWeapon,
+      },
+      ai: {
+        ...makeState(attacker, MORTARION).ai,
+        selectedWeaponProfile: MORTARION.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      6, 5, 5, 4,   // 4 hit rolls (TN 4+, all hit; only 6 is a crit due to PraeternaturalResilience)
+      1, 1, 1,      // 3 wound rolls for normal hits (S4 vs T7 = 6+, all fail)
+      1,            // 1 save roll for the crit wound (AP2 → Inv4+, fail)
+      1,1,1,1,1,1,  // 6 Mortarion hit rolls (all miss, TN 4+)
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, MORTARION, 'player');
+    // Without PraeternaturalResilience, rolls 5,5 would also crit (5 ≥ 5+), giving 3 crits.
+    // With it, only roll 6 crits → 1 auto-wound; the 3 normal hits fail to wound at TN 6+.
+    expect(result.playerResult.hits).toBe(4);
+    expect(result.playerResult.wounds).toBe(1);      // 1 crit auto-wound only
+    expect(result.playerResult.unsavedWounds).toBe(1);
+    expect(result.updatedState.ai.currentWounds).toBe(6); // W7 − 1 damage = 6
+  });
+
+  it('PraeternaturalResilience: gambit criticalHitThreshold also raised to 6+', () => {
+    // deaths-champion gambit gives the attacker criticalHitThreshold = 5 (no weapon CritHit).
+    // Against MORTARION: effective threshold = max(5,6) = 6, so only roll 6 crits.
+    // Hit rolls [6,5,4]: roll 6 → crit; rolls 5,4 → normal hits.
+    // Wound rolls for 2 normal hits: S4 vs T7 = 6+. Rolls [1,1] → both fail.
+    // 1 crit auto-wound: save roll 1 → fail → 1 unsaved crit wound.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'praetres-gambit-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 4, A: 2, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const plainWeapon = {
+      profileName: 'Plain Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: 2, damage: 2,
+      specialRules: [],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, MORTARION),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, MORTARION).player,
+        selectedGambit: 'deaths-champion',   // criticalHitThreshold: 5
+        selectedWeaponProfile: plainWeapon,
+      },
+      ai: {
+        ...makeState(attacker, MORTARION).ai,
+        selectedWeaponProfile: MORTARION.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      6, 5, 4,      // 3 hit rolls (A2 + advantage = 3 attacks; TN 4+, all hit)
+      1, 1,         // 2 wound rolls for normal hits (S4 vs T7 = 6+, all fail)
+      1,            // 1 save roll for the crit (AP2 → Inv4+, fail)
+      1,1,1,1,1,1,  // 6 Mortarion hit rolls (all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, MORTARION, 'player');
+    // Without PraeternaturalResilience, rolls 5,6 both crit (≥5+) → 2 crits.
+    // With it, only roll 6 crits → 1 auto-wound; normal hits can't wound at TN 6+.
+    expect(result.playerResult.hits).toBe(3);
+    expect(result.playerResult.wounds).toBe(1);
+    expect(result.playerResult.unsavedWounds).toBe(1);
+    expect(result.updatedState.ai.currentWounds).toBe(6); // W7 − 1 = 6
   });
 
   it('Mirror-Form: hits always on 4+ regardless of WS comparison', () => {
