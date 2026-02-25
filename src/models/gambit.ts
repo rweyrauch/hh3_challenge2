@@ -67,6 +67,7 @@ export type GambitId =
   | 'steadfast-resilience'    // all DG: T = opponent's WS for Strike Step
   | 'witchblood'              // Calas Typhon: once/battle; WP check → +2A/+2S or 1 wound
   // ── Thousand Sons (XV) ───────────────────────────────────────────────────
+  | 'battle-of-the-wills'    // Magnus the Red: +Focus equal to max(0, own WP − opponent WP)
   | 'prophetic-duellist'      // all TS: after Focus Roll, may replace total with own WP
   // ── Sons of Horus (XVI) ──────────────────────────────────────────────────
   | 'merciless-strike'        // all SoH: first round only; weapons gain Phage(T) (reduce enemy T per wound)

@@ -67,6 +67,8 @@ export interface FocusContext {
   baseWounds?: number;
   /** Willpower of the gambit user (used by Prophetic Duellist). */
   ownWP?: number;
+  /** Willpower of the opposing model (used by Battle of the Wills). */
+  enemyWP?: number;
   /** Enemy model's Bulky(X) value (used by Angelic Descent). */
   enemyBulkyValue?: number;
   /** Character ID of the gambit user (for Lucius/Paragon of Excellence). */
@@ -99,6 +101,8 @@ export function getFocusDiceModification(
   const currentWounds   = ctx.currentWounds  ?? 99;
   const enemyBulkyValue = ctx.enemyBulkyValue ?? 0;
   const characterId     = ctx.characterId    ?? '';
+  const ownWP           = ctx.ownWP          ?? 0;
+  const enemyWP         = ctx.enemyWP        ?? 0;
 
   switch (gambitId) {
     // ── Core gambits ────────────────────────────────────────────────────────
@@ -186,6 +190,10 @@ export function getFocusDiceModification(
     }
 
     // ── Thousand Sons ───────────────────────────────────────────────────────
+    case 'battle-of-the-wills':
+      // +Focus equal to max(0, own WP − opponent WP).
+      return { ...base, flatBonus: Math.max(0, ownWP - enemyWP) };
+
     case 'prophetic-duellist':
       // After roll, may replace total with own WP.
       return { ...base, replaceWithWP: true };
@@ -205,7 +213,7 @@ export function getFocusDiceModification(
   }
 
   // Suppress TS unused-variable warnings (variables captured in switch cases above)
-  void round; void currentWounds; void enemyBulkyValue;
+  void round; void currentWounds; void enemyBulkyValue; void ownWP; void enemyWP;
 }
 
 // ─── Strike step modifiers ────────────────────────────────────────────────────

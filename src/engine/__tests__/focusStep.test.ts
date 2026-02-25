@@ -3,12 +3,14 @@ import { resolveFocusStep } from '../focusStep.js';
 import { FakeDiceRoller } from '../dice.js';
 import { CUSTODES_CHARACTERS } from '../../data/factions/custodes.js';
 import { ORK_CHARACTERS } from '../../data/factions/orks.js';
+import { TRAITOR_LEGION_CHARACTERS } from '../../data/factions/traitorLegions.js';
 import { buildInitialState } from '../challengeEngine.js';
 
 const VALDOR     = CUSTODES_CHARACTERS.find(c => c.id === 'constantin-valdor')!;
 const TRIBUNE    = CUSTODES_CHARACTERS.find(c => c.id === 'tribune')!;
 const WARBOSS    = ORK_CHARACTERS.find(c => c.id === 'warboss-goffs')!;
 const MEGA_BOSS  = ORK_CHARACTERS.find(c => c.id === 'mega-warboss')!;
+const MAGNUS     = TRAITOR_LEGION_CHARACTERS.find(c => c.id === 'magnus-the-red')!;
 
 function makeState(playerChar = VALDOR, aiChar = WARBOSS) {
   const s = buildInitialState(playerChar, aiChar);
@@ -118,6 +120,44 @@ describe('resolveFocusStep', () => {
     const result = resolveFocusStep(dice, state, VALDOR, WARBOSS, null);
     // Player total = 1 + CI(6) + DE(2) + guardUp(2) = 11; AI = 6 + CI(4) = 10
     expect(result.playerRoll.total).toBe(11);
+    expect(result.advantage).toBe('player');
+  });
+
+  it('Battle of the Wills: adds WP difference as flat Focus bonus', () => {
+    // Magnus WP=10 vs WARBOSS WP=9 → flatBonus = max(0, 10−9) = +1
+    // Magnus CI = I(6) + no I modifier = 6; DE = 0 (Blade of Ahn-nunurta has no DuellistsEdge)
+    // Dice: player rolls 4, AI rolls 1
+    // Magnus total = 4 + CI(6) + bonus(1) = 11; WARBOSS total = 1 + CI(4) = 5
+    const dice = new FakeDiceRoller([4, 1]);
+    const state = {
+      ...makeState(MAGNUS, WARBOSS),
+      player: {
+        ...makeState(MAGNUS, WARBOSS).player,
+        selectedGambit: 'battle-of-the-wills' as any,
+      },
+    };
+    const result = resolveFocusStep(dice, state, MAGNUS, WARBOSS, null);
+    expect(result.playerRoll.total).toBe(11);
+    expect(result.playerRoll.modifiers).toBe(1); // WP bonus only, no DE
+    expect(result.advantage).toBe('player');
+  });
+
+  it('Battle of the Wills: no bonus when WP difference is zero or negative', () => {
+    // Magnus WP=10 vs opponent with WP=10 → flatBonus = max(0, 10−10) = 0
+    // Dice: player rolls 4, AI rolls 1
+    // Magnus total = 4 + CI(6) + 0 = 10
+    const opponentWP10 = { ...WARBOSS, stats: { ...WARBOSS.stats, WP: 10 } };
+    const dice = new FakeDiceRoller([4, 1]);
+    const state = {
+      ...makeState(MAGNUS, opponentWP10),
+      player: {
+        ...makeState(MAGNUS, opponentWP10).player,
+        selectedGambit: 'battle-of-the-wills' as any,
+      },
+    };
+    const result = resolveFocusStep(dice, state, MAGNUS, opponentWP10, null);
+    expect(result.playerRoll.total).toBe(10);
+    expect(result.playerRoll.modifiers).toBe(0); // no bonus
     expect(result.advantage).toBe('player');
   });
 });
