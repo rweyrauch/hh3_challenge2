@@ -110,6 +110,14 @@ export const DEATH_GUARD_GAMBITS: Gambit[] = [
 
 export const THOUSAND_SONS_GAMBITS: Gambit[] = [
   {
+    id: 'battle-of-the-wills',
+    name: 'Battle of the Wills',
+    description: 'Gain a positive modifier to the Focus Roll equal to this model\'s Base Willpower Characteristic minus the Base Willpower Characteristic of the opposing model. If the result is 0 or negative, no modifier is gained.',
+    timings: ['focus'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
+  {
     id: 'prophetic-duellist',
     name: 'Prophetic Duellist',
     description: 'Immediately after making the Focus Roll, the controlling player may choose to replace the result (after all modifiers) with this model\'s Willpower Characteristic.',

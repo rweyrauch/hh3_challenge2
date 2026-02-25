@@ -184,6 +184,7 @@ export function resolveFocusStep(
     currentWounds:   state.player.currentWounds,
     baseWounds:      state.player.baseWounds,
     ownWP:           playerChar.stats.WP,
+    enemyWP:         aiChar.stats.WP,
     enemyBulkyValue: getBulkyValue(aiChar),
     characterId:     playerChar.id,
   };
@@ -192,6 +193,7 @@ export function resolveFocusStep(
     currentWounds:   state.ai.currentWounds,
     baseWounds:      state.ai.baseWounds,
     ownWP:           aiChar.stats.WP,
+    enemyWP:         playerChar.stats.WP,
     enemyBulkyValue: getBulkyValue(playerChar),
     characterId:     aiChar.id,
   };

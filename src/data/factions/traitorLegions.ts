@@ -250,9 +250,7 @@ const MAGNUS_THE_RED: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [BLADE_OF_AHN_NUNURTA],
-  // Battle of the Wills is a passive always-on Focus bonus (not a selectable gambit).
-  // It is handled in focusStep.ts by checking the character's specialRules.
-  factionGambitIds: ['prophetic-duellist'],
+  factionGambitIds: ['battle-of-the-wills', 'prophetic-duellist'],
   specialRules: [
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 5 },
