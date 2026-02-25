@@ -258,5 +258,74 @@ export const SATURNINE_CONCUSSION_HAMMER: Weapon = {
       specialRules: [{ name: 'CriticalHit', threshold: 6}],
     },
   ],
+};
 
+// ── Force Weapons ─────────────────────────────────────────────────────────────
+// Psychic melee weapons carried by Librarians (and some Praetors).
+// All four variants share the Force(D) special rule — on a successful WP check
+// (2d6 ≤ WP) the Damage Characteristic is doubled; rolling doubles triggers
+// Perils of the Warp (D3 unsaveable wounds to the user) regardless of success.
+
+/** Force Sword: I, A, +1S, AP3, D1, Force(D) */
+export const FORCE_SWORD: Weapon = {
+  name: 'Force Sword',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Force Sword',
+      initiativeModifier: { kind: 'none' },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 1 },
+      ap: 3, damage: 1,
+      specialRules: [{ name: 'Force', characteristic: 'D' }],
+    },
+  ],
+};
+
+/** Force Axe: -1IM, A, +2S, AP2, D1, Force(D) */
+export const FORCE_AXE: Weapon = {
+  name: 'Force Axe',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Force Axe',
+      initiativeModifier: { kind: 'add', value: -1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 2 },
+      ap: 2, damage: 1,
+      specialRules: [{ name: 'Force', characteristic: 'D' }],
+    },
+  ],
+};
+
+/** Force Maul: -1IM, A, +3S, AP3, D1, Force(D) */
+export const FORCE_MAUL: Weapon = {
+  name: 'Force Maul',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Force Maul',
+      initiativeModifier: { kind: 'add', value: -1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 3 },
+      ap: 3, damage: 1,
+      specialRules: [{ name: 'Force', characteristic: 'D' }],
+    },
+  ],
+};
+
+/** Force Staff: +1IM, A, +2S, AP4, D1, Force(D) */
+export const FORCE_STAFF: Weapon = {
+  name: 'Force Staff',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Force Staff',
+      initiativeModifier: { kind: 'add', value: 1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 2 },
+      ap: 4, damage: 1,
+      specialRules: [{ name: 'Force', characteristic: 'D' }],
+    },
+  ],
 };
