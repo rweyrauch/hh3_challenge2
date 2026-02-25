@@ -20,11 +20,13 @@ export interface SelectionResult {
   aiCharId: string;
   playerWeaponIndex: number;
   playerProfileIndex: number;
+  /** Active filter at the time this result was captured. */
+  filter: CharacterFilter;
 }
 
 // ── Filter types ──────────────────────────────────────────────────────────────
 
-type CharacterFilter = 'all' | 'primarchs' | 'legion-astartes';
+export type CharacterFilter = 'all' | 'primarchs' | 'legion-astartes';
 
 /** All factions that fall under the "Legion Astartes" umbrella. */
 const LEGION_ASTARTES_FACTIONS = new Set([
@@ -61,10 +63,11 @@ export function mountSelectionScreen(
   container: HTMLElement,
   onBegin: (result: SelectionResult) => void,
   onSimulate: (result: SelectionResult) => void,
-  onAbout: () => void,
+  onAbout: (snapshot: SelectionResult) => void,
+  initialState?: SelectionResult,
 ): void {
   container.innerHTML = buildHTML();
-  attachListeners(container, onBegin, onSimulate, onAbout);
+  attachListeners(container, onBegin, onSimulate, onAbout, initialState);
 }
 
 function buildHTML(): string {
@@ -156,7 +159,8 @@ function attachListeners(
   container: HTMLElement,
   onBegin: (result: SelectionResult) => void,
   onSimulate: (result: SelectionResult) => void,
-  onAbout: () => void,
+  onAbout: (snapshot: SelectionResult) => void,
+  initialState?: SelectionResult,
 ): void {
   const playerSelect  = container.querySelector<HTMLSelectElement>('#player-char-select')!;
   const weaponSection = container.querySelector<HTMLElement>('#player-weapon-section')!;
@@ -207,8 +211,36 @@ function attachListeners(
     updateBeginBtn();
   };
 
-  // Populate the selects on first mount
-  refreshSelects('all');
+  // Populate the selects — restore previous state if available, otherwise use defaults
+  if (initialState) {
+    // Re-check the saved filter radio (radio buttons in the same group auto-deselect each other)
+    const savedRadio = container.querySelector<HTMLInputElement>(
+      `input[name="char-filter"][value="${initialState.filter}"]`,
+    );
+    if (savedRadio) savedRadio.checked = true;
+
+    refreshSelects(initialState.filter);
+
+    // Restore player character and weapon
+    playerSelect.value = initialState.playerCharId;
+    const savedPlayerChar = ALL_CHARACTERS.find(c => c.id === initialState.playerCharId);
+    if (savedPlayerChar) {
+      populateWeaponSelect(savedPlayerChar, weaponSelect, weaponSection);
+      weaponSelect.value = `${initialState.playerWeaponIndex}-${initialState.playerProfileIndex}`;
+      playerStat.innerHTML = renderStatBlock(savedPlayerChar);
+    }
+
+    // Restore AI character
+    aiSelect.value = initialState.aiCharId;
+    const savedAiChar = ALL_CHARACTERS.find(c => c.id === initialState.aiCharId);
+    if (savedAiChar) {
+      aiStat.innerHTML = renderStatBlock(savedAiChar);
+    }
+
+    updateBeginBtn();
+  } else {
+    refreshSelects('all');
+  }
 
   // Filter radio buttons
   container.querySelectorAll<HTMLInputElement>('input[name="char-filter"]').forEach(radio => {
@@ -237,11 +269,13 @@ function attachListeners(
 
   const buildResult = (): SelectionResult => {
     const [wIdx, pIdx] = parseWeaponValue(weaponSelect.value);
+    const checkedFilter = container.querySelector<HTMLInputElement>('input[name="char-filter"]:checked');
     return {
       playerCharId: playerSelect.value,
       aiCharId: aiSelect.value,
       playerWeaponIndex: wIdx,
       playerProfileIndex: pIdx,
+      filter: (checkedFilter?.value ?? 'all') as CharacterFilter,
     };
   };
 
@@ -253,7 +287,7 @@ function attachListeners(
     if (playerSelect.value && aiSelect.value) onSimulate(buildResult());
   });
 
-  container.querySelector('#about-btn')!.addEventListener('click', onAbout);
+  container.querySelector('#about-btn')!.addEventListener('click', () => onAbout(buildResult()));
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────

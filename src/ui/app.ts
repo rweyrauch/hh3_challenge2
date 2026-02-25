@@ -13,7 +13,7 @@ import type { GambitId } from '../models/gambit.js';
 import { getCharacterById } from '../data/factions/index.js';
 import { ChallengeEngine, buildInitialState } from '../engine/challengeEngine.js';
 import { RealDiceRoller } from '../engine/dice.js';
-import { mountSelectionScreen } from './screens/selectionScreen.js';
+import { mountSelectionScreen, type SelectionResult } from './screens/selectionScreen.js';
 import { mountCombatScreen, updateCombatScreen } from './screens/combatScreen.js';
 import { mountResultScreen } from './screens/resultScreen.js';
 import { mountSimulationScreen } from './screens/simulationScreen.js';
@@ -30,6 +30,8 @@ interface AppState {
   playerWeaponIndex:   number;
   playerProfileIndex:  number;
   recommendedOpeningGambit: GambitId | null;
+  /** Persisted selection-screen state, restored when returning to selection. */
+  selectionSnapshot: SelectionResult | null;
 }
 
 /** Boot the application. */
@@ -43,6 +45,7 @@ export function startApp(container: HTMLElement): void {
     playerWeaponIndex:        0,
     playerProfileIndex:       0,
     recommendedOpeningGambit: null,
+    selectionSnapshot:        null,
   };
 
   function goToSelection(): void {
@@ -52,23 +55,30 @@ export function startApp(container: HTMLElement): void {
     app.engine                   = null;
     app.combatState              = null;
     app.recommendedOpeningGambit = null;
+    // app.selectionSnapshot is intentionally preserved so the user's picks are restored.
     mountSelectionScreen(
       container,
-      ({ playerCharId, aiCharId, playerWeaponIndex, playerProfileIndex }) => {
-        app.playerChar          = getCharacterById(playerCharId) ?? null;
-        app.aiChar              = getCharacterById(aiCharId) ?? null;
-        app.playerWeaponIndex   = playerWeaponIndex;
-        app.playerProfileIndex  = playerProfileIndex;
+      (result) => {
+        app.selectionSnapshot   = result;
+        app.playerChar          = getCharacterById(result.playerCharId) ?? null;
+        app.aiChar              = getCharacterById(result.aiCharId) ?? null;
+        app.playerWeaponIndex   = result.playerWeaponIndex;
+        app.playerProfileIndex  = result.playerProfileIndex;
         if (app.playerChar && app.aiChar) goToCombat();
       },
-      ({ playerCharId, aiCharId, playerWeaponIndex, playerProfileIndex }) => {
-        app.playerChar          = getCharacterById(playerCharId) ?? null;
-        app.aiChar              = getCharacterById(aiCharId) ?? null;
-        app.playerWeaponIndex   = playerWeaponIndex;
-        app.playerProfileIndex  = playerProfileIndex;
+      (result) => {
+        app.selectionSnapshot   = result;
+        app.playerChar          = getCharacterById(result.playerCharId) ?? null;
+        app.aiChar              = getCharacterById(result.aiCharId) ?? null;
+        app.playerWeaponIndex   = result.playerWeaponIndex;
+        app.playerProfileIndex  = result.playerProfileIndex;
         if (app.playerChar && app.aiChar) goToSimulation();
       },
-      () => goToAbout(),
+      (snapshot) => {
+        app.selectionSnapshot = snapshot;
+        goToAbout();
+      },
+      app.selectionSnapshot ?? undefined,
     );
   }
 
