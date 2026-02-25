@@ -43,7 +43,7 @@ const PRAETOR: Character = {
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },
-  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -62,7 +62,7 @@ const CATAPHRACTII_PRAETOR: Character = {
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },
-  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -80,7 +80,7 @@ const TARTAROS_PRAETOR: Character = {
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4, // Tartaros Praetor really do have a 4+ Inv.
   },
-  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -142,6 +142,27 @@ const CHAPLAIN: Character = {
   specialRules: [],
 };
 
+// ── Cataphractii Librarian ────────────────────────────────────────────────────
+// Legion Psyker in Cataphractii Terminator armour.  WP9 makes the Force weapon
+// WP check very reliable.  Heavy sub-type imposes −1 to Focus Rolls.
+// Implacable Advance and Slow and Purposeful are movement/shooting rules with
+// no effect in the Challenge Sub-Phase.  Psyker trait has no engine effect.
+const CATAPHRACTII_LIBRARIAN: Character = {
+  id: 'cataphractii-librarian',
+  name: 'Cataphractii Librarian',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
 // ── Centurion ─────────────────────────────────────────────────────────────────
 // Mid-ranking officer.  Lower WS and Wounds than a Praetor but still a
 // competent challenger.
@@ -156,7 +177,7 @@ const CENTURION: Character = {
     I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
     Sv: 2, Inv: 5,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -174,7 +195,7 @@ const CATAPHRACTII_CENTURION: Character = {
     I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
     Sv: 2, Inv: 4,
   },
-  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -192,9 +213,27 @@ const TARTAROS_CENTURION: Character = {
     I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
     Sv: 2, Inv: 5,
   },
-  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
+};
+
+// ── Librarian ──────────────────────────────────────────────────────────
+const LIBRARIAN: Character = {
+  id: 'librarian',
+  name: 'Librarian',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_STAFF, FORCE_MAUL],
+  factionGambitIds: [],
+  specialRules: [],
+
 };
 
 // ── Chosen Champion ──────────────────────────────────────────────────────────
@@ -211,7 +250,7 @@ const CHOSEN_CHAMPION: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 2, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -229,7 +268,7 @@ const CHOSEN_CHAMPION_JUMP_PACK: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 2, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
   factionGambitIds: [],
   specialRules: [
     { name: 'Bulky', value: 2 },
@@ -250,7 +289,7 @@ const VETERAN_CHAMPION: Character = {
     I: 4, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 3, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -269,7 +308,7 @@ const TARTAROS_CHOSEN_CHAMPION: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 2, Inv: 5,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST, CHAINFIST, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST, CHAINFIST],
   factionGambitIds: [],
   specialRules: [
     { name: 'Bulky', value: 2 },
@@ -290,7 +329,7 @@ const CATAPHRACTII_CHOSEN_CHAMPION: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 2, Inv: 4,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST, CHAINFIST, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST, CHAINFIST],
   factionGambitIds: [],
   specialRules: [
     { name: 'Bulky', value: 2 },
@@ -311,7 +350,7 @@ const SCIMITAR_CHOSEN_CHAMPION: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 2, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
   factionGambitIds: [],
   specialRules: [
     { name: 'Bulky', value: 3 },
@@ -332,7 +371,7 @@ const OUTRIDER_CHOSEN_CHAMPION: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 6,
     Sv: 2, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
   factionGambitIds: [],
   specialRules: [
     { name: 'Bulky', value: 2 },
@@ -353,7 +392,7 @@ const SATURNINE_CENTURION: Character = {
     I: 4, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
     Sv: 2, Inv: 4,
   },
-  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -430,6 +469,8 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   CATAPHRACTII_CENTURION,
   TARTAROS_CENTURION,
   SATURNINE_CENTURION,
+  LIBRARIAN,
+  CATAPHRACTII_LIBRARIAN,
   LEGION_CHAMPION_JUMP_PACK,
   CATAPHRACTII_LEGION_CHAMPION,
   CHOSEN_CHAMPION,
