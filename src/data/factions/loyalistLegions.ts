@@ -240,7 +240,7 @@ const ROGAL_DORN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [STORMS_TEETH],
-  factionGambitIds: ['a-wall-unyielding'],
+  factionGambitIds: ['a-wall-unyielding', 'bulwark-of-the-imperium'],
   specialRules: [
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },

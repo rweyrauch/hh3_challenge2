@@ -36,6 +36,7 @@ export type GambitId =
   | 'a-wall-unyielding'       // all IF: no CI contribution to Focus, gain EternalWarrior(1)
   | 'deaths-champion'         // Sigismund: attacks gain CriticalHit(5+)
   | 'executioners-tax'        // Fafnir Rann: roll 2d6 discard highest, attacks gain CriticalHit(6+)
+  | 'bulwark-of-the-imperium' // Rogal Dorn: wound rolls of 1-4 against this model always fail
   // ── Blood Angels (IX) ────────────────────────────────────────────────────
   | 'thrall-of-the-red-thirst'// all BA: ignore wound penalties, +1 Damage, no OS bonus
   | 'angelic-descent'         // Sanguinius: +Focus bonus equal to enemy Bulky(X)
