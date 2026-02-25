@@ -511,7 +511,7 @@ const VULKAN: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [DAWNBRINGER],
-  factionGambitIds: ['duty-is-sacrifice'],
+  factionGambitIds: ['duty-is-sacrifice', 'the-undying-fire'],
   specialRules: [
     { name: 'EternalWarrior', value: 3 },
     { name: 'Bulky', value: 5 },

@@ -261,8 +261,38 @@ export class ChallengeEngine {
       next = addLog(next, msg, msg.includes('CASUALTY') ? 'danger' : 'info');
     }
 
+    // The Undying Fire: if model survived the Strike Step (not a casualty), it
+    // regains D3 Wounds (max Base Wounds) before entering the Glory Step.
+    // Regained wounds do not alter the opponent's woundsInflictedThisChallenge.
+    next = this.applyUndyingFireHealing(next);
+
     next = { ...next, phase: 'glory' };
     return { state: next, waitingForInput: false };
+  }
+
+  /** Apply The Undying Fire D3 wound healing for any combatant with this gambit. */
+  private applyUndyingFireHealing(state: CombatState): CombatState {
+    let next = state;
+    for (const side of ['player', 'ai'] as const) {
+      const combatant = next[side];
+      if (combatant.selectedGambit !== 'the-undying-fire') continue;
+      if (combatant.isCasualty) continue;         // reduced to 0 Wounds → no healing
+      if (combatant.currentWounds >= combatant.baseWounds) continue; // already at full
+
+      const healRoll = this.dice.rollD3();
+      const before   = combatant.currentWounds;
+      const after    = Math.min(before + healRoll, combatant.baseWounds);
+      const actual   = after - before;
+      next = { ...next, [side]: { ...combatant, currentWounds: after } };
+      const label = side === 'player' ? 'Player' : 'AI';
+      next = addLog(
+        next,
+        `The Undying Fire (${label}): regains ${actual} wound(s)` +
+          ` (D3=${healRoll}; W${before}→${after}, max W${combatant.baseWounds}).`,
+        'success',
+      );
+    }
+    return next;
   }
 
   // ── strike-ai ────────────────────────────────────────────────────────────

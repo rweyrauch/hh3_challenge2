@@ -45,6 +45,13 @@ export interface FocusDiceModification {
    * purpose of this Focus Roll (I Am Alpharius).
    */
   setOpponentCIToOne: boolean;
+  /**
+   * If true, all positive external modifiers to the Focus Roll are
+   * suppressed (Guard Up bonus, flat bonuses from other sources).
+   * The model still rolls 1d6 and adds its Combat Initiative.
+   * Used by The Undying Fire.
+   */
+  suppressPositiveModifiers: boolean;
 }
 
 /**
@@ -85,6 +92,7 @@ export function getFocusDiceModification(
     suppressWoundPenalties: false,
     replaceWithWP: false,
     setOpponentCIToOne: false,
+    suppressPositiveModifiers: false,
   };
 
   const round           = ctx.round          ?? 1;
@@ -158,6 +166,12 @@ export function getFocusDiceModification(
       // Player chooses +1/+2/+3; default to +2. Wounds applied in strike step.
       // A full UI for this choice would need additional input; we use +2 here.
       return { ...base, flatBonus: 2 };
+
+    case 'the-undying-fire':
+      // No positive modifiers may be applied to the Focus Roll.
+      // (The model still rolls 1d6 + CI and applies wound penalties.)
+      // Wound healing is resolved in the challenge engine after the Strike Step.
+      return { ...base, suppressPositiveModifiers: true };
 
     // ── Raven Guard ─────────────────────────────────────────────────────────
     case 'the-shadowed-lord':

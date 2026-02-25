@@ -183,6 +183,14 @@ export const SALAMANDERS_GAMBITS: Gambit[] = [
     firstMoverOnly: false,
     oncePerChallenge: false,
   },
+  {
+    id: 'the-undying-fire',
+    name: 'The Undying Fire',
+    description: 'No positive modifiers may be applied to this model\'s Focus Roll. If this model is not reduced to 0 Wounds in the Strike Step, it regains D3 Wounds (max Base Wounds) before the Glory Step or next round begins. Regained Wounds do not affect Combat Resolution.',
+    timings: ['focus', 'glory'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
 ];
 
 // ── Raven Guard (XIX) ────────────────────────────────────────────────────────

@@ -47,6 +47,7 @@ export type GambitId =
   | 'calculating-swordsman'   // Guilliman: +Focus equal to battle round number (max +4)
   // ── Salamanders (XVIII) ──────────────────────────────────────────────────
   | 'duty-is-sacrifice'       // all SA: choose +1/+2/+3 to Focus, suffer same wounds
+  | 'the-undying-fire'        // Vulkan: suppress positive Focus mods; survive Strike → regain D3 Wounds
   // ── Raven Guard (XIX) ────────────────────────────────────────────────────
   | 'decapitation-strike'     // all RG: once/challenge; no Focus Roll, one attack first
   | 'the-shadowed-lord'       // Corvus Corax: ignore wound penalties; may choose early Glory Step

@@ -108,10 +108,13 @@ function rollFocus(
   const os = 0;
 
   const diceTotal = keptDice.reduce((a, b) => a + b, 0);
-  let total = buildFocusTotal(keptDice, ci, isHeavy, isLight, woundPenalty, de, os, guardUpBonus);
+  // The Undying Fire suppresses positive external modifiers (Guard Up bonus).
+  const effectiveGuardUpBonus = mod.suppressPositiveModifiers ? 0 : guardUpBonus;
+  let total = buildFocusTotal(keptDice, ci, isHeavy, isLight, woundPenalty, de, os, effectiveGuardUpBonus);
 
-  // Apply flat bonus from gambit (e.g., Paragon of Excellence, Howl of the Death Wolf)
-  total += mod.flatBonus;
+  // Apply flat bonus from gambit (e.g., Paragon of Excellence, Howl of the Death Wolf).
+  // For The Undying Fire this is 0, so no change needed.
+  total += mod.suppressPositiveModifiers ? Math.min(mod.flatBonus, 0) : mod.flatBonus;
 
   // Prophetic Duellist: may replace the entire total with Willpower if WP is higher
   if (mod.replaceWithWP) {
