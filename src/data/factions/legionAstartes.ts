@@ -20,9 +20,13 @@ import {
   POWER_LANCE,
   POWER_MAUL,
   CHAINFIST,
-  SATURNINE_WAR_AXE, 
-  SATURNINE_DISRUPTION_FIST, 
-  SATURNINE_CONCUSSION_HAMMER
+  SATURNINE_WAR_AXE,
+  SATURNINE_DISRUPTION_FIST,
+  SATURNINE_CONCUSSION_HAMMER,
+  FORCE_SWORD,
+  FORCE_AXE,
+  FORCE_MAUL,
+  FORCE_STAFF,
 } from '../weapons/legionAstartes.js';
 
 // ── Praetor ─────────────────────────────────────────────────────────────────
@@ -138,6 +142,65 @@ const CHAPLAIN: Character = {
   specialRules: [],
 };
 
+// ── Cataphractii Librarian ────────────────────────────────────────────────────
+// Legion Psyker in Cataphractii Terminator armour.  WP9 makes the Force weapon
+// WP check very reliable.  Heavy sub-type imposes −1 to Focus Rolls.
+// Implacable Advance and Slow and Purposeful are movement/shooting rules with
+// no effect in the Challenge Sub-Phase.  Psyker trait has no engine effect.
+const CATAPHRACTII_LIBRARIAN: Character = {
+  id: 'cataphractii-librarian',
+  name: 'Cataphractii Librarian',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Tartaros Librarian ────────────────────────────────────────────────────────
+// As Cataphractii Librarian but in Tartaros plate: faster (M7), lighter save
+// (Inv5+ vs 4+), and no Heavy sub-type penalty on Focus Rolls.
+const TARTAROS_LIBRARIAN: Character = {
+  id: 'tartaros-librarian',
+  name: 'Tartaros Librarian',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Librarian (Jump Pack) ─────────────────────────────────────────────────────
+// Standard Librarian mounted on a jump pack; same stats as the base Librarian
+// but with M12 and the Antigrav/Deep Strike movement rules.
+const LIBRARIAN_JUMP_PACK: Character = {
+  id: 'librarian-jump-pack',
+  name: 'Librarian (Jump Pack)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
 // ── Centurion ─────────────────────────────────────────────────────────────────
 // Mid-ranking officer.  Lower WS and Wounds than a Praetor but still a
 // competent challenger.
@@ -191,6 +254,24 @@ const TARTAROS_CENTURION: Character = {
   weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
+};
+
+// ── Librarian ──────────────────────────────────────────────────────────
+const LIBRARIAN: Character = {
+  id: 'librarian',
+  name: 'Librarian',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_STAFF, FORCE_MAUL],
+  factionGambitIds: [],
+  specialRules: [],
+
 };
 
 // ── Chosen Champion ──────────────────────────────────────────────────────────
@@ -426,6 +507,10 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   CATAPHRACTII_CENTURION,
   TARTAROS_CENTURION,
   SATURNINE_CENTURION,
+  LIBRARIAN,
+  CATAPHRACTII_LIBRARIAN,
+  TARTAROS_LIBRARIAN,
+  LIBRARIAN_JUMP_PACK,
   LEGION_CHAMPION_JUMP_PACK,
   CATAPHRACTII_LEGION_CHAMPION,
   CHOSEN_CHAMPION,

@@ -7,7 +7,6 @@
  *   Reaping Blow(X) — established pattern; no effect in Challenge Sub-Phase
  *   Impact(X)       — charge-only bonus; no effect in Challenge Sub-Phase
  *   Phage(S)        — established pattern (daemon weapons); omit from profiles
- *   Force(D)        — Force staff psychic instakill; outside Challenge scope
  */
 import type { Weapon } from '../../models/weapon.js';
 

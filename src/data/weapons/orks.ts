@@ -79,7 +79,8 @@ export const SLUGGA: Weapon = {
 
 /**
  * Force staff (Weirdboy). IM+1/AM—/SM+2/AP4/D1.
- * Force(D) — psychic instakill — is NOT simulated; too complex for Challenge scope.
+ * Force(D) — WP check (2d6 ≤ WP): success doubles D characteristic; doubles trigger
+ * Perils of the Warp (D3 unsaveable wounds to the user), resolved at Strike Step start.
  */
 export const FORCE_STAFF: Weapon = {
   name: 'Force Staff',
@@ -91,7 +92,7 @@ export const FORCE_STAFF: Weapon = {
       attacksModifier:    { kind: 'none' },
       strengthModifier:   { kind: 'add', value: 2 },
       ap: 4, damage: 1,
-      specialRules: [],  // Force(D) not simulated
+      specialRules: [{ name: 'Force', characteristic: 'D' }],
     },
   ],
 };
