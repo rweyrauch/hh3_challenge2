@@ -10,7 +10,9 @@
 import type { Character } from '../models/character.js';
 import type { CombatState } from '../models/combatState.js';
 import type { GambitId } from '../models/gambit.js';
+import type { PsychicDiscipline } from '../models/character.js';
 import { getCharacterById } from '../data/factions/index.js';
+import { applyDiscipline } from '../data/psychicDisciplines.js';
 import { ChallengeEngine, buildInitialState } from '../engine/challengeEngine.js';
 import { RealDiceRoller } from '../engine/dice.js';
 import { mountSelectionScreen, type SelectionResult } from './screens/selectionScreen.js';
@@ -60,7 +62,11 @@ export function startApp(container: HTMLElement): void {
       container,
       (result) => {
         app.selectionSnapshot   = result;
-        app.playerChar          = getCharacterById(result.playerCharId) ?? null;
+        let playerChar = getCharacterById(result.playerCharId) ?? null;
+        if (result.playerDiscipline && playerChar) {
+          playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
+        }
+        app.playerChar          = playerChar;
         app.aiChar              = getCharacterById(result.aiCharId) ?? null;
         app.playerWeaponIndex   = result.playerWeaponIndex;
         app.playerProfileIndex  = result.playerProfileIndex;
@@ -68,7 +74,11 @@ export function startApp(container: HTMLElement): void {
       },
       (result) => {
         app.selectionSnapshot   = result;
-        app.playerChar          = getCharacterById(result.playerCharId) ?? null;
+        let playerChar = getCharacterById(result.playerCharId) ?? null;
+        if (result.playerDiscipline && playerChar) {
+          playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
+        }
+        app.playerChar          = playerChar;
         app.aiChar              = getCharacterById(result.aiCharId) ?? null;
         app.playerWeaponIndex   = result.playerWeaponIndex;
         app.playerProfileIndex  = result.playerProfileIndex;

@@ -6,13 +6,15 @@
  * Character filter bar (above the row) lets the user narrow both dropdowns to:
  *   All | Primarchs only | Legion Astartes only
  */
-import type { Character } from '../../models/character.js';
+import type { Character, PsychicDiscipline } from '../../models/character.js';
 import type { CharModifier } from '../../models/weapon.js';
+import type { Weapon } from '../../models/weapon.js';
 import {
   ALL_CHARACTERS,
   getFactionLabel,
   getCharactersByFaction,
 } from '../../data/factions/index.js';
+import { DISCIPLINE_CONFIGS } from '../../data/psychicDisciplines.js';
 import { renderStatBlock } from '../components/statBlock.js';
 
 export interface SelectionResult {
@@ -22,6 +24,8 @@ export interface SelectionResult {
   playerProfileIndex: number;
   /** Active filter at the time this result was captured. */
   filter: CharacterFilter;
+  /** Selected Psychic Discipline (only for Librarian characters). */
+  playerDiscipline?: string;
 }
 
 // ── Filter types ──────────────────────────────────────────────────────────────
@@ -105,6 +109,17 @@ function buildHTML(): string {
               <select id="player-char-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                 <option value="">— Select a character —</option>
               </select>
+              <div id="player-discipline-section" hidden>
+                <label class="form-label small text-muted">Psychic Discipline:</label>
+                <select id="player-discipline-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
+                  <option value="">— No Discipline —</option>
+                  <option value="biomancy">Biomancy (Biomantic Slam)</option>
+                  <option value="pyromancy">Pyromancy (Conflagration)</option>
+                  <option value="telekinesis">Telekinesis (no melee weapon)</option>
+                  <option value="divination">Divination (DuellistsEdge +2, Every Strike Foreseen)</option>
+                  <option value="thaumaturgy">Thaumaturgy (Hatred: Psykers)</option>
+                </select>
+              </div>
               <div id="player-weapon-section" hidden>
                 <label class="form-label small text-muted">Starting weapon:</label>
                 <select id="player-weapon-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
@@ -162,14 +177,16 @@ function attachListeners(
   onAbout: (snapshot: SelectionResult) => void,
   initialState?: SelectionResult,
 ): void {
-  const playerSelect  = container.querySelector<HTMLSelectElement>('#player-char-select')!;
-  const weaponSection = container.querySelector<HTMLElement>('#player-weapon-section')!;
-  const weaponSelect  = container.querySelector<HTMLSelectElement>('#player-weapon-select')!;
-  const aiSelect      = container.querySelector<HTMLSelectElement>('#ai-char-select')!;
-  const beginBtn      = container.querySelector<HTMLButtonElement>('#begin-btn')!;
-  const simulateBtn   = container.querySelector<HTMLButtonElement>('#simulate-btn')!;
-  const playerStat    = container.querySelector<HTMLElement>('#player-stat-block')!;
-  const aiStat        = container.querySelector<HTMLElement>('#ai-stat-block')!;
+  const playerSelect       = container.querySelector<HTMLSelectElement>('#player-char-select')!;
+  const disciplineSection  = container.querySelector<HTMLElement>('#player-discipline-section')!;
+  const disciplineSelect   = container.querySelector<HTMLSelectElement>('#player-discipline-select')!;
+  const weaponSection      = container.querySelector<HTMLElement>('#player-weapon-section')!;
+  const weaponSelect       = container.querySelector<HTMLSelectElement>('#player-weapon-select')!;
+  const aiSelect           = container.querySelector<HTMLSelectElement>('#ai-char-select')!;
+  const beginBtn           = container.querySelector<HTMLButtonElement>('#begin-btn')!;
+  const simulateBtn        = container.querySelector<HTMLButtonElement>('#simulate-btn')!;
+  const playerStat         = container.querySelector<HTMLElement>('#player-stat-block')!;
+  const aiStat             = container.querySelector<HTMLElement>('#ai-stat-block')!;
 
   const updateBeginBtn = () => {
     const ready = Boolean(playerSelect.value && aiSelect.value);
@@ -221,11 +238,22 @@ function attachListeners(
 
     refreshSelects(initialState.filter);
 
-    // Restore player character and weapon
+    // Restore player character, discipline, and weapon
     playerSelect.value = initialState.playerCharId;
     const savedPlayerChar = ALL_CHARACTERS.find(c => c.id === initialState.playerCharId);
     if (savedPlayerChar) {
-      populateWeaponSelect(savedPlayerChar, weaponSelect, weaponSection);
+      // Show discipline section if the character supports it
+      if (savedPlayerChar.availablePsychicDisciplines) {
+        disciplineSection.hidden = false;
+        if (initialState.playerDiscipline) {
+          disciplineSelect.value = initialState.playerDiscipline;
+        }
+      }
+      // Populate weapons — include the discipline weapon if one was selected
+      const savedDisciplineWeapon = initialState.playerDiscipline
+        ? DISCIPLINE_CONFIGS[initialState.playerDiscipline as PsychicDiscipline]?.meleeWeapon
+        : undefined;
+      populateWeaponSelect(savedPlayerChar, weaponSelect, weaponSection, savedDisciplineWeapon);
       weaponSelect.value = `${initialState.playerWeaponIndex}-${initialState.playerProfileIndex}`;
       playerStat.innerHTML = renderStatBlock(savedPlayerChar);
     }
@@ -252,13 +280,33 @@ function attachListeners(
   playerSelect.addEventListener('change', () => {
     const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
     if (char) {
+      // Show/hide discipline section
+      if (char.availablePsychicDisciplines) {
+        disciplineSection.hidden = false;
+        disciplineSelect.value = ''; // reset discipline on character change
+      } else {
+        disciplineSection.hidden = true;
+        disciplineSelect.value = '';
+      }
+      // Populate base weapons only (no discipline selected yet after a character change)
       populateWeaponSelect(char, weaponSelect, weaponSection);
       playerStat.innerHTML = renderStatBlock(char);
     } else {
+      disciplineSection.hidden = true;
       weaponSection.hidden = true;
       playerStat.innerHTML = '';
     }
     updateBeginBtn();
+  });
+
+  // Discipline dropdown: repopulate weapon list when a discipline is selected
+  disciplineSelect.addEventListener('change', () => {
+    const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
+    if (char) {
+      const disc = disciplineSelect.value as PsychicDiscipline | '';
+      const disciplineWeapon = disc ? DISCIPLINE_CONFIGS[disc]?.meleeWeapon : undefined;
+      populateWeaponSelect(char, weaponSelect, weaponSection, disciplineWeapon);
+    }
   });
 
   aiSelect.addEventListener('change', () => {
@@ -276,6 +324,7 @@ function attachListeners(
       playerWeaponIndex: wIdx,
       playerProfileIndex: pIdx,
       filter: (checkedFilter?.value ?? 'all') as CharacterFilter,
+      playerDiscipline: disciplineSelect.value || undefined,
     };
   };
 
@@ -295,11 +344,14 @@ function attachListeners(
 /**
  * Populate the weapon dropdown from a character's melee weapons.
  * Shows the section when the character has options; auto-selects the first.
+ *
+ * @param extraWeapon - optional discipline weapon appended at index char.weapons.length
  */
 function populateWeaponSelect(
   char: Character,
   selectEl: HTMLSelectElement,
   sectionEl: HTMLElement,
+  extraWeapon?: Weapon,
 ): void {
   const options: string[] = [];
 
@@ -313,6 +365,18 @@ function populateWeaponSelect(
       );
     });
   });
+
+  // Extra weapon (e.g. discipline weapon) is appended at index char.weapons.length
+  if (extraWeapon && extraWeapon.type === 'melee') {
+    const extraWIdx = char.weapons.length;
+    extraWeapon.profiles.forEach((profile, pIdx) => {
+      const sStr = resolveStrength(char.stats.S, profile.strengthModifier);
+      const apStr = profile.ap !== null ? `AP${profile.ap}` : 'AP-';
+      options.push(
+        `<option value="${extraWIdx}-${pIdx}">${profile.profileName} — S${sStr} ${apStr} D${profile.damage}</option>`,
+      );
+    });
+  }
 
   selectEl.innerHTML = options.join('');
   selectEl.disabled  = options.length <= 1;

@@ -1,6 +1,18 @@
 import type { Weapon, SpecialRule } from './weapon.js';
 import type { GambitId } from './gambit.js';
 
+/**
+ * Available Psychic Disciplines for Legion Astartes Librarian characters.
+ * Each discipline grants a melee psychic weapon and/or character-level
+ * special rules / gambits that affect the Challenge Phase.
+ */
+export type PsychicDiscipline =
+  | 'biomancy'
+  | 'pyromancy'
+  | 'telekinesis'
+  | 'divination'
+  | 'thaumaturgy';
+
 /** Sub-types that a model may have in addition to its primary Type. */
 export type ModelSubType =
   | 'Command'
@@ -58,4 +70,10 @@ export interface Character {
    * Used by the Eversor ('biological-overload') and Adamus ('mirror-form') assassins.
    */
   mandatoryGambitId?: GambitId;
+  /**
+   * If set, the character may choose a Psychic Discipline on the selection
+   * screen, which adds the discipline's weapon, special rules, and gambits.
+   * Only applies to Legion Astartes Librarian characters.
+   */
+  availablePsychicDisciplines?: PsychicDiscipline[];
 }

@@ -146,7 +146,7 @@ const CHAPLAIN: Character = {
 // Legion Psyker in Cataphractii Terminator armour.  WP9 makes the Force weapon
 // WP check very reliable.  Heavy sub-type imposes −1 to Focus Rolls.
 // Implacable Advance and Slow and Purposeful are movement/shooting rules with
-// no effect in the Challenge Sub-Phase.  Psyker trait has no engine effect.
+// no effect in the Challenge Sub-Phase.
 const CATAPHRACTII_LIBRARIAN: Character = {
   id: 'cataphractii-librarian',
   name: 'Cataphractii Librarian',
@@ -160,7 +160,8 @@ const CATAPHRACTII_LIBRARIAN: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
   factionGambitIds: [],
-  specialRules: [{ name: 'Bulky', value: 2 }],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psyker' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 
 // ── Tartaros Librarian ────────────────────────────────────────────────────────
@@ -179,7 +180,8 @@ const TARTAROS_LIBRARIAN: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
   factionGambitIds: [],
-  specialRules: [{ name: 'Bulky', value: 2 }],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psyker' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 
 // ── Librarian (Jump Pack) ─────────────────────────────────────────────────────
@@ -198,7 +200,8 @@ const LIBRARIAN_JUMP_PACK: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
   factionGambitIds: [],
-  specialRules: [{ name: 'Bulky', value: 2 }],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psyker' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 
 // ── Centurion ─────────────────────────────────────────────────────────────────
@@ -270,8 +273,8 @@ const LIBRARIAN: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_STAFF, FORCE_MAUL],
   factionGambitIds: [],
-  specialRules: [],
-
+  specialRules: [{ name: 'Psyker' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 
 // ── Chosen Champion ──────────────────────────────────────────────────────────
