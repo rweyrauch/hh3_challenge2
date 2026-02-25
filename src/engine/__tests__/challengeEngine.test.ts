@@ -3,9 +3,11 @@ import { ChallengeEngine, buildInitialState } from '../challengeEngine.js';
 import { FakeDiceRoller } from '../dice.js';
 import { CUSTODES_CHARACTERS } from '../../data/factions/custodes.js';
 import { ORK_CHARACTERS } from '../../data/factions/orks.js';
+import { LOYALIST_LEGION_CHARACTERS } from '../../data/factions/loyalistLegions.js';
 
 const VALDOR  = CUSTODES_CHARACTERS.find(c => c.id === 'constantin-valdor')!;
 const WARBOSS = ORK_CHARACTERS.find(c => c.id === 'warboss-goffs')!;
+const VULKAN  = LOYALIST_LEGION_CHARACTERS.find(c => c.id === 'vulkan')!;
 
 /**
  * Run the engine until it reaches 'ended' or maxRounds, feeding fixed input
@@ -122,6 +124,49 @@ describe('ChallengeEngine', () => {
     expect(state.phase).toBe('ended');
     expect(state.playerCRP).toBe(0);
     expect(state.aiCRP).toBe(0);
+  });
+
+  it('The Undying Fire: D3 wounds regained after surviving the Strike Step', () => {
+    // Player (VULKAN, W7) starts at W6 (pre-injured by 1) to make healing visible.
+    // All attacks miss on both sides.  D3 raw=1 → D3 result=1 → player heals 1 wound → W7.
+    //
+    // Focus: player [1] + CI5 = 6; AI [5,(spare)] + CI4 = 9 → AI wins.
+    // The Undying Fire suppresses positive Focus modifiers (guardUpBonus=0 enforced).
+    // Strike: 20 × 1 covers any AI gambit dice (flurry D3=1) + AI attacks (all 1s miss TN5+)
+    //         + VULKAN attacks (all 1s miss TN3+).
+    // Heal: raw=1 → D3=1 → player.currentWounds = min(6+1, 7) = 7.
+    const dice = new FakeDiceRoller([
+      1, 5, 1,                           // focus: player [1]; AI [5, (spare if seize)]
+      1,1,1,1,1,1,1,1,1,1,               // strike padding: AI attacks/D3 (all 1s → miss)
+      1,1,1,1,1,1,                       // VULKAN: 6 attack dice (all 1s → miss)
+      1,                                 // D3 heal raw=1 → D3=1 → heal 1 wound
+    ]);
+
+    const engine = new ChallengeEngine(VULKAN, WARBOSS, dice);
+    let state = buildInitialState(VULKAN, WARBOSS);
+    // Pre-reduce player to 6 wounds so healing has a measurable effect
+    state = { ...state, player: { ...state.player, currentWounds: 6 } };
+
+    // faceOff: player picks 'the-undying-fire'
+    let r = engine.advance(state, { selectedGambit: 'the-undying-fire' });
+    state = r.state;
+
+    // focus: weapon selection (Dawnbringer)
+    r = engine.advance(state, { selectedWeaponIndex: 0, selectedProfileIndex: 0 });
+    state = r.state;
+
+    // Advance through strike
+    while (state.phase !== 'glory' && state.phase !== 'ended') {
+      r = engine.advance(state);
+      state = r.state;
+    }
+
+    // Healing is applied in the strike→glory transition, before Glory Step CRP resolution
+    expect(state.phase).toBe('glory');
+    expect(state.player.currentWounds).toBe(7);  // W6 + D3(1) = 7, capped at baseW7
+    expect(state.player.baseWounds).toBe(7);      // baseWounds never changes
+    expect(state.ai.woundsInflictedThisChallenge).toBe(0); // AI inflicted 0 (all missed)
+    // CRP for this round = AI wins 0 vs player 0 → draw (no wounds inflicted)
   });
 
   it('Test the Foe: advantage carries to next round', () => {

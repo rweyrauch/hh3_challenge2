@@ -148,6 +148,29 @@ describe('Biological Overload gambit', () => {
   });
 });
 
+describe('The Undying Fire gambit', () => {
+  const state = buildInitialState(VALDOR, WARBOSS);
+
+  it('Focus: suppressPositiveModifiers=true, no extra dice, no flat bonus', () => {
+    const mod = getFocusDiceModification('the-undying-fire');
+    expect(mod.suppressPositiveModifiers).toBe(true);
+    expect(mod.extraDice).toBe(0);
+    expect(mod.discardLowest).toBe(false);
+    expect(mod.flatBonus).toBe(0);
+    expect(mod.suppressWoundPenalties).toBe(false);
+  });
+
+  it('Strike: returns base modifiers (wound healing is in challenge engine, not strike)', () => {
+    const mods = getStrikeModifiers('the-undying-fire', state, true);
+    expect(mods.wsDelta).toBe(0);
+    expect(mods.attacksDelta).toBe(0);
+    expect(mods.strengthDelta).toBe(0);
+    expect(mods.damageDelta).toBe(0);
+    expect(mods.damageSetToOne).toBe(false);
+    expect(mods.singleAttackCap).toBe(false);
+  });
+});
+
 describe('Mirror-Form gambit', () => {
   const state = buildInitialState(VALDOR, WARBOSS);
 
