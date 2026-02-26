@@ -81,6 +81,40 @@ export const GREAT_FROST_BLADE: Weapon = {
 
 // ── Dark Angels Weapons ──────────────────────────────────────────────────────
 
+export const CALIBANITE_WARBLADE: Weapon = {
+  name: 'Calibanite Warblade',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Calibanite Warblade',
+      initiativeModifier: { kind: 'none' },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 1},
+      ap: 3, damage: 1,
+      specialRules: [
+        { name: 'Breaching', threshold: 5 },
+      ]
+    },
+  ],
+};
+
+export const TERRANIC_GREATSWORD: Weapon = {
+  name: 'Terranic Greatsword',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Terranic Greatsword',
+      initiativeModifier: { kind: 'add', value: -1 },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 2},
+      ap: 3, damage: 2,
+      specialRules: [
+        { name: 'Breaching', threshold: 5 },
+      ]
+    },
+  ],
+};
+
 /**
  * Calibanite charge-blade (Firewing Enigmatii / Dark Angels).
  * Two profiles: Uncharged and Charged. Player selects one per engagement.

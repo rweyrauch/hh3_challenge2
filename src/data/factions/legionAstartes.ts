@@ -46,7 +46,7 @@ const PRAETOR: Character = {
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },
-  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHARNABAL_SABRE, CHAINBLADE, CHAINAXE],
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHARNABAL_SABRE, CHAINBLADE, CHAINAXE],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -67,7 +67,7 @@ const CATAPHRACTII_PRAETOR: Character = {
   },
   weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
   factionGambitIds: [],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
 };
 
 // ── Tartaros Praetor ─────────────────────────────────────────────────────
@@ -85,7 +85,7 @@ const TARTAROS_PRAETOR: Character = {
   },
   weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
   factionGambitIds: [],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
 };
 
 // ── Saturnine Praetor ─────────────────────────────────────────────────────
@@ -104,7 +104,7 @@ const SATURNINE_PRAETOR: Character = {
   },
   weapons: [SATURNINE_WAR_AXE, SATURNINE_DISRUPTION_FIST, SATURNINE_CONCUSSION_HAMMER],
   factionGambitIds: [],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 4 }],
 };
 
 // ── Legion Champion ──────────────────────────────────────────────────────────
@@ -121,7 +121,7 @@ const LEGION_CHAMPION: Character = {
     I: 5, A: 5, LD: 8, CL: 8, WP: 8, IN: 8,
     Sv: 2, Inv: 5,
   },
-  weapons: [PARAGON_BLADE, LIGHTNING_CLAWS_PAIR],
+  weapons: [PARAGON_BLADE],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -221,7 +221,7 @@ const CENTURION: Character = {
     I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
     Sv: 2, Inv: 5,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR],
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHARNABAL_SABRE, CHAINBLADE, CHAINAXE],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -241,7 +241,7 @@ const CATAPHRACTII_CENTURION: Character = {
   },
   weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
 };
 
 // ── Tartaros Centurion ────────────────────────────────────────────────────
@@ -259,7 +259,7 @@ const TARTAROS_CENTURION: Character = {
   },
   weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
 };
 
 // ── Librarian ──────────────────────────────────────────────────────────
@@ -294,7 +294,7 @@ const CHOSEN_CHAMPION: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 2, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, CHAINAXE, CHAINSWORD, CHARNABAL_SABRE, POWER_FIST, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -312,7 +312,7 @@ const CHOSEN_CHAMPION_JUMP_PACK: Character = {
     I: 4, A: 4, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 2, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, CHAINAXE, CHAINSWORD, CHARNABAL_SABRE, POWER_FIST, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [
     { name: 'Bulky', value: 2 },
@@ -333,7 +333,7 @@ const VETERAN_CHAMPION: Character = {
     I: 4, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
     Sv: 3, Inv: null,
   },
-  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER],
+  weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, CHAINAXE, CHAINSWORD, CHARNABAL_SABRE, POWER_FIST, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
 };
@@ -422,25 +422,6 @@ const OUTRIDER_CHOSEN_CHAMPION: Character = {
   ],
 };
 
-// ── Saturnine Centurion ───────────────────────────────────────────────────────
-// Centurion in Saturnine Terminator armour; extremely tough (T6 W5) but slow.
-// Stats: M5 WS5 BS5 S4 T6 W5 I4 A3 LD9 CL8 WP8 IN8 Sv2+ Inv4+
-const SATURNINE_CENTURION: Character = {
-  id: 'saturnine-centurion',
-  name: 'Saturnine Centurion',
-  faction: 'legion-astartes',
-  type: 'infantry',
-  subTypes: ['Command', 'Heavy'],
-  stats: {
-    M: 5, WS: 5, BS: 5, S: 4, T: 6, W: 5,
-    I: 4, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
-    Sv: 2, Inv: 4,
-  },
-  weapons: [THUNDER_HAMMER, POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, LIGHTNING_CLAWS_PAIR],
-  factionGambitIds: [],
-  specialRules: [],
-};
-
 // ── Cataphractii Legion Champion ──────────────────────────────────────────────
 // Legion Champion in Cataphractii plate; gains T5 W4 Inv4+ at cost of Heavy.
 // Stats: M6 WS6 BS5 S4 T5 W4 I5 A5 LD8 CL8 WP8 IN8 Sv2+ Inv4+
@@ -457,7 +438,7 @@ const CATAPHRACTII_LEGION_CHAMPION: Character = {
   },
   weapons: [PARAGON_BLADE, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
 };
 
 // ── Legion Champion (Jump Pack) ───────────────────────────────────────────────
@@ -481,27 +462,6 @@ const LEGION_CHAMPION_JUMP_PACK: Character = {
   ],
 };
 
-// ── Saturnine Chosen Champion ─────────────────────────────────────────────────
-// Chosen Champion in Saturnine Terminator armour; T6 W3, but I3 A3 Heavy.
-// Stats: M5 WS5 BS4 S4 T6 W3 I3 A3 LD8 CL8 WP7 IN7 Sv2+ Inv4+
-const SATURNINE_CHOSEN_CHAMPION: Character = {
-  id: 'saturnine-chosen-champion',
-  name: 'Saturnine Chosen Champion',
-  faction: 'legion-astartes',
-  type: 'infantry',
-  subTypes: ['Champion', 'Heavy'],
-  stats: {
-    M: 5, WS: 5, BS: 4, S: 4, T: 6, W: 3,
-    I: 3, A: 3, LD: 8, CL: 8, WP: 7, IN: 7,
-    Sv: 2, Inv: 4,
-  },
-  weapons: [SATURNINE_WAR_AXE, SATURNINE_DISRUPTION_FIST, SATURNINE_CONCUSSION_HAMMER, POWER_FIST, CHAINFIST],
-  factionGambitIds: [],
-  specialRules: [
-    { name: 'Bulky', value: 2 },
-  ],
-};
-
 export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   PRAETOR,
   CATAPHRACTII_PRAETOR,
@@ -512,7 +472,6 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   CENTURION,
   CATAPHRACTII_CENTURION,
   TARTAROS_CENTURION,
-  SATURNINE_CENTURION,
   LIBRARIAN,
   CATAPHRACTII_LIBRARIAN,
   TARTAROS_LIBRARIAN,
@@ -524,7 +483,6 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   VETERAN_CHAMPION,
   TARTAROS_CHOSEN_CHAMPION,
   CATAPHRACTII_CHOSEN_CHAMPION,
-  SATURNINE_CHOSEN_CHAMPION,
   SCIMITAR_CHOSEN_CHAMPION,
   OUTRIDER_CHOSEN_CHAMPION,
 ];

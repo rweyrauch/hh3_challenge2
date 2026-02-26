@@ -11,7 +11,7 @@ import type { Character } from '../models/character.js';
 import type { CombatState } from '../models/combatState.js';
 import type { GambitId } from '../models/gambit.js';
 import type { PsychicDiscipline } from '../models/character.js';
-import { getCharacterById } from '../data/factions/index.js';
+import { getCharacterById, getFactionLabel, getLegionAlignment } from '../data/factions/index.js';
 import { applyDiscipline } from '../data/psychicDisciplines.js';
 import { ChallengeEngine, buildInitialState } from '../engine/challengeEngine.js';
 import { RealDiceRoller } from '../engine/dice.js';
@@ -64,7 +64,7 @@ export function startApp(container: HTMLElement): void {
         app.selectionSnapshot   = result;
         let playerChar = getCharacterById(result.playerCharId) ?? null;
         if (result.playerSubFaction && playerChar) {
-          playerChar = { ...playerChar, subFaction: result.playerSubFaction };
+          playerChar = applySubFaction(playerChar, result.playerSubFaction);
         }
         if (result.playerDiscipline && playerChar) {
           playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
@@ -72,7 +72,7 @@ export function startApp(container: HTMLElement): void {
         app.playerChar          = playerChar;
         let aiChar = getCharacterById(result.aiCharId) ?? null;
         if (result.aiSubFaction && aiChar) {
-          aiChar = { ...aiChar, subFaction: result.aiSubFaction };
+          aiChar = applySubFaction(aiChar, result.aiSubFaction);
         }
         app.aiChar              = aiChar;
         app.playerWeaponIndex   = result.playerWeaponIndex;
@@ -83,7 +83,7 @@ export function startApp(container: HTMLElement): void {
         app.selectionSnapshot   = result;
         let playerChar = getCharacterById(result.playerCharId) ?? null;
         if (result.playerSubFaction && playerChar) {
-          playerChar = { ...playerChar, subFaction: result.playerSubFaction };
+          playerChar = applySubFaction(playerChar, result.playerSubFaction);
         }
         if (result.playerDiscipline && playerChar) {
           playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
@@ -91,7 +91,7 @@ export function startApp(container: HTMLElement): void {
         app.playerChar          = playerChar;
         let aiChar = getCharacterById(result.aiCharId) ?? null;
         if (result.aiSubFaction && aiChar) {
-          aiChar = { ...aiChar, subFaction: result.aiSubFaction };
+          aiChar = applySubFaction(aiChar, result.aiSubFaction);
         }
         app.aiChar              = aiChar;
         app.playerWeaponIndex   = result.playerWeaponIndex;
@@ -226,4 +226,21 @@ export function startApp(container: HTMLElement): void {
 
   // Boot
   goToSelection();
+}
+
+/**
+ * Return a shallow-cloned Character with subFaction set and two traits appended:
+ * the human-readable legion name and its alignment ('Loyalist' or 'Traitor').
+ */
+function applySubFaction(char: Character, subFaction: string): Character {
+  const legionName = getFactionLabel(subFaction);
+  const alignment  = getLegionAlignment(subFaction);
+  const addedTraits: string[] = alignment
+    ? [legionName, alignment]
+    : [legionName];
+  return {
+    ...char,
+    subFaction,
+    traits: [...(char.traits ?? []), ...addedTraits],
+  };
 }
