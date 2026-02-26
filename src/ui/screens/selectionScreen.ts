@@ -16,6 +16,8 @@ import {
   LEGION_SUBFACTION_IDS,
 } from '../../data/factions/index.js';
 import { DISCIPLINE_CONFIGS } from '../../data/psychicDisciplines.js';
+import { CALIBANITE_WARBLADE, TERRANIC_GREATSWORD, POWER_GLAIVE, FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE, BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION, LEGATINE_AXE, RAVENS_TALON, PAIR_OF_RAVENS_TALONS, PHOENIX_POWER_SPEAR, PHOENIX_RAPIER, GRAVITON_MACE, CHAINGLAIVE, HEADSMANS_AXE, POWER_SCYTHE, ACHEA_PATTERN_FORCE_SWORD, CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR, POWER_DAGGER } from '../../data/weapons/legionChampions.js';
+import { SOLARITE_POWER_GAUNTLET, ARTIFICER_POWER_AXE } from '../../data/weapons/namedCharacters.js';
 import { renderStatBlock } from '../components/statBlock.js';
 
 export interface SelectionResult {
@@ -291,11 +293,13 @@ function attachListeners(
           disciplineSelect.value = initialState.playerDiscipline;
         }
       }
-      // Populate weapons — include the discipline weapon if one was selected
-      const savedDisciplineWeapon = initialState.playerDiscipline
-        ? DISCIPLINE_CONFIGS[initialState.playerDiscipline as PsychicDiscipline]?.meleeWeapon
-        : undefined;
-      populateWeaponSelect(savedPlayerChar, weaponSelect, weaponSection, savedDisciplineWeapon);
+      // Populate weapons — include subfaction and discipline extras if selected
+      const savedExtras = getPlayerExtraWeapons(
+        savedPlayerChar,
+        initialState.playerSubFaction ?? '',
+        initialState.playerDiscipline ?? '',
+      );
+      populateWeaponSelect(savedPlayerChar, weaponSelect, weaponSection, savedExtras);
       weaponSelect.value = `${initialState.playerWeaponIndex}-${initialState.playerProfileIndex}`;
       playerStat.innerHTML = renderStatBlock(savedPlayerChar);
     }
@@ -357,13 +361,21 @@ function attachListeners(
     updateBeginBtn();
   });
 
+  // Sub-faction dropdown: repopulate weapon list (Dark Angels adds extra weapons)
+  playerSubfactionSelect.addEventListener('change', () => {
+    const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
+    if (char) {
+      const extras = getPlayerExtraWeapons(char, playerSubfactionSelect.value, disciplineSelect.value);
+      populateWeaponSelect(char, weaponSelect, weaponSection, extras);
+    }
+  });
+
   // Discipline dropdown: repopulate weapon list when a discipline is selected
   disciplineSelect.addEventListener('change', () => {
     const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
     if (char) {
-      const disc = disciplineSelect.value as PsychicDiscipline | '';
-      const disciplineWeapon = disc ? DISCIPLINE_CONFIGS[disc]?.meleeWeapon : undefined;
-      populateWeaponSelect(char, weaponSelect, weaponSection, disciplineWeapon);
+      const extras = getPlayerExtraWeapons(char, playerSubfactionSelect.value, disciplineSelect.value);
+      populateWeaponSelect(char, weaponSelect, weaponSection, extras);
     }
   });
 
@@ -415,16 +427,77 @@ function attachListeners(
 // ── Helpers ───────────────────────────────────────────────────────────────────
 
 /**
- * Populate the weapon dropdown from a character's melee weapons.
- * Shows the section when the character has options; auto-selects the first.
- *
- * @param extraWeapon - optional discipline weapon appended at index char.weapons.length
+ * Collect extra weapons to append after a character's base weapons in the
+ * weapon dropdown, in the order they will be indexed:
+ *   1. Dark Angels subfaction extras (Calibanite Warblade, Terranic Greatsword)
+ *      — only when subfaction is 'dark-angels' and the character has a Power Sword.
+ *   2. Psychic discipline weapon (appended last, matching applyDiscipline order).
+ */
+function getPlayerExtraWeapons(char: Character, subfaction: string, discipline: string): Weapon[] {
+  const extras: Weapon[] = [];
+  if (subfaction === 'dark-angels' && char.weapons.some(w => w.name === 'Power Sword')) {
+    extras.push(CALIBANITE_WARBLADE, TERRANIC_GREATSWORD);
+  }
+  if (subfaction === 'white-scars') {
+    extras.push(POWER_GLAIVE);
+  }
+  if (subfaction === 'space-wolves') {
+    extras.push(FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE);
+  }
+  if (subfaction === 'imperial-fists') {
+    extras.push(SOLARITE_POWER_GAUNTLET);
+  }
+  if (subfaction === 'blood-angels') {
+    extras.push(BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION);
+  }
+  if (subfaction === 'iron-hands') {
+    extras.push(ARTIFICER_POWER_AXE);
+  }
+  if (subfaction === 'ultramarines') {
+    extras.push(LEGATINE_AXE);
+  }
+  if (subfaction === 'raven-guard') {
+    extras.push(RAVENS_TALON, PAIR_OF_RAVENS_TALONS);
+  }
+  if (subfaction === 'emperors-children') {
+    extras.push(PHOENIX_POWER_SPEAR, PHOENIX_RAPIER);
+  }
+  if (subfaction === 'iron-warriors') {
+    extras.push(GRAVITON_MACE);
+  }
+  if (subfaction === 'night-lords') {
+    extras.push(CHAINGLAIVE, HEADSMANS_AXE);
+  }
+  if (subfaction === 'death-guard') {
+    extras.push(POWER_SCYTHE);
+  }
+  if (subfaction === 'thousand-sons') {
+    extras.push(ACHEA_PATTERN_FORCE_SWORD);
+  }
+  if (subfaction === 'sons-of-horus') {
+    extras.push(CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR);
+  }
+  if (subfaction === 'alpha-legion') {
+    extras.push(POWER_DAGGER);
+  }
+  if (discipline) {
+    const discWeapon = DISCIPLINE_CONFIGS[discipline as PsychicDiscipline]?.meleeWeapon;
+    if (discWeapon) extras.push(discWeapon);
+  }
+  return extras;
+}
+
+/**
+ * Populate the weapon dropdown from a character's melee weapons plus any
+ * extra weapons (subfaction or discipline). Extra weapons are indexed starting
+ * at char.weapons.length so they align with how app.ts appends them to the
+ * character before passing it to the engine.
  */
 function populateWeaponSelect(
   char: Character,
   selectEl: HTMLSelectElement,
   sectionEl: HTMLElement,
-  extraWeapon?: Weapon,
+  extraWeapons: Weapon[] = [],
 ): void {
   const options: string[] = [];
 
@@ -439,17 +512,18 @@ function populateWeaponSelect(
     });
   });
 
-  // Extra weapon (e.g. discipline weapon) is appended at index char.weapons.length
-  if (extraWeapon && extraWeapon.type === 'melee') {
-    const extraWIdx = char.weapons.length;
-    extraWeapon.profiles.forEach((profile, pIdx) => {
+  // Extra weapons appended at indices char.weapons.length, +1, +2, …
+  extraWeapons.forEach((weapon, i) => {
+    if (weapon.type !== 'melee') return;
+    const extraWIdx = char.weapons.length + i;
+    weapon.profiles.forEach((profile, pIdx) => {
       const sStr = resolveStrength(char.stats.S, profile.strengthModifier);
       const apStr = profile.ap !== null ? `AP${profile.ap}` : 'AP-';
       options.push(
         `<option value="${extraWIdx}-${pIdx}">${profile.profileName} — S${sStr} ${apStr} D${profile.damage}</option>`,
       );
     });
-  }
+  });
 
   selectEl.innerHTML = options.join('');
   selectEl.disabled  = options.length <= 1;

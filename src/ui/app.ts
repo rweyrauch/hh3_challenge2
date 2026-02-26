@@ -13,6 +13,8 @@ import type { GambitId } from '../models/gambit.js';
 import type { PsychicDiscipline } from '../models/character.js';
 import { getCharacterById, getFactionLabel, getLegionAlignment } from '../data/factions/index.js';
 import { applyDiscipline } from '../data/psychicDisciplines.js';
+import { CALIBANITE_WARBLADE, TERRANIC_GREATSWORD, POWER_GLAIVE, FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE, BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION, LEGATINE_AXE, RAVENS_TALON, PAIR_OF_RAVENS_TALONS, PHOENIX_POWER_SPEAR, PHOENIX_RAPIER, GRAVITON_MACE, CHAINGLAIVE, HEADSMANS_AXE, POWER_SCYTHE, ACHEA_PATTERN_FORCE_SWORD, CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR, POWER_DAGGER } from '../data/weapons/legionChampions.js';
+import { SOLARITE_POWER_GAUNTLET, ARTIFICER_POWER_AXE } from '../data/weapons/namedCharacters.js';
 import { ChallengeEngine, buildInitialState } from '../engine/challengeEngine.js';
 import { RealDiceRoller } from '../engine/dice.js';
 import { mountSelectionScreen, type SelectionResult } from './screens/selectionScreen.js';
@@ -229,18 +231,42 @@ export function startApp(container: HTMLElement): void {
 }
 
 /**
- * Return a shallow-cloned Character with subFaction set and two traits appended:
- * the human-readable legion name and its alignment ('Loyalist' or 'Traitor').
+ * Return a shallow-cloned Character with subFaction set, traits appended
+ * (legion name + 'Loyalist'/'Traitor'), and any subfaction-specific weapons
+ * appended to the weapons array so engine indices match the selection screen.
+ *
+ * Dark Angels: adds Calibanite Warblade and Terranic Greatsword when the
+ * character already has a Power Sword.
  */
 function applySubFaction(char: Character, subFaction: string): Character {
   const legionName = getFactionLabel(subFaction);
   const alignment  = getLegionAlignment(subFaction);
-  const addedTraits: string[] = alignment
-    ? [legionName, alignment]
-    : [legionName];
+  const addedTraits: string[] = alignment ? [legionName, alignment] : [legionName];
+
+  const extraWeapons = [
+    ...(subFaction === 'dark-angels' && char.weapons.some(w => w.name === 'Power Sword')
+      ? [CALIBANITE_WARBLADE, TERRANIC_GREATSWORD]
+      : []),
+    ...(subFaction === 'white-scars' ? [POWER_GLAIVE] : []),
+    ...(subFaction === 'space-wolves' ? [FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE] : []),
+    ...(subFaction === 'imperial-fists' ? [SOLARITE_POWER_GAUNTLET] : []),
+    ...(subFaction === 'blood-angels' ? [BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION] : []),
+    ...(subFaction === 'iron-hands' ? [ARTIFICER_POWER_AXE] : []),
+    ...(subFaction === 'ultramarines' ? [LEGATINE_AXE] : []),
+    ...(subFaction === 'raven-guard' ? [RAVENS_TALON, PAIR_OF_RAVENS_TALONS] : []),
+    ...(subFaction === 'emperors-children' ? [PHOENIX_POWER_SPEAR, PHOENIX_RAPIER] : []),
+    ...(subFaction === 'iron-warriors' ? [GRAVITON_MACE] : []),
+    ...(subFaction === 'night-lords' ? [CHAINGLAIVE, HEADSMANS_AXE] : []),
+    ...(subFaction === 'death-guard' ? [POWER_SCYTHE] : []),
+    ...(subFaction === 'thousand-sons' ? [ACHEA_PATTERN_FORCE_SWORD] : []),
+    ...(subFaction === 'sons-of-horus' ? [CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR] : []),
+    ...(subFaction === 'alpha-legion' ? [POWER_DAGGER] : []),
+  ];
+
   return {
     ...char,
     subFaction,
-    traits: [...(char.traits ?? []), ...addedTraits],
+    traits:   [...(char.traits ?? []), ...addedTraits],
+    weapons:  extraWeapons.length > 0 ? [...char.weapons, ...extraWeapons] : char.weapons,
   };
 }
