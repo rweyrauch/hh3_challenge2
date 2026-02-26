@@ -1033,6 +1033,39 @@ export function resolveStrikeStep(
     };
   }
 
+  // ── Seeker of Atonement (Hibou Khan / White Scars) ───────────────────────
+  // If the player with this gambit is reduced to 0 Wounds, roll a d6.
+  // On a 4+, they survive with W1 and their controller gains Challenge Advantage.
+  if (updatedState.player.isCasualty && state.player.selectedGambit === 'seeker-of-atonement') {
+    const roll = dice.rollD6();
+    log.push(`Seeker of Atonement: ${playerChar.name} reduced to 0 Wounds — rolling to survive: ${roll} (need 4+).`);
+    if (roll >= 4) {
+      log.push(`Seeker of Atonement: SUCCESS — ${playerChar.name} remains Engaged with 1 Wound. Player gains Challenge Advantage.`);
+      updatedState = {
+        ...updatedState,
+        player: { ...updatedState.player, isCasualty: false, currentWounds: 1 },
+        challengeAdvantage: 'player',
+      };
+    } else {
+      log.push(`Seeker of Atonement: FAILED — ${playerChar.name} is Removed as a Casualty.`);
+    }
+  }
+
+  if (updatedState.ai.isCasualty && state.ai.selectedGambit === 'seeker-of-atonement') {
+    const roll = dice.rollD6();
+    log.push(`Seeker of Atonement: ${aiChar.name} reduced to 0 Wounds — rolling to survive: ${roll} (need 4+).`);
+    if (roll >= 4) {
+      log.push(`Seeker of Atonement: SUCCESS — ${aiChar.name} remains Engaged with 1 Wound. AI gains Challenge Advantage.`);
+      updatedState = {
+        ...updatedState,
+        ai: { ...updatedState.ai, isCasualty: false, currentWounds: 1 },
+        challengeAdvantage: 'ai',
+      };
+    } else {
+      log.push(`Seeker of Atonement: FAILED — ${aiChar.name} is Removed as a Casualty.`);
+    }
+  }
+
   return {
     firstAttacker: advantage,
     playerResult: playerResult!,

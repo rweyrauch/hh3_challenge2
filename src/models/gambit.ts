@@ -28,6 +28,7 @@ export type GambitId =
   // ── White Scars (V) ──────────────────────────────────────────────────────
   | 'the-path-of-the-warrior' // all WS: predict 1-3/4-6 before roll; if correct ignore negatives
   | 'death-by-a-thousand-cuts'// Jaghatai Khan: enemy S -1 in Strike Step if enemy has been wounded
+  | 'seeker-of-atonement'     // Hibou Khan: on 4+ survive at W1 and gain Challenge Advantage
   // ── Space Wolves (VI) ────────────────────────────────────────────────────
   | 'no-prey-escapes'         // all SW: Glory Step unavailable until a casualty occurs
   | 'a-saga-woven-of-glory'   // all SW: unit gains +1A after killing opponent (no-op in 1v1)

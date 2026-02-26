@@ -480,6 +480,12 @@ export function getStrikeModifiers(
       // the engine: if reactive player, allows attacks after reaching 0W.
       return base;
 
+    // ── White Scars ──────────────────────────────────────────────────────────
+    case 'seeker-of-atonement':
+      // Survival roll logic handled in strikeStep.ts after all attacks resolve.
+      // On a 4+, model survives at W1 and its controller gains Challenge Advantage.
+      return { ...base };
+
     // ── Legion Astartes Psychic Discipline gambits ───────────────────────────
     case 'divination-every-strike-foreseen':
       // WP check logic handled in strikeStep.ts (before hit rolls).

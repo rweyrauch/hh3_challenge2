@@ -165,7 +165,7 @@ const HIBOU_KHAN: Character = {
     Sv: 2, Inv: 5,
   },
   weapons: [BREATH_OF_THE_STORM],
-  factionGambitIds: ['the-path-of-the-warrior'],
+  factionGambitIds: ['the-path-of-the-warrior', 'seeker-of-atonement'],
   specialRules: [],
 };
 

@@ -49,6 +49,14 @@ export const WHITE_SCARS_GAMBITS: Gambit[] = [
     firstMoverOnly: false,
     oncePerChallenge: false,
   },
+  {
+    id: 'seeker-of-atonement',
+    name: 'Seeker of Atonement',
+    description: 'If this model is reduced to 0 Wounds in the Strike Step, its Controlling Player may roll a dice. On a 4+, this model is not Removed as a Casualty but instead remains Engaged with a Wounds Characteristic of 1, and its Controlling Player gains Challenge Advantage.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
 ];
 
 // ── Space Wolves (VI) ────────────────────────────────────────────────────────
