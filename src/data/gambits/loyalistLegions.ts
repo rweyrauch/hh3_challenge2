@@ -160,6 +160,14 @@ export const BLOOD_ANGELS_GAMBITS: Gambit[] = [
     firstMoverOnly: false,
     oncePerChallenge: true,
   },
+  {
+    id: 'archein-of-wisdom',
+    name: 'Archein of Wisdom',
+    description: 'Gain a positive modifier to the Focus Roll equal to the number of successful Hit Tests made by the opponent in the previous Strike Step. Has no effect in the first round (before any Strike Step has been resolved).',
+    timings: ['focus'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
 ];
 
 // ── Iron Hands (X) ───────────────────────────────────────────────────────────

@@ -180,22 +180,24 @@ export function resolveFocusStep(
 
   // Build context for each side (used by state-dependent gambits)
   const playerCtx: FocusContext = {
-    round:           state.round,
-    currentWounds:   state.player.currentWounds,
-    baseWounds:      state.player.baseWounds,
-    ownWP:           playerChar.stats.WP,
-    enemyWP:         aiChar.stats.WP,
-    enemyBulkyValue: getBulkyValue(aiChar),
-    characterId:     playerChar.id,
+    round:                      state.round,
+    currentWounds:              state.player.currentWounds,
+    baseWounds:                 state.player.baseWounds,
+    ownWP:                      playerChar.stats.WP,
+    enemyWP:                    aiChar.stats.WP,
+    enemyBulkyValue:            getBulkyValue(aiChar),
+    characterId:                playerChar.id,
+    opponentHitsLastStrikeStep: state.player.hitsReceivedLastStrikeStep,
   };
   const aiCtx: FocusContext = {
-    round:           state.round,
-    currentWounds:   state.ai.currentWounds,
-    baseWounds:      state.ai.baseWounds,
-    ownWP:           aiChar.stats.WP,
-    enemyWP:         playerChar.stats.WP,
-    enemyBulkyValue: getBulkyValue(playerChar),
-    characterId:     aiChar.id,
+    round:                      state.round,
+    currentWounds:              state.ai.currentWounds,
+    baseWounds:                 state.ai.baseWounds,
+    ownWP:                      aiChar.stats.WP,
+    enemyWP:                    playerChar.stats.WP,
+    enemyBulkyValue:            getBulkyValue(playerChar),
+    characterId:                aiChar.id,
+    opponentHitsLastStrikeStep: state.ai.hitsReceivedLastStrikeStep,
   };
 
   do {

@@ -366,7 +366,7 @@ const RALDORON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [ENCARMINE_WARBLADE],
-  factionGambitIds: ['thrall-of-the-red-thirst'],
+  factionGambitIds: ['thrall-of-the-red-thirst', 'archein-of-wisdom'],
   specialRules: [],
 };
 

@@ -72,6 +72,7 @@ export function buildInitialState(playerChar: Character, aiChar: Character): Com
     tauntAndBaitCount: 0,
     usedBrutalButKunnin: false,
     feintAndRiposteBan: null,
+    hitsReceivedLastStrikeStep: 0,
   });
 
   return {
@@ -260,6 +261,14 @@ export class ChallengeEngine {
     for (const msg of strikeResult.log) {
       next = addLog(next, msg, msg.includes('CASUALTY') ? 'danger' : 'info');
     }
+
+    // Record hit counts for Archein of Wisdom: each side tracks hits their
+    // opponent landed on them in this Strike Step, for use in the next Focus Roll.
+    next = {
+      ...next,
+      player: { ...next.player, hitsReceivedLastStrikeStep: strikeResult.aiResult.hits },
+      ai:     { ...next.ai,     hitsReceivedLastStrikeStep: strikeResult.playerResult.hits },
+    };
 
     // The Undying Fire: if model survived the Strike Step (not a casualty), it
     // regains D3 Wounds (max Base Wounds) before entering the Glory Step.

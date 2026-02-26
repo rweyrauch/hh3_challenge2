@@ -43,6 +43,7 @@ export type GambitId =
   // ── Blood Angels (IX) ────────────────────────────────────────────────────
   | 'thrall-of-the-red-thirst'// all BA: ignore wound penalties, +1 Damage, no OS bonus
   | 'angelic-descent'         // Sanguinius: +Focus bonus equal to enemy Bulky(X)
+  | 'archein-of-wisdom'       // Raldoron: +Focus equal to opponent's hits from previous Strike Step
   // ── Iron Hands (X) ───────────────────────────────────────────────────────
   | 'legion-of-one'           // all IH: double OS bonus (no-op in 1v1 duel)
   | 'tempered-by-war'         // Ferrus Manus: T set to 8 for Strike Step

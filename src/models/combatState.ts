@@ -62,6 +62,12 @@ export interface CombatantState {
    * of each new Face-Off.
    */
   feintAndRiposteBan: GambitId | null;
+  /**
+   * Number of successful Hit Tests the opponent made against this model in
+   * the most recently resolved Strike Step.  Used by Archein of Wisdom to
+   * grant a matching Focus Roll bonus.  0 before any Strike Step has occurred.
+   */
+  hitsReceivedLastStrikeStep: number;
 }
 
 /** Immutable-snapshot of the full Challenge state after each engine step. */
