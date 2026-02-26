@@ -280,6 +280,20 @@ export const SOLARITE_POWER_GAUNTLET: Weapon = {
   }],
 };
 
+/** Hammerblow (Alexis Polux gambit): I, fixed 2A (M=1+AM=1), +0S, AP2, D3, Critical Hit(6+), Power */
+export const HAMMERBLOW: Weapon = {
+  name: 'Hammerblow',
+  type: 'melee',
+  profiles: [{
+    profileName: 'Hammerblow',
+    initiativeModifier: { kind: 'none' },
+    attacksModifier:    { kind: 'fixed', value: 2 },
+    strengthModifier:   { kind: 'none' },
+    ap: 2, damage: 3,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+  }],
+};
+
 // ════════════════════════════════════════════════════════════════
 // BLOOD ANGELS
 // ════════════════════════════════════════════════════════════════

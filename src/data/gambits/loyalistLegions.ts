@@ -123,6 +123,22 @@ export const IMPERIAL_FISTS_GAMBITS: Gambit[] = [
     firstMoverOnly: false,
     oncePerChallenge: false,
   },
+  {
+    id: 'the-line-unbroken',
+    name: 'The Line Unbroken',
+    description: 'When this Gambit is selected and this model does not have Challenge Advantage, this model\'s Attacks Characteristic is modified by +2.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
+  {
+    id: 'hammerblow',
+    name: 'Hammerblow',
+    description: 'This model gains the Hammerblow Weapon Profile and may not make attacks with any other Weapon this Strike Step. Hammerblow: I, fixed 2A, +0S, AP2, D3, Critical Hit(6+), Power.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
 ];
 
 // ── Blood Angels (IX) ────────────────────────────────────────────────────────

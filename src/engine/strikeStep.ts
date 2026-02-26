@@ -797,8 +797,30 @@ export function resolveStrikeStep(
   const playerAttackBonus = advantage === 'player' ? 1 : 0;
   const aiAttackBonus     = advantage === 'ai'     ? 1 : 0;
 
-  const playerProfile = state.player.selectedWeaponProfile!;
-  const aiProfile     = state.ai.selectedWeaponProfile!;
+  let playerProfile = state.player.selectedWeaponProfile!;
+  let aiProfile     = state.ai.selectedWeaponProfile!;
+
+  // ── Hammerblow gambit: force the Hammerblow weapon profile ───────────────
+  // The gambit prohibits any other weapon; override whatever the player
+  // pre-selected on the selection screen.
+  if (state.player.selectedGambit === 'hammerblow') {
+    const hammerblowProfile = playerChar.weapons
+      .flatMap(w => w.profiles)
+      .find(p => p.profileName === 'Hammerblow');
+    if (hammerblowProfile) {
+      playerProfile = hammerblowProfile;
+      log.push(`Hammerblow: ${playerChar.name} must use the Hammerblow weapon profile (no other weapon permitted).`);
+    }
+  }
+  if (state.ai.selectedGambit === 'hammerblow') {
+    const hammerblowProfile = aiChar.weapons
+      .flatMap(w => w.profiles)
+      .find(p => p.profileName === 'Hammerblow');
+    if (hammerblowProfile) {
+      aiProfile = hammerblowProfile;
+      log.push(`Hammerblow: ${aiChar.name} must use the Hammerblow weapon profile (no other weapon permitted).`);
+    }
+  }
 
   let updatedState = { ...state };
   let playerResult: AttackResult;

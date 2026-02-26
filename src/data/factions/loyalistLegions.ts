@@ -41,6 +41,7 @@ import {
   SUBJUGATOR,
   DURENDA,
   SOLARITE_POWER_GAUNTLET,
+  HAMMERBLOW,
   BLADE_ENCARMINE,
   SPEAR_OF_TELESTO,
   MOONSILVER_BLADE,
@@ -310,7 +311,7 @@ const CAMBA_DIAZ: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [DURENDA],
-  factionGambitIds: ['a-wall-unyielding'],
+  factionGambitIds: ['a-wall-unyielding', 'the-line-unbroken'],
   specialRules: [],
 };
 
@@ -325,8 +326,8 @@ const ALEXIS_POLUX: Character = {
     I: 1, A: 3, LD: 9, CL: 9, WP: 8, IN: 8,
     Sv: 2, Inv: 4,
   },
-  weapons: [SOLARITE_POWER_GAUNTLET],
-  factionGambitIds: ['a-wall-unyielding'],
+  weapons: [SOLARITE_POWER_GAUNTLET, HAMMERBLOW],
+  factionGambitIds: ['a-wall-unyielding', 'hammerblow'],
   specialRules: [],
 };
 

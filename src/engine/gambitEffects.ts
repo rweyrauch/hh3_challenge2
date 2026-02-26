@@ -395,6 +395,19 @@ export function getStrikeModifiers(
         minimumWoundRoll: 5,
       };
 
+    case 'the-line-unbroken': {
+      // +2 Attacks only when this model does NOT have Challenge Advantage
+      // (i.e., it fights reactive/second in the Strike Step).
+      const hasAdvantage = forPlayer
+        ? state.challengeAdvantage === 'player'
+        : state.challengeAdvantage === 'ai';
+      return hasAdvantage ? { ...base } : { ...base, attacksDelta: +2 };
+    }
+
+    case 'hammerblow':
+      // Weapon profile override handled in strikeStep.ts — no stat modifiers here.
+      return { ...base };
+
     // ── Blood Angels ────────────────────────────────────────────────────────
     case 'thrall-of-the-red-thirst':
       return {

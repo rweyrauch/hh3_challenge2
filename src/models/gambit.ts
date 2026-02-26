@@ -38,6 +38,8 @@ export type GambitId =
   | 'deaths-champion'         // Sigismund: attacks gain CriticalHit(5+)
   | 'executioners-tax'        // Fafnir Rann: roll 2d6 discard highest, attacks gain CriticalHit(6+)
   | 'bulwark-of-the-imperium' // Rogal Dorn: wound rolls of 1-4 against this model always fail
+  | 'the-line-unbroken'       // Camba Diaz: +2 Attacks when this model does not have Challenge Advantage
+  | 'hammerblow'              // Alexis Polux: must use Hammerblow profile (fixed 2A, +0S, AP2, D3, CritHit6+)
   // ── Blood Angels (IX) ────────────────────────────────────────────────────
   | 'thrall-of-the-red-thirst'// all BA: ignore wound penalties, +1 Damage, no OS bonus
   | 'angelic-descent'         // Sanguinius: +Focus bonus equal to enemy Bulky(X)
