@@ -86,6 +86,30 @@ export function getCharactersByFaction(): { faction: string; characters: Charact
   return Array.from(map.entries()).map(([faction, characters]) => ({ faction, characters }));
 }
 
+/**
+ * The 18 Legion faction identifiers, in legionary number order.
+ * Used to populate the sub-faction picker on the selection screen.
+ */
+export const LEGION_SUBFACTION_IDS: string[] = [
+  // Loyalist Legions
+  'dark-angels', 'white-scars', 'space-wolves', 'imperial-fists',
+  'blood-angels', 'iron-hands', 'ultramarines', 'salamanders', 'raven-guard',
+  // Traitor Legions
+  'emperors-children', 'iron-warriors', 'night-lords', 'world-eaters',
+  'death-guard', 'thousand-sons', 'sons-of-horus', 'word-bearers', 'alpha-legion',
+];
+
+const LOYALIST_LEGION_IDS = new Set([
+  'dark-angels', 'white-scars', 'space-wolves', 'imperial-fists',
+  'blood-angels', 'iron-hands', 'ultramarines', 'salamanders', 'raven-guard',
+]);
+
+/** Return 'Loyalist' or 'Traitor' for a legion subfaction id, or null for non-legion factions. */
+export function getLegionAlignment(subfaction: string): 'Loyalist' | 'Traitor' | null {
+  if (!LEGION_SUBFACTION_IDS.includes(subfaction)) return null;
+  return LOYALIST_LEGION_IDS.has(subfaction) ? 'Loyalist' : 'Traitor';
+}
+
 /** Human-readable faction label. */
 export function getFactionLabel(faction: string): string {
   const labels: Record<string, string> = {

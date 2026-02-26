@@ -212,6 +212,40 @@ export const CHAINFIST: Weapon = {
   ],
 };
 
+/** Chainblade: I, A, +1S, AP3, D1 */
+export const CHAINBLADE: Weapon = {
+  name: 'Chainblade',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Chainblade',
+      initiativeModifier: { kind: 'none' },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 1 },
+      ap: 3,
+      damage: 1,
+      specialRules: [{ name: 'Shred', threshold: 6}, { name: 'Breaching', threshold: 6 }],
+    },
+  ],
+};
+
+/** Chainaxe I-1, A, +1S, AP5, D1 */
+export const CHAINAXE: Weapon = {
+  name: 'Chainaxe',
+  type: 'melee',
+  profiles: [
+    {
+      profileName: 'Chainaxe',
+      initiativeModifier: { kind: 'add', value: -1 },
+      attacksModifier:    { kind: 'none' },
+      strengthModifier:   { kind: 'add', value: 1 },
+      ap: 5,
+      damage: 1,
+      specialRules: [{ name: 'Shred', threshold: 6}],
+    },
+  ],
+};
+
 export const SATURNINE_WAR_AXE: Weapon = {
   name: 'Saturnine War Axe',
   type: 'melee',

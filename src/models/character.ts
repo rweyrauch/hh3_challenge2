@@ -76,4 +76,5 @@ export interface Character {
    * Only applies to Legion Astartes Librarian characters.
    */
   availablePsychicDisciplines?: PsychicDiscipline[];
+  traits?: string[];
 }
