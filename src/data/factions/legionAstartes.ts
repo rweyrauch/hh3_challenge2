@@ -16,6 +16,8 @@ import {
   LIGHTNING_CLAWS_PAIR,
   LIGHTNING_CLAW,
   CHAINSWORD,
+  CHAINBLADE,
+  CHAINAXE,
   POWER_AXE,
   POWER_LANCE,
   POWER_MAUL,
@@ -28,6 +30,7 @@ import {
   FORCE_MAUL,
   FORCE_STAFF,
 } from '../weapons/legionAstartes.js';
+import { CHARNABAL_SABRE } from '../weapons/militia.js';
 
 // ── Praetor ─────────────────────────────────────────────────────────────────
 // The senior commander of a Legion detachment.  Wears artificer armour and
@@ -43,7 +46,7 @@ const PRAETOR: Character = {
     I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },
-  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST],
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHARNABAL_SABRE, CHAINBLADE, CHAINAXE],
   factionGambitIds: [],
   specialRules: [],
 };

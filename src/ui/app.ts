@@ -63,11 +63,18 @@ export function startApp(container: HTMLElement): void {
       (result) => {
         app.selectionSnapshot   = result;
         let playerChar = getCharacterById(result.playerCharId) ?? null;
+        if (result.playerSubFaction && playerChar) {
+          playerChar = { ...playerChar, subFaction: result.playerSubFaction };
+        }
         if (result.playerDiscipline && playerChar) {
           playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
         }
         app.playerChar          = playerChar;
-        app.aiChar              = getCharacterById(result.aiCharId) ?? null;
+        let aiChar = getCharacterById(result.aiCharId) ?? null;
+        if (result.aiSubFaction && aiChar) {
+          aiChar = { ...aiChar, subFaction: result.aiSubFaction };
+        }
+        app.aiChar              = aiChar;
         app.playerWeaponIndex   = result.playerWeaponIndex;
         app.playerProfileIndex  = result.playerProfileIndex;
         if (app.playerChar && app.aiChar) goToCombat();
@@ -75,11 +82,18 @@ export function startApp(container: HTMLElement): void {
       (result) => {
         app.selectionSnapshot   = result;
         let playerChar = getCharacterById(result.playerCharId) ?? null;
+        if (result.playerSubFaction && playerChar) {
+          playerChar = { ...playerChar, subFaction: result.playerSubFaction };
+        }
         if (result.playerDiscipline && playerChar) {
           playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
         }
         app.playerChar          = playerChar;
-        app.aiChar              = getCharacterById(result.aiCharId) ?? null;
+        let aiChar = getCharacterById(result.aiCharId) ?? null;
+        if (result.aiSubFaction && aiChar) {
+          aiChar = { ...aiChar, subFaction: result.aiSubFaction };
+        }
+        app.aiChar              = aiChar;
         app.playerWeaponIndex   = result.playerWeaponIndex;
         app.playerProfileIndex  = result.playerProfileIndex;
         if (app.playerChar && app.aiChar) goToSimulation();

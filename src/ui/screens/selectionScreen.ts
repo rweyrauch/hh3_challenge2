@@ -13,6 +13,7 @@ import {
   ALL_CHARACTERS,
   getFactionLabel,
   getCharactersByFaction,
+  LEGION_SUBFACTION_IDS,
 } from '../../data/factions/index.js';
 import { DISCIPLINE_CONFIGS } from '../../data/psychicDisciplines.js';
 import { renderStatBlock } from '../components/statBlock.js';
@@ -26,6 +27,10 @@ export interface SelectionResult {
   filter: CharacterFilter;
   /** Selected Psychic Discipline (only for Librarian characters). */
   playerDiscipline?: string;
+  /** Selected sub-faction (only for generic 'legion-astartes' characters). */
+  playerSubFaction?: string;
+  /** Selected sub-faction for the AI (only for generic 'legion-astartes' characters). */
+  aiSubFaction?: string;
 }
 
 // ── Filter types ──────────────────────────────────────────────────────────────
@@ -60,6 +65,13 @@ function buildCharacterOptions(filter: CharacterFilter): string {
   }).join('');
 }
 
+/** Build the <option> HTML for the sub-faction picker (all 18 legions). */
+function buildSubfactionOptions(): string {
+  return LEGION_SUBFACTION_IDS.map(
+    id => `<option value="${id}">${getFactionLabel(id)}</option>`,
+  ).join('');
+}
+
 // ── Mount ─────────────────────────────────────────────────────────────────────
 
 /** Inject the selection screen HTML into the #app container. */
@@ -75,6 +87,7 @@ export function mountSelectionScreen(
 }
 
 function buildHTML(): string {
+  const subfactionOpts = buildSubfactionOptions();
   return `
     <div class="container py-4">
       <div class="text-center mb-4">
@@ -109,6 +122,13 @@ function buildHTML(): string {
               <select id="player-char-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                 <option value="">— Select a character —</option>
               </select>
+              <div id="player-subfaction-section" hidden>
+                <label class="form-label small text-muted">Legion Sub-faction:</label>
+                <select id="player-subfaction-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
+                  <option value="">— No Sub-faction —</option>
+                  ${subfactionOpts}
+                </select>
+              </div>
               <div id="player-discipline-section" hidden>
                 <label class="form-label small text-muted">Psychic Discipline:</label>
                 <select id="player-discipline-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
@@ -143,9 +163,16 @@ function buildHTML(): string {
             <div class="card-header text-danger fw-bold text-center">AI Warrior</div>
             <div class="card-body">
               <label class="form-label small text-muted">Choose the AI's character:</label>
-              <select id="ai-char-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-3">
+              <select id="ai-char-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                 <option value="">— Select a character —</option>
               </select>
+              <div id="ai-subfaction-section" hidden>
+                <label class="form-label small text-muted">Legion Sub-faction:</label>
+                <select id="ai-subfaction-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
+                  <option value="">— No Sub-faction —</option>
+                  ${subfactionOpts}
+                </select>
+              </div>
               <div id="ai-stat-block"></div>
             </div>
           </div>
@@ -177,16 +204,20 @@ function attachListeners(
   onAbout: (snapshot: SelectionResult) => void,
   initialState?: SelectionResult,
 ): void {
-  const playerSelect       = container.querySelector<HTMLSelectElement>('#player-char-select')!;
-  const disciplineSection  = container.querySelector<HTMLElement>('#player-discipline-section')!;
-  const disciplineSelect   = container.querySelector<HTMLSelectElement>('#player-discipline-select')!;
-  const weaponSection      = container.querySelector<HTMLElement>('#player-weapon-section')!;
-  const weaponSelect       = container.querySelector<HTMLSelectElement>('#player-weapon-select')!;
-  const aiSelect           = container.querySelector<HTMLSelectElement>('#ai-char-select')!;
-  const beginBtn           = container.querySelector<HTMLButtonElement>('#begin-btn')!;
-  const simulateBtn        = container.querySelector<HTMLButtonElement>('#simulate-btn')!;
-  const playerStat         = container.querySelector<HTMLElement>('#player-stat-block')!;
-  const aiStat             = container.querySelector<HTMLElement>('#ai-stat-block')!;
+  const playerSelect          = container.querySelector<HTMLSelectElement>('#player-char-select')!;
+  const playerSubfactionSection = container.querySelector<HTMLElement>('#player-subfaction-section')!;
+  const playerSubfactionSelect  = container.querySelector<HTMLSelectElement>('#player-subfaction-select')!;
+  const disciplineSection     = container.querySelector<HTMLElement>('#player-discipline-section')!;
+  const disciplineSelect      = container.querySelector<HTMLSelectElement>('#player-discipline-select')!;
+  const weaponSection         = container.querySelector<HTMLElement>('#player-weapon-section')!;
+  const weaponSelect          = container.querySelector<HTMLSelectElement>('#player-weapon-select')!;
+  const aiSelect              = container.querySelector<HTMLSelectElement>('#ai-char-select')!;
+  const aiSubfactionSection   = container.querySelector<HTMLElement>('#ai-subfaction-section')!;
+  const aiSubfactionSelect    = container.querySelector<HTMLSelectElement>('#ai-subfaction-select')!;
+  const beginBtn              = container.querySelector<HTMLButtonElement>('#begin-btn')!;
+  const simulateBtn           = container.querySelector<HTMLButtonElement>('#simulate-btn')!;
+  const playerStat            = container.querySelector<HTMLElement>('#player-stat-block')!;
+  const aiStat                = container.querySelector<HTMLElement>('#ai-stat-block')!;
 
   const updateBeginBtn = () => {
     const ready = Boolean(playerSelect.value && aiSelect.value);
@@ -212,6 +243,8 @@ function attachListeners(
       playerSelect.value = prevPlayer;
       if (playerSelect.value !== prevPlayer) {
         // Character filtered out — clear derived UI
+        playerSubfactionSection.hidden = true;
+        playerSubfactionSelect.value   = '';
         weaponSection.hidden = true;
         playerStat.innerHTML = '';
       }
@@ -221,6 +254,8 @@ function attachListeners(
     if (prevAi) {
       aiSelect.value = prevAi;
       if (aiSelect.value !== prevAi) {
+        aiSubfactionSection.hidden = true;
+        aiSubfactionSelect.value   = '';
         aiStat.innerHTML = '';
       }
     }
@@ -238,10 +273,17 @@ function attachListeners(
 
     refreshSelects(initialState.filter);
 
-    // Restore player character, discipline, and weapon
+    // Restore player character, sub-faction, discipline, and weapon
     playerSelect.value = initialState.playerCharId;
     const savedPlayerChar = ALL_CHARACTERS.find(c => c.id === initialState.playerCharId);
     if (savedPlayerChar) {
+      // Show sub-faction section if applicable
+      if (savedPlayerChar.faction === 'legion-astartes') {
+        playerSubfactionSection.hidden = false;
+        if (initialState.playerSubFaction) {
+          playerSubfactionSelect.value = initialState.playerSubFaction;
+        }
+      }
       // Show discipline section if the character supports it
       if (savedPlayerChar.availablePsychicDisciplines) {
         disciplineSection.hidden = false;
@@ -258,10 +300,16 @@ function attachListeners(
       playerStat.innerHTML = renderStatBlock(savedPlayerChar);
     }
 
-    // Restore AI character
+    // Restore AI character and sub-faction
     aiSelect.value = initialState.aiCharId;
     const savedAiChar = ALL_CHARACTERS.find(c => c.id === initialState.aiCharId);
     if (savedAiChar) {
+      if (savedAiChar.faction === 'legion-astartes') {
+        aiSubfactionSection.hidden = false;
+        if (initialState.aiSubFaction) {
+          aiSubfactionSelect.value = initialState.aiSubFaction;
+        }
+      }
       aiStat.innerHTML = renderStatBlock(savedAiChar);
     }
 
@@ -280,6 +328,14 @@ function attachListeners(
   playerSelect.addEventListener('change', () => {
     const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
     if (char) {
+      // Show/hide sub-faction section
+      if (char.faction === 'legion-astartes') {
+        playerSubfactionSection.hidden = false;
+        playerSubfactionSelect.value   = ''; // reset on character change
+      } else {
+        playerSubfactionSection.hidden = true;
+        playerSubfactionSelect.value   = '';
+      }
       // Show/hide discipline section
       if (char.availablePsychicDisciplines) {
         disciplineSection.hidden = false;
@@ -292,6 +348,8 @@ function attachListeners(
       populateWeaponSelect(char, weaponSelect, weaponSection);
       playerStat.innerHTML = renderStatBlock(char);
     } else {
+      playerSubfactionSection.hidden = true;
+      playerSubfactionSelect.value   = '';
       disciplineSection.hidden = true;
       weaponSection.hidden = true;
       playerStat.innerHTML = '';
@@ -311,7 +369,20 @@ function attachListeners(
 
   aiSelect.addEventListener('change', () => {
     const char = ALL_CHARACTERS.find(c => c.id === aiSelect.value);
-    aiStat.innerHTML = char ? renderStatBlock(char) : '';
+    if (char) {
+      if (char.faction === 'legion-astartes') {
+        aiSubfactionSection.hidden = false;
+        aiSubfactionSelect.value   = ''; // reset on character change
+      } else {
+        aiSubfactionSection.hidden = true;
+        aiSubfactionSelect.value   = '';
+      }
+      aiStat.innerHTML = renderStatBlock(char);
+    } else {
+      aiSubfactionSection.hidden = true;
+      aiSubfactionSelect.value   = '';
+      aiStat.innerHTML = '';
+    }
     updateBeginBtn();
   });
 
@@ -325,6 +396,8 @@ function attachListeners(
       playerProfileIndex: pIdx,
       filter: (checkedFilter?.value ?? 'all') as CharacterFilter,
       playerDiscipline: disciplineSelect.value || undefined,
+      playerSubFaction: playerSubfactionSelect.value || undefined,
+      aiSubFaction: aiSubfactionSelect.value || undefined,
     };
   };
 
