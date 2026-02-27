@@ -128,6 +128,13 @@ export function scoreGambit(
       }
       break;
 
+    // ── Emperor's Children faction gambits ────────────────────────────────
+
+    case 'bite-of-the-betrayed':
+      // Permanent +1 WS/S/T for the challenge — very valuable in round 1 when eligible
+      score += 4;
+      break;
+
     default:
       score = 0;
   }
@@ -160,6 +167,17 @@ export function selectAIGambit(
         (id === 'brutal-but-kunnin' || id === 'kunnin-but-brutal') &&
         state.ai.usedBrutalButKunnin
       ) return false;
+      // Bite of the Betrayed: only eligible in round 1 vs EC/WE/SoH/DG opponents
+      if (id === 'bite-of-the-betrayed') {
+        const biteQualifyingFactions = new Set<string>([
+          'emperors-children', 'world-eaters', 'sons-of-horus', 'death-guard',
+        ]);
+        if (
+          state.ai.biteOfTheBetrayedActive ||
+          state.round > 1 ||
+          !biteQualifyingFactions.has(playerChar.faction)
+        ) return false;
+      }
       // Feint and Riposte only available to first mover
       if (id === 'feint-and-riposte') {
         const hasAdvantage =

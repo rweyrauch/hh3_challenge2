@@ -73,6 +73,7 @@ export function buildInitialState(playerChar: Character, aiChar: Character): Com
     usedBrutalButKunnin: false,
     feintAndRiposteBan: null,
     hitsReceivedLastStrikeStep: 0,
+    biteOfTheBetrayedActive: false,
   });
 
   return {
@@ -156,6 +157,11 @@ export class ChallengeEngine {
         next = { ...next, player: { ...next.player, tauntAndBaitCount: state.player.tauntAndBaitCount + 1 } };
       }
 
+      // Bite of the Betrayed: activate persistent +1 WS/S/T for this model
+      if (gambitId === 'bite-of-the-betrayed') {
+        next = { ...next, player: { ...next.player, biteOfTheBetrayedActive: true } };
+      }
+
       next = addLog(next, `Player selects gambit: ${gambitId}`, 'info');
 
       // Now AI selects its gambit
@@ -176,6 +182,11 @@ export class ChallengeEngine {
       // Taunt and Bait: increment counter for AI
       if (aiGambitId === 'taunt-and-bait') {
         next = { ...next, ai: { ...next.ai, tauntAndBaitCount: state.ai.tauntAndBaitCount + 1 } };
+      }
+
+      // Bite of the Betrayed: activate persistent +1 WS/S/T for AI
+      if (aiGambitId === 'bite-of-the-betrayed') {
+        next = { ...next, ai: { ...next.ai, biteOfTheBetrayedActive: true } };
       }
 
       next = addLog(next, `AI selects gambit: ${aiGambitId}`, 'info');

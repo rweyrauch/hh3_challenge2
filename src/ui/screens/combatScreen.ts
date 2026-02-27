@@ -89,6 +89,17 @@ export function updateCombatScreen(
       usedOnce.add('brutal-but-kunnin');
       usedOnce.add('kunnin-but-brutal');
     }
+    // Bite of the Betrayed: only eligible in round 1 vs EC/WE/SoH/DG opponents
+    const BITE_QUALIFYING_FACTIONS = new Set<string>([
+      'emperors-children', 'world-eaters', 'sons-of-horus', 'death-guard',
+    ]);
+    if (
+      state.player.biteOfTheBetrayedActive ||
+      state.round > 1 ||
+      !BITE_QUALIFYING_FACTIONS.has(aiChar.faction)
+    ) {
+      usedOnce.add('bite-of-the-betrayed');
+    }
     const bannedGambit = state.player.feintAndRiposteBan ?? state.ai.feintAndRiposteBan;
 
     gambitsEl.innerHTML = renderGambitsPanel(

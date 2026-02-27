@@ -98,11 +98,22 @@ function resolveAttackSequence(
     log.push(`Force: WP check succeeded — ${boostDesc}`);
   }
 
-  let atkWS = (forceBoost === 'WS' ? attackerChar.stats.WS * 2 : attackerChar.stats.WS) + mods.wsDelta;
+  // Bite of the Betrayed: persistent +1 WS and +1 S when attacking; +1 T when defending
+  const biteAtkBonus = attacker.biteOfTheBetrayedActive ? 1 : 0;
+  const biteDefBonus = defender.biteOfTheBetrayedActive ? 1 : 0;
+  if (biteAtkBonus > 0) {
+    log.push(`Bite of the Betrayed: ${attackerChar.name} has +1 WS and +1 S.`);
+  }
+  if (biteDefBonus > 0) {
+    log.push(`Bite of the Betrayed: ${defenderChar.name} has +1 T.`);
+  }
+
+  let atkWS = (forceBoost === 'WS' ? attackerChar.stats.WS * 2 : attackerChar.stats.WS) + mods.wsDelta + biteAtkBonus;
 
   // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n, 'mult' = S*n)
   const sm = profile.strengthModifier;
   let atkS = forceBoost === 'S' ? attackerChar.stats.S * 2 : attackerChar.stats.S;
+  if (biteAtkBonus > 0) atkS += 1; // bite bonus to base S before weapon modifier
   if (sm.kind === 'add')   atkS += sm.value;
   if (sm.kind === 'fixed') atkS  = sm.value;
   if (sm.kind === 'mult')  atkS *= sm.value;
@@ -150,8 +161,10 @@ function resolveAttackSequence(
 
   const defWS = defenderChar.stats.WS;
   const defT  = defenderChar.stats.T;
+  // Bite of the Betrayed: +1 T to the defender's base Toughness
+  const defTWithBite = defT + biteDefBonus;
   // Steadfast Resilience / Tempered by War may override defender's effective Toughness
-  const effectiveDefT = defenderMods.overrideDefenderToughness ?? defT;
+  const effectiveDefT = defenderMods.overrideDefenderToughness ?? defTWithBite;
 
   // Effective Strength and Damage for wound/damage calc
   const effectiveS = Math.max(1, atkS + mods.strengthDelta);
