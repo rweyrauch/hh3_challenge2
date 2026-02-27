@@ -21,7 +21,7 @@ import {
   GREAT_FROST_BLADE,
   BLADE_OF_JUDGEMENT,
   ARGEAN_POWER_SWORD,
-} from '../weapons/legionChampions.js';
+} from '../weapons/legionFaction.js';
 import { POWER_SWORD } from '../weapons/legionAstartes.js';
 import {
   LION_SWORD,

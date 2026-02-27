@@ -13,7 +13,7 @@ import type { GambitId } from '../models/gambit.js';
 import type { PsychicDiscipline } from '../models/character.js';
 import { getCharacterById, getFactionLabel, getLegionAlignment } from '../data/factions/index.js';
 import { applyDiscipline } from '../data/psychicDisciplines.js';
-import { CALIBANITE_WARBLADE, TERRANIC_GREATSWORD, POWER_GLAIVE, FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE, BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION, LEGATINE_AXE, RAVENS_TALON, PAIR_OF_RAVENS_TALONS, PHOENIX_POWER_SPEAR, PHOENIX_RAPIER, GRAVITON_MACE, CHAINGLAIVE, HEADSMANS_AXE, POWER_SCYTHE, ACHEA_PATTERN_FORCE_SWORD, CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR, POWER_DAGGER } from '../data/weapons/legionChampions.js';
+import { CALIBANITE_WARBLADE, TERRANIC_GREATSWORD, POWER_GLAIVE, FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE, BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION, LEGATINE_AXE, RAVENS_TALON, PAIR_OF_RAVENS_TALONS, PHOENIX_POWER_SPEAR, PHOENIX_RAPIER, GRAVITON_MACE, CHAINGLAIVE, HEADSMANS_AXE, POWER_SCYTHE, ACHEA_PATTERN_FORCE_SWORD, CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR, POWER_DAGGER } from '../data/weapons/legionFaction.js';
 import { SOLARITE_POWER_GAUNTLET, ARTIFICER_POWER_AXE } from '../data/weapons/namedCharacters.js';
 import { ChallengeEngine, buildInitialState } from '../engine/challengeEngine.js';
 import { RealDiceRoller } from '../engine/dice.js';

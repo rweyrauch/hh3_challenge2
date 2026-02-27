@@ -20,7 +20,7 @@ import {
   PAIRED_FALAX_BLADES,
   BARB_HOOK_LASH,
   ANAKATIS_BLADE,
-} from '../weapons/legionChampions.js';
+} from '../weapons/legionFaction.js';
 import {
   LAERAN_BLADE,
   BLADES_OF_LUCIUS,
