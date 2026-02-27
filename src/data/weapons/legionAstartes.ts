@@ -21,6 +21,7 @@ export const POWER_SWORD: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [{ name: 'Breaching', threshold: 6 }],
+      traits: ['Power'],      
     },
   ],
 };
@@ -37,6 +38,7 @@ export const POWER_AXE: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [{ name: 'Breaching', threshold: 5 }],
+      traits: ['Power'],       
     },
   ],
 };
@@ -53,6 +55,7 @@ export const POWER_MAUL: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [{ name: 'Breaching', threshold: 6 }],
+      traits: ['Power'],       
     },
   ],
 };
@@ -69,6 +72,7 @@ export const POWER_LANCE: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [{ name: 'Precision', threshold: 6 }],
+      traits: ['Power'],       
     },
   ],
 };
@@ -86,6 +90,7 @@ export const PARAGON_BLADE: Weapon = {
       ap: 2,
       damage: 1,
       specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+      traits: ['Power'],       
     },
   ],
 };
@@ -103,6 +108,7 @@ export const POWER_FIST: Weapon = {
       ap: 2,
       damage: 2,
       specialRules: [],
+      traits: ['Power'],       
     },
   ],
 };
@@ -120,6 +126,7 @@ export const THUNDER_HAMMER: Weapon = {
       ap: 2,
       damage: 2,
       specialRules: [],
+      traits: ['Power'],       
     },
   ],
 };
@@ -137,6 +144,7 @@ export const CROZIUS_ARCANUM: Weapon = {
       ap: 3,
       damage: 2,
       specialRules: [{ name: 'Breaching', threshold: 6 }],
+      traits: ['Power'],       
     },
   ],
 };
@@ -157,6 +165,7 @@ export const LIGHTNING_CLAWS_PAIR: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [{ name: 'Rending', threshold: 6 }, { name: 'Breaching', threshold: 6 }],
+      traits: ['Power'],       
     },
   ],
 };
@@ -174,6 +183,7 @@ export const CHAINSWORD: Weapon = {
       ap: 5,
       damage: 1,
       specialRules: [{ name: 'Shred', threshold: 6}],
+      traits: ['Chain'], 
     },
   ],
 };
@@ -191,6 +201,7 @@ export const LIGHTNING_CLAW: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [{ name: 'Rending', threshold: 6 }, { name: 'Breaching', threshold: 6 }],
+      traits: ['Power'],       
     },
   ],
 };
@@ -208,6 +219,7 @@ export const CHAINFIST: Weapon = {
       ap: 2,
       damage: 2,
       specialRules: [{ name: 'Shred', threshold: 6}],
+      traits: ['Chain'], 
     },
   ],
 };
@@ -225,6 +237,7 @@ export const CHAINBLADE: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [{ name: 'Shred', threshold: 6}, { name: 'Breaching', threshold: 6 }],
+      traits: ['Chain'],       
     },
   ],
 };
@@ -242,6 +255,7 @@ export const CHAINAXE: Weapon = {
       ap: 5,
       damage: 1,
       specialRules: [{ name: 'Shred', threshold: 6}],
+      traits: ['Chain'],       
     },
   ],
 };
@@ -258,6 +272,7 @@ export const SATURNINE_WAR_AXE: Weapon = {
       ap: 2,
       damage: 2,
       specialRules: [],
+      traits: ['Power'],       
     },
   ],
 };
@@ -274,6 +289,7 @@ export const SATURNINE_DISRUPTION_FIST: Weapon = {
       ap: 2,
       damage: 3,
       specialRules: [],
+      traits: ['Power'],       
     },
   ],
 };
@@ -290,6 +306,7 @@ export const SATURNINE_CONCUSSION_HAMMER: Weapon = {
       ap: 2,
       damage: 2,
       specialRules: [{ name: 'CriticalHit', threshold: 6}],
+      traits: ['Power'],       
     },
   ],
 };
@@ -312,6 +329,7 @@ export const FORCE_SWORD: Weapon = {
       strengthModifier:   { kind: 'add', value: 1 },
       ap: 3, damage: 1,
       specialRules: [{ name: 'Force', characteristic: 'D' }],
+      traits: ['Psychic'], 
     },
   ],
 };
@@ -328,6 +346,7 @@ export const FORCE_AXE: Weapon = {
       strengthModifier:   { kind: 'add', value: 2 },
       ap: 2, damage: 1,
       specialRules: [{ name: 'Force', characteristic: 'D' }],
+      traits: ['Psychic'],       
     },
   ],
 };
@@ -344,6 +363,7 @@ export const FORCE_MAUL: Weapon = {
       strengthModifier:   { kind: 'add', value: 3 },
       ap: 3, damage: 1,
       specialRules: [{ name: 'Force', characteristic: 'D' }],
+      traits: ['Psychic'],       
     },
   ],
 };
@@ -360,6 +380,7 @@ export const FORCE_STAFF: Weapon = {
       strengthModifier:   { kind: 'add', value: 2 },
       ap: 4, damage: 1,
       specialRules: [{ name: 'Force', characteristic: 'D' }],
+      traits: ['Psychic'],       
     },
   ],
 };

@@ -24,6 +24,7 @@ export const APOLLONIAN_SPEAR: Weapon = {
         { name: 'CriticalHit', threshold: 5 },
         { name: 'DuellistsEdge', value: 2 },
       ],
+      traits: ['Power'],       
     },
   ],
 };
@@ -41,6 +42,7 @@ export const SENTINEL_WARBLADE: Weapon = {
       ap: 2,
       damage: 1,
       specialRules: [],
+      traits: ['Power'],       
     },
   ],
 };
@@ -58,6 +60,7 @@ export const GUARDIAN_SPEAR: Weapon = {
       ap: 2,
       damage: 1,
       specialRules: [],
+      traits: ['Power'],       
     },
   ],
 };
@@ -92,6 +95,7 @@ export const MISERICORDIA: Weapon = {
       ap: 3,
       damage: 1,
       specialRules: [],
+      traits: ['Power'],       
     },
   ],
 };

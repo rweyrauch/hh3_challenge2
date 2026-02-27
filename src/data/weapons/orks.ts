@@ -18,6 +18,7 @@ export const CHOPPA: Weapon = {
       ap: null,              // AP '-'
       damage: 1,
       specialRules: [],
+      traits: ['Choppa'],      
     },
   ],
 };
@@ -35,6 +36,7 @@ export const POWER_KLAW: Weapon = {
       ap: 2,
       damage: 2,
       specialRules: [{ name: 'Rending', threshold: 6 }],
+      traits: ['Power'],      
     },
   ],
 };
@@ -52,6 +54,7 @@ export const BIG_CHOPPA: Weapon = {
       ap: 5,
       damage: 2,
       specialRules: [{ name: 'Shred', threshold: 6 }],
+      traits: ['Choppa'],      
     },
   ],
 };
@@ -93,6 +96,7 @@ export const FORCE_STAFF: Weapon = {
       strengthModifier:   { kind: 'add', value: 2 },
       ap: 4, damage: 1,
       specialRules: [{ name: 'Force', characteristic: 'D' }],
+      traits: ['Psychic'],
     },
   ],
 };

@@ -48,6 +48,7 @@ export const CHARNABAL_SABRE: Weapon = {
       { name: 'Breaching',      threshold: 6 },
       { name: 'DuellistsEdge', value: 1 },
     ],
+    traits: ['Charnabal'],        
   }],
 };
 
@@ -65,6 +66,7 @@ export const CHARNABAL_TABAR: Weapon = {
       { name: 'Breaching',      threshold: 6 },
       { name: 'DuellistsEdge', value: 1 },
     ],
+    traits: ['Charnabal'],     
   }],
 };
 
@@ -97,6 +99,7 @@ export const MILITIA_POWER_SWORD: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
+    traits: ['Power'],     
   }],
 };
 
@@ -111,6 +114,7 @@ export const MILITIA_POWER_AXE: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 5 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -125,5 +129,6 @@ export const MILITIA_POWER_FIST: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Power'],    
   }],
 };

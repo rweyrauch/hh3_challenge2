@@ -29,6 +29,7 @@ export const BIOMANTIC_SLAM: Weapon = {
         { name: 'Armourbane' },
         { name: 'Force', characteristic: 'D' },
       ],
+      traits: ['Psychic'],      
     },
   ],
 };
@@ -53,6 +54,7 @@ export const CONFLAGRATION: Weapon = {
       specialRules: [
         { name: 'Deflagrate', value: 5 },
       ],
+      traits: ['Psychic'],        
     },
   ],
 };
