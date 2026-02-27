@@ -8,7 +8,7 @@
  *   Impact(X)       — charge-only bonus; no effect in Challenge Sub-Phase
  *   Phage(S)        — established pattern (daemon weapons); omit from profiles
  */
-import type { Weapon } from '../../models/weapon.js';
+import { type Weapon, profile } from '../../models/weapon.js';
 
 // ── Space Wolves Frost Weapons ───────────────────────────────────────────────
 
@@ -16,71 +16,59 @@ import type { Weapon } from '../../models/weapon.js';
 export const FROST_AXE: Weapon = {
   name: 'Frost Axe',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Frost Axe',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
-    specialRules: [
-      { name: 'Breaching', threshold: 4 },
-      // Reaping Blow(1) not simulated
-    ],
+    specialRules: [{ name: 'Breaching', threshold: 4 }],
+    // Reaping Blow(1) not simulated
     traits: ['Power'],
-  }],
+  })],
 };
 
 /** Frost sword. IM+1/AM—/SM—/AP3/D1, Breaching(5+). Reaping Blow(1) omitted. */
 export const FROST_SWORD: Weapon = {
   name: 'Frost Sword',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Frost Sword',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
-    specialRules: [
-      { name: 'Breaching', threshold: 5 },
-      // Reaping Blow(1) not simulated
-    ],
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
+    // Reaping Blow(1) not simulated
     traits: ['Power'],
-  }],
+  })],
 };
 
 /** Frost claw. IM—/AM—/SM—/AP3/D1, Breaching(4+), Shred(6+). Reaping Blow(1) omitted. */
 export const FROST_CLAW: Weapon = {
   name: 'Frost Claw',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Frost Claw',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 4 },
       { name: 'Shred', threshold: 6 },
-      // Reaping Blow(1) not simulated
     ],
+    // Reaping Blow(1) not simulated
     traits: ['Power'],
-  }],
+  })],
 };
 
 /** Great frost blade. IM-2/AM—/SM+3/AP2/D2. Reaping Blow(1) omitted. */
 export const GREAT_FROST_BLADE: Weapon = {
   name: 'Great Frost Blade',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Great Frost Blade',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 2,
-    specialRules: [],
     // Reaping Blow(1) not simulated
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── Dark Angels Weapons ──────────────────────────────────────────────────────
@@ -88,37 +76,26 @@ export const GREAT_FROST_BLADE: Weapon = {
 export const CALIBANITE_WARBLADE: Weapon = {
   name: 'Calibanite Warblade',
   type: 'melee',
-  profiles: [
-    {
-      profileName: 'Calibanite Warblade',
-      initiativeModifier: { kind: 'none' },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'add', value: 1 },
-      ap: 3, damage: 1,
-      specialRules: [
-        { name: 'Breaching', threshold: 5 },
-      ],
-      traits: ['Sword of the Order'],
-    },
-  ],
+  profiles: [profile({
+    profileName: 'Calibanite Warblade',
+    strengthModifier: { kind: 'add', value: 1 },
+    ap: 3, damage: 1,
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
+    traits: ['Sword of the Order'],
+  })],
 };
 
 export const TERRANIC_GREATSWORD: Weapon = {
   name: 'Terranic Greatsword',
   type: 'melee',
-  profiles: [
-    {
-      profileName: 'Terranic Greatsword',
-      initiativeModifier: { kind: 'add', value: -1 },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'add', value: 2 },
-      ap: 3, damage: 2,
-      specialRules: [
-        { name: 'Breaching', threshold: 5 },
-      ],
-      traits: ['Sword of the Order'],
-    },
-  ],
+  profiles: [profile({
+    profileName: 'Terranic Greatsword',
+    initiativeModifier: { kind: 'add', value: -1 },
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 3, damage: 2,
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
+    traits: ['Sword of the Order'],
+  })],
 };
 
 /**
@@ -130,26 +107,20 @@ export const CALIBANITE_CHARGE_BLADE: Weapon = {
   name: 'Calibanite Charge-blade',
   type: 'melee',
   profiles: [
-    {
+    profile({
       profileName: 'Uncharged',
       initiativeModifier: { kind: 'add', value: 2 },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'none' },
       ap: 4, damage: 1,
-      specialRules: [],
       traits: ['Sword of the Order'],
-    },
-    {
+    }),
+    profile({
       profileName: 'Charged',
       initiativeModifier: { kind: 'add', value: -1 },
-      attacksModifier: { kind: 'none' },
       strengthModifier: { kind: 'add', value: 1 },
       ap: 3, damage: 1,
-      specialRules: [
-        { name: 'Breaching', threshold: 6 },
-      ],
+      specialRules: [{ name: 'Breaching', threshold: 6 }],
       traits: ['Sword of the Order'],
-    },
+    }),
   ],
 };
 
@@ -160,10 +131,8 @@ export const CALIBANITE_CHARGE_BLADE: Weapon = {
 export const EXCINDIO_CLAWS: Weapon = {
   name: 'Excindio Claws',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Excindio Claws',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 2,
     specialRules: [
@@ -171,7 +140,7 @@ export const EXCINDIO_CLAWS: Weapon = {
       // Reaping Blow(2) not simulated
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── White Scars Weapons ─────────────────────────────────────────────────────
@@ -179,17 +148,14 @@ export const EXCINDIO_CLAWS: Weapon = {
 export const POWER_GLAIVE: Weapon = {
   name: 'Power glaive',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Power glaive',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
-    specialRules: [
-      { name: 'Breaching', threshold: 5 },
-    ],
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── Blood Angels Weapons ─────────────────────────────────────────────────────
@@ -198,10 +164,8 @@ export const POWER_GLAIVE: Weapon = {
 export const BLADE_OF_JUDGEMENT: Weapon = {
   name: 'Blade of Judgement',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Blade of Judgement',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 1,
     specialRules: [
@@ -209,33 +173,29 @@ export const BLADE_OF_JUDGEMENT: Weapon = {
       { name: 'CriticalHit', threshold: 6 },
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 export const BLADE_OF_PERDITION: Weapon = {
   name: 'Blade of Perdition',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Blade of Perdition',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 6 },
       //{ name: 'Aflame', threshold: 1 },
     ],
     traits: ['Power', 'Flame'],
-  }]
+  })],
 };
 
 export const AXE_OF_PERDITION: Weapon = {
   name: 'Axe of Perdition',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Axe of Perdition',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [
@@ -243,16 +203,15 @@ export const AXE_OF_PERDITION: Weapon = {
       //{ name: 'Aflame', threshold: 1 },
     ],
     traits: ['Power', 'Flame'],
-  }]
+  })],
 };
 
 export const MAUL_OF_PERDITION: Weapon = {
   name: 'Maul of Perdition',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Maul of Perdition',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 1,
     specialRules: [
@@ -260,24 +219,22 @@ export const MAUL_OF_PERDITION: Weapon = {
       //{ name: 'Aflame', threshold: 1 },
     ],
     traits: ['Power', 'Flame'],
-  }]
+  })],
 };
 
 export const SPEAR_OF_PERDITION: Weapon = {
   name: 'Spear of Perdition',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Spear of Perdition',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Precision', threshold: 6 },
       //{ name: 'Aflame', threshold: 1 },
     ],
     traits: ['Power', 'Flame'],
-  }]
+  })],
 };
 
 // ── Ultramarines Weapons ─────────────────────────────────────────────────────
@@ -286,34 +243,26 @@ export const SPEAR_OF_PERDITION: Weapon = {
 export const ARGEAN_POWER_SWORD: Weapon = {
   name: 'Argean Power Sword',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Argean Power Sword',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
-    specialRules: [
-      { name: 'Breaching', threshold: 5 },
-    ],
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
     traits: ['Power'],
-  }],
+  })],
 };
 
 export const LEGATINE_AXE: Weapon = {
   name: 'Legatine Axe',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Legatine Axe',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
-    specialRules: [
-      { name: 'Breaching', threshold: 4 },
-    ],
+    specialRules: [{ name: 'Breaching', threshold: 4 }],
     traits: ['Power'],
-  }],
+  })],
 };
+
 // ── Emperor's Children Weapons ───────────────────────────────────────────────
 
 /**
@@ -325,10 +274,9 @@ export const LEGATINE_AXE: Weapon = {
 export const PHOENIX_POWER_SPEAR: Weapon = {
   name: 'Phoenix Power Spear',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Phoenix Power Spear',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [
@@ -336,34 +284,29 @@ export const PHOENIX_POWER_SPEAR: Weapon = {
       { name: 'Breaching', threshold: 6 },
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 export const PHOENIX_RAPIER: Weapon = {
   name: 'Phoenix Rapier',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Phoenix Rapier',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Impact', modifier: { kind: 'none' } }, // charge-only, not simulated
       { name: 'Breaching', threshold: 6 },
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 /** Palatine blade (Palatine Prefector / Emperor's Children). IM—/AM—/SM+1/AP3/D1, Breaching(5+), DuellistsEdge(1). */
 export const PALATINE_BLADE: Weapon = {
   name: 'Palatine Blade',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Palatine Blade',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [
@@ -371,7 +314,7 @@ export const PALATINE_BLADE: Weapon = {
       { name: 'DuellistsEdge', value: 1 },
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── Raven Guard Weapons ─────────────────────────────────────────────
@@ -379,11 +322,8 @@ export const PALATINE_BLADE: Weapon = {
 export const RAVENS_TALON: Weapon = {
   name: 'Raven\'s Talon',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Raven\'s Talon',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 6 },
@@ -391,17 +331,15 @@ export const RAVENS_TALON: Weapon = {
       // Impact(IM) not simulated — charge-only bonus
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 export const PAIR_OF_RAVENS_TALONS: Weapon = {
   name: 'Pair of Raven\'s Talons',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Pair of Raven\'s Talons',
-    initiativeModifier: { kind: 'none' },
     attacksModifier: { kind: 'add', value: 2 },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 6 },
@@ -409,7 +347,7 @@ export const PAIR_OF_RAVENS_TALONS: Weapon = {
       // Impact(IM) not simulated — charge-only bonus
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── Iron Warriors Weapons ─────────────────────────────────────────────
@@ -417,15 +355,14 @@ export const PAIR_OF_RAVENS_TALONS: Weapon = {
 export const GRAVITON_MACE: Weapon = {
   name: 'Graviton Mace',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Graviton Mace',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 3 },
     ap: 3, damage: 1,
-    specialRules: [], // Shock (Pinned) not simulated
+    // Shock (Pinned) not simulated
     traits: ['Graviton'],
-  }],
+  })],
 };
 
 // ── Night Lords Weapons ─────────────────────────────────────────────
@@ -433,10 +370,8 @@ export const GRAVITON_MACE: Weapon = {
 export const CHAINGLAIVE: Weapon = {
   name: 'Chainglaive',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Chainglaive',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [
@@ -444,23 +379,20 @@ export const CHAINGLAIVE: Weapon = {
       { name: 'Shred', threshold: 6 },
     ],
     traits: ['Chain'],
-  }],
+  })],
 };
 
 export const HEADSMANS_AXE: Weapon = {
   name: 'Headsman\'s Axe',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Headsman\'s Axe',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 2,
-    specialRules: [
-      { name: 'CriticalHit', threshold: 6 },
-    ],
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
     traits: ['Chain'],
-  }],
+  })],
 };
 
 // ── World Eaters Caedere Weapons ─────────────────────────────────────────────
@@ -472,26 +404,23 @@ export const HEADSMANS_AXE: Weapon = {
 export const METEOR_HAMMER: Weapon = {
   name: 'Meteor Hammer',
   type: 'melee',
-  profiles: [{
+  // Impact(IM) not simulated — charge-only bonus
+  profiles: [profile({
     profileName: 'Meteor Hammer',
-    initiativeModifier: { kind: 'none' },
     attacksModifier: { kind: 'add', value: -1 },
     strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 2,
-    specialRules: [],
-    // Impact(IM) not simulated — charge-only bonus
     traits: ['Power'],
-  }],
+  })],
 };
 
 /** Excoriator chainaxe (Rampager Champion / World Eaters). IM-2/AM—/SM+2/AP3/D1, Breaching(6+), Shred(6+). */
 export const EXCORIATOR_CHAINAXE: Weapon = {
   name: 'Excoriator Chainaxe',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Excoriator Chainaxe',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 1,
     specialRules: [
@@ -499,22 +428,19 @@ export const EXCORIATOR_CHAINAXE: Weapon = {
       { name: 'Shred', threshold: 6 },
     ],
     traits: ['Chain'],
-  }],
+  })],
 };
 
 /** Paired falax blades (Rampager Champion / World Eaters). IM—/AM+2/SM—/AP3/D1. */
 export const PAIRED_FALAX_BLADES: Weapon = {
   name: 'Paired Falax Blades',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Paired Falax Blades',
-    initiativeModifier: { kind: 'none' },
     attacksModifier: { kind: 'add', value: 2 },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
-    specialRules: [],
     traits: ['Power'],
-  }],
+  })],
 };
 
 /**
@@ -524,18 +450,16 @@ export const PAIRED_FALAX_BLADES: Weapon = {
 export const BARB_HOOK_LASH: Weapon = {
   name: 'Barb-hook Lash',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Barb-hook Lash',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'CriticalHit', threshold: 6 },
       // Phage(S) not simulated — established pattern
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── Word Bearers Weapons ─────────────────────────────────────────────────────
@@ -547,18 +471,15 @@ export const BARB_HOOK_LASH: Weapon = {
 export const ANAKATIS_BLADE: Weapon = {
   name: 'Anakatis Blade',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Anakatis Blade',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [
       { name: 'Breaching', threshold: 6 },
       // Phage(S) not simulated — established pattern
     ],
     traits: ['Psychic'],
-  }],
+  })],
 };
 
 // ── Death Guard Weapons ─────────────────────────────────────────────────────
@@ -566,18 +487,17 @@ export const ANAKATIS_BLADE: Weapon = {
 export const POWER_SCYTHE: Weapon = {
   name: 'Power Scythe',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Power Scythe',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 5 },
-      // ReapingBlow(2) not simulator — established pattern
+      // ReapingBlow(2) not simulated — established pattern
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── The Thousand Sons Weapons ─────────────────────────────────────────────────────
@@ -585,17 +505,13 @@ export const POWER_SCYTHE: Weapon = {
 export const ACHEA_PATTERN_FORCE_SWORD: Weapon = {
   name: 'Achea pattern force sword',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Achea pattern force sword',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
-    specialRules: [
-      { name: 'Breaching', threshold: 5 },
-    ],
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
     traits: ['Psychic'],
-  }],
+  })],
 };
 
 // ── Sons of Horus Weapons ─────────────────────────────────────────────────────
@@ -603,10 +519,9 @@ export const ACHEA_PATTERN_FORCE_SWORD: Weapon = {
 export const CARSORAN_POWER_AXE: Weapon = {
   name: 'Carsoran Power Axe',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Carsoran Power Axe',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [
@@ -614,16 +529,15 @@ export const CARSORAN_POWER_AXE: Weapon = {
       { name: 'Shred', threshold: 6 },
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 export const CARSORAN_POWER_TABAR: Weapon = {
   name: 'Carsoran Power Tabar',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Carsoran Power Tabar',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 1,
     specialRules: [
@@ -631,7 +545,7 @@ export const CARSORAN_POWER_TABAR: Weapon = {
       { name: 'Shred', threshold: 5 },
     ],
     traits: ['Power'],
-  }],
+  })],
 };
 
 // ── Alpha Legion Weapons ─────────────────────────────────────────────────────
@@ -639,15 +553,12 @@ export const CARSORAN_POWER_TABAR: Weapon = {
 export const POWER_DAGGER: Weapon = {
   name: 'Power Dagger',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Power Dagger',
     initiativeModifier: { kind: 'add', value: 2 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: -1 },
     ap: 3, damage: 1,
-    specialRules: [
-      { name: 'Breaching', threshold: 5 },
-    ],
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
     traits: ['Power'],
-  }],
+  })],
 };

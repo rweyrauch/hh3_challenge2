@@ -10,12 +10,12 @@
 import type { Character } from '../../models/character.js';
 import {
   NEURO_GAUNTLET,
-  POWER_SWORD_ASSASSIN,
   PHASE_SWORD,
   PSYK_OUT_BOMBS,
   NEMESII_BLADE,
   HOOKFANG,
 } from '../weapons/assassins.js';
+import { POWER_SWORD } from '../weapons/legionAstartes.js';
 
 // ── Eversor Assassin ─────────────────────────────────────────────────────────
 // Frenzon Rage: must always select biological-overload; no other gambit allowed.
@@ -30,7 +30,7 @@ const EVERSOR_ASSASSIN: Character = {
     I: 5, A: 4, LD: 10, CL: 10, WP: 7, IN: 7,
     Sv: 4, Inv: 4,
   },
-  weapons: [NEURO_GAUNTLET, POWER_SWORD_ASSASSIN],
+  weapons: [NEURO_GAUNTLET, POWER_SWORD],
   factionGambitIds: ['biological-overload'],
   mandatoryGambitId: 'biological-overload',
   specialRules: [

@@ -79,6 +79,23 @@ export interface Weapon {
 }
 
 /**
+ * Convenience factory for a WeaponProfile.
+ * Defaults all three modifiers to {kind:'none'} and specialRules to [].
+ * Pass only the fields that differ from those defaults.
+ */
+export function profile(
+  fields: Pick<WeaponProfile, 'profileName' | 'ap' | 'damage'> & Partial<WeaponProfile>,
+): WeaponProfile {
+  return {
+    initiativeModifier: { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
+    specialRules: [],
+    ...fields,
+  };
+}
+
+/**
  * Return true if this weapon profile qualifies for the Dark Angels
  * 'Sword of the Order' gambit — i.e., it carries the 'Sword of the Order'
  * trait, or its profile name contains 'sword' (covers Power Sword, Chainsword,

@@ -13,8 +13,11 @@
  *
  * Charnabal weapons give the player a choice of sabre or tabar variant;
  * both are included so the UI can present them as separate weapon options.
+ *
+ * Standard power weapons (Power Sword, Power Axe, Power Fist) are shared
+ * with Legion Astartes and imported from weapons/legionAstartes.ts.
  */
-import type { Weapon } from '../../models/weapon.js';
+import { type Weapon, profile } from '../../models/weapon.js';
 
 // ── Rudimentary Weapons ───────────────────────────────────────────────────────
 
@@ -22,14 +25,7 @@ import type { Weapon } from '../../models/weapon.js';
 export const MILITIA_CCW: Weapon = {
   name: 'Close Combat Weapon',
   type: 'melee',
-  profiles: [{
-    profileName: 'Close Combat Weapon',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
-    ap: null, damage: 1,
-    specialRules: [],
-  }],
+  profiles: [profile({ profileName: 'Close Combat Weapon', ap: null, damage: 1 })],
 };
 
 // ── Charnabal Weapons ─────────────────────────────────────────────────────────
@@ -38,28 +34,24 @@ export const MILITIA_CCW: Weapon = {
 export const CHARNABAL_SABRE: Weapon = {
   name: 'Charnabal Sabre',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Charnabal Sabre',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: null, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 6 },
       { name: 'DuellistsEdge', value: 1 },
     ],
     traits: ['Charnabal'],
-  }],
+  })],
 };
 
 /** Charnabal tabar: I, A, +1S, AP-, D1, Breaching(6+), Duellist's Edge(1) */
 export const CHARNABAL_TABAR: Weapon = {
   name: 'Charnabal Tabar',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Charnabal Tabar',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: null, damage: 1,
     specialRules: [
@@ -67,7 +59,7 @@ export const CHARNABAL_TABAR: Weapon = {
       { name: 'DuellistsEdge', value: 1 },
     ],
     traits: ['Charnabal'],
-  }],
+  })],
 };
 
 // ── Paragon Weapons ───────────────────────────────────────────────────────────
@@ -76,59 +68,10 @@ export const CHARNABAL_TABAR: Weapon = {
 export const MILITIA_PARAGON_BLADE: Weapon = {
   name: 'Paragon Blade',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Paragon Blade',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-  }],
-};
-
-// ── Power Weapons ─────────────────────────────────────────────────────────────
-
-/** Power sword: I, A, S, AP3, D1, Breaching(6+) */
-export const MILITIA_POWER_SWORD: Weapon = {
-  name: 'Power Sword',
-  type: 'melee',
-  profiles: [{
-    profileName: 'Power Sword',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
-    ap: 3, damage: 1,
-    specialRules: [{ name: 'Breaching', threshold: 6 }],
-    traits: ['Power'],
-  }],
-};
-
-/** Power axe: -1I, A, +1S, AP3, D1, Breaching(5+) */
-export const MILITIA_POWER_AXE: Weapon = {
-  name: 'Power Axe',
-  type: 'melee',
-  profiles: [{
-    profileName: 'Power Axe',
-    initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'add', value: 1 },
-    ap: 3, damage: 1,
-    specialRules: [{ name: 'Breaching', threshold: 5 }],
-    traits: ['Power'],
-  }],
-};
-
-/** Power fist: -3I, A, +4S, AP2, D2 */
-export const MILITIA_POWER_FIST: Weapon = {
-  name: 'Power Fist',
-  type: 'melee',
-  profiles: [{
-    profileName: 'Power Fist',
-    initiativeModifier: { kind: 'add', value: -3 },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'add', value: 4 },
-    ap: 2, damage: 2,
-    specialRules: [],
-    traits: ['Power'],
-  }],
+  })],
 };

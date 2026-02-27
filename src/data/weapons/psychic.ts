@@ -7,7 +7,7 @@
  * Biomancy   → Biomantic Slam
  * Pyromancy  → Conflagration
  */
-import type { Weapon } from '../../models/weapon.js';
+import { type Weapon, profile } from '../../models/weapon.js';
 
 /**
  * Biomantic Slam (Biomancy)
@@ -17,21 +17,18 @@ import type { Weapon } from '../../models/weapon.js';
 export const BIOMANTIC_SLAM: Weapon = {
   name: 'Biomantic Slam',
   type: 'melee',
-  profiles: [
-    {
-      profileName: 'Biomantic Slam',
-      initiativeModifier: { kind: 'add', value: -3 },
-      attacksModifier: { kind: 'add', value: 1 },
-      strengthModifier: { kind: 'fixed', value: 12 },
-      ap: 2,
-      damage: 2,
-      specialRules: [
-        { name: 'Armourbane' },
-        { name: 'Force', characteristic: 'D' },
-      ],
-      traits: ['Psychic'],
-    },
-  ],
+  profiles: [profile({
+    profileName: 'Biomantic Slam',
+    initiativeModifier: { kind: 'add', value: -3 },
+    attacksModifier: { kind: 'add', value: 1 },
+    strengthModifier: { kind: 'fixed', value: 12 },
+    ap: 2, damage: 2,
+    specialRules: [
+      { name: 'Armourbane' },
+      { name: 'Force', characteristic: 'D' },
+    ],
+    traits: ['Psychic'],
+  })],
 };
 
 /**
@@ -42,19 +39,14 @@ export const BIOMANTIC_SLAM: Weapon = {
 export const CONFLAGRATION: Weapon = {
   name: 'Conflagration',
   type: 'melee',
-  profiles: [
-    {
-      profileName: 'Conflagration',
-      initiativeModifier: { kind: 'add', value: -1 },
-      attacksModifier: { kind: 'fixed', value: 6 },
-      strengthModifier: { kind: 'fixed', value: 5 },
-      ap: 4,
-      damage: 1,
-      attacksExtraD3: true,
-      specialRules: [
-        { name: 'Deflagrate', value: 5 },
-      ],
-      traits: ['Psychic'],
-    },
-  ],
+  profiles: [profile({
+    profileName: 'Conflagration',
+    initiativeModifier: { kind: 'add', value: -1 },
+    attacksModifier: { kind: 'fixed', value: 6 },
+    strengthModifier: { kind: 'fixed', value: 5 },
+    ap: 4, damage: 1,
+    attacksExtraD3: true,
+    specialRules: [{ name: 'Deflagrate', value: 5 }],
+    traits: ['Psychic'],
+  })],
 };
