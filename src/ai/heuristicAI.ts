@@ -11,6 +11,7 @@ import type { CombatState } from '../models/combatState.js';
 import type { Character }   from '../models/character.js';
 import type { GambitId }    from '../models/gambit.js';
 import { getFactionGambits } from '../data/factions/index.js';
+import { isSwordProfile } from '../models/weapon.js';
 
 /**
  * Score a single gambit for the AI to use in the current round.
@@ -98,6 +99,14 @@ export function scoreGambit(
       // Good when AI is strong; bad when slow
       if (aiS >= 6) score += 2;
       if (aiI < playerI) score -= 2;
+      break;
+
+    // ── Dark Angels faction gambits ───────────────────────────────────────
+
+    case 'sword-of-the-order':
+      // CriticalHit(6+) at cost of -1A; worthwhile when AI has many attacks
+      if (aiChar.stats.A >= 4) score += 2;
+      else score += 1;
       break;
 
     // ── Custodes faction gambits ───────────────────────────────────────────
@@ -194,6 +203,13 @@ export function selectAIGambit(
           state.round > 1 ||
           !biteQualifyingFactions.has(playerChar.faction)
         ) return false;
+      }
+      // Sword of the Order: only eligible when the AI has at least one sword weapon
+      if (id === 'sword-of-the-order') {
+        const hasSword = aiChar.weapons.some(
+          w => w.type === 'melee' && w.profiles.some(p => isSwordProfile(p)),
+        );
+        if (!hasSword) return false;
       }
       // Feint and Riposte only available to first mover
       if (id === 'feint-and-riposte') {

@@ -26,6 +26,7 @@ export const FROST_AXE: Weapon = {
       { name: 'Breaching', threshold: 4 },
       // Reaping Blow(1) not simulated
     ],
+    traits: ['Power'],
   }],
 };
 
@@ -43,6 +44,7 @@ export const FROST_SWORD: Weapon = {
       { name: 'Breaching', threshold: 5 },
       // Reaping Blow(1) not simulated
     ],
+    traits: ['Power'],    
   }],
 };
 
@@ -61,6 +63,7 @@ export const FROST_CLAW: Weapon = {
       { name: 'Shred',     threshold: 6 },
       // Reaping Blow(1) not simulated
     ],
+    traits: ['Power'],    
   }],
 };
 
@@ -76,6 +79,7 @@ export const GREAT_FROST_BLADE: Weapon = {
     ap: 2, damage: 2,
     specialRules: [],
     // Reaping Blow(1) not simulated
+    traits: ['Power'],
   }],
 };
 
@@ -93,7 +97,8 @@ export const CALIBANITE_WARBLADE: Weapon = {
       ap: 3, damage: 1,
       specialRules: [
         { name: 'Breaching', threshold: 5 },
-      ]
+      ],
+      traits: ['Sword of the Order'],
     },
   ],
 };
@@ -110,7 +115,8 @@ export const TERRANIC_GREATSWORD: Weapon = {
       ap: 3, damage: 2,
       specialRules: [
         { name: 'Breaching', threshold: 5 },
-      ]
+      ],
+      traits: ['Sword of the Order'],
     },
   ],
 };
@@ -131,6 +137,7 @@ export const CALIBANITE_CHARGE_BLADE: Weapon = {
       strengthModifier:   { kind: 'none' },
       ap: 4, damage: 1,
       specialRules: [],
+      traits: ['Sword of the Order'],
     },
     {
       profileName: 'Charged',
@@ -141,6 +148,7 @@ export const CALIBANITE_CHARGE_BLADE: Weapon = {
       specialRules: [
         { name: 'Breaching', threshold: 6 },
       ],
+      traits: ['Sword of the Order'],
     },
   ],
 };
@@ -162,6 +170,7 @@ export const EXCINDIO_CLAWS: Weapon = {
       { name: 'Breaching', threshold: 5 },
       // Reaping Blow(2) not simulated
     ],
+    traits: ['Power'],    
   }],
 };
 
@@ -179,6 +188,7 @@ export const POWER_GLAIVE: Weapon = {
     specialRules: [
       { name: 'Breaching',   threshold: 5 },
     ],
+    traits: ['Power'],    
   }],
 };
 
@@ -198,6 +208,7 @@ export const BLADE_OF_JUDGEMENT: Weapon = {
       { name: 'Breaching',   threshold: 5 },
       { name: 'CriticalHit', threshold: 6 },
     ],
+    traits: ['Power'],    
   }],
 };
 
@@ -214,6 +225,7 @@ export const BLADE_OF_PERDITION: Weapon = {
       { name: 'Breaching',   threshold: 6 },
       //{ name: 'Aflame', threshold: 1 },
     ],
+    traits: ['Power', 'Flame'],    
   }]
 };
 
@@ -230,6 +242,7 @@ export const AXE_OF_PERDITION: Weapon = {
       { name: 'Breaching',   threshold: 5 },
       //{ name: 'Aflame', threshold: 1 },
     ],
+    traits: ['Power', 'Flame'],    
   }]
 };
 
@@ -246,6 +259,7 @@ export const MAUL_OF_PERDITION: Weapon = {
       { name: 'Breaching',   threshold: 6 },
       //{ name: 'Aflame', threshold: 1 },
     ],
+    traits: ['Power', 'Flame'],    
   }]
 };
 
@@ -262,6 +276,7 @@ export const SPEAR_OF_PERDITION: Weapon = {
       { name: 'Precision',   threshold: 6 },
       //{ name: 'Aflame', threshold: 1 },
     ],
+    traits: ['Power', 'Flame'],    
   }]
 };
 
@@ -280,6 +295,7 @@ export const ARGEAN_POWER_SWORD: Weapon = {
     specialRules: [
       { name: 'Breaching', threshold: 5 },
     ],
+    traits: ['Power'],      
   }],
 };
 
@@ -295,6 +311,7 @@ export const LEGATINE_AXE: Weapon = {
     specialRules: [
       { name: 'Breaching', threshold: 4 },
     ],
+    traits: ['Power'],     
   }],
 };
 // ── Emperor's Children Weapons ───────────────────────────────────────────────
@@ -319,6 +336,7 @@ export const PHOENIX_POWER_SPEAR: Weapon = {
       { name: 'Breaching', threshold: 6 },
     ],
   }],
+  traits: ['Power'],   
 };
 
 export const PHOENIX_RAPIER: Weapon = {
@@ -335,6 +353,7 @@ export const PHOENIX_RAPIER: Weapon = {
       { name: 'Breaching', threshold: 6 },
     ],
   }],
+  traits: ['Power'],  
 };
 
 /** Palatine blade (Palatine Prefector / Emperor's Children). IM—/AM—/SM+1/AP3/D1, Breaching(5+), DuellistsEdge(1). */
@@ -351,6 +370,7 @@ export const PALATINE_BLADE: Weapon = {
       { name: 'Breaching',    threshold: 5 },
       { name: 'DuellistsEdge', value: 1 },
     ],
+    traits: ['Power'],    
   }],
 };
 
@@ -370,6 +390,7 @@ export const RAVENS_TALON: Weapon = {
       { name: 'Rending', threshold: 6 },
     // Impact(IM) not simulated — charge-only bonus
     ],   
+    traits: ['Power'],     
   }],
 };
 
@@ -387,6 +408,7 @@ export const PAIR_OF_RAVENS_TALONS: Weapon = {
       { name: 'Rending', threshold: 6 },
     // Impact(IM) not simulated — charge-only bonus
     ],   
+    traits: ['Power'], 
   }],
 };
 
@@ -402,6 +424,7 @@ export const GRAVITON_MACE: Weapon = {
     strengthModifier:   { kind: 'add', value: 3 },
     ap: 3, damage: 1,
     specialRules: [], // Shock (Pinned) not simulated
+    traits: ['Graviton'], 
   }],
 };
 
@@ -420,6 +443,7 @@ export const CHAINGLAIVE: Weapon = {
       { name: 'Breaching', threshold: 6 },
       { name: 'Shred', threshold: 6 },      
     ], 
+    traits: ['Chain'], 
   }],
 };
 
@@ -435,6 +459,7 @@ export const HEADSMANS_AXE: Weapon = {
     specialRules: [
       { name: 'CriticalHit', threshold: 6 },    
     ], 
+    traits: ['Chain'],     
   }],
 };
 
@@ -455,6 +480,7 @@ export const METEOR_HAMMER: Weapon = {
     ap: 3, damage: 2,
     specialRules: [],
     // Impact(IM) not simulated — charge-only bonus
+    traits: ['Power'],     
   }],
 };
 
@@ -472,6 +498,7 @@ export const EXCORIATOR_CHAINAXE: Weapon = {
       { name: 'Breaching', threshold: 6 },
       { name: 'Shred',     threshold: 6 },
     ],
+    traits: ['Chain'],     
   }],
 };
 
@@ -486,6 +513,7 @@ export const PAIRED_FALAX_BLADES: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [],
+    traits: ['Power'],     
   }],
 };
 
@@ -506,6 +534,7 @@ export const BARB_HOOK_LASH: Weapon = {
       { name: 'CriticalHit', threshold: 6 },
       // Phage(S) not simulated — established pattern
     ],
+    traits: ['Power'],     
   }],
 };
 
@@ -528,6 +557,7 @@ export const ANAKATIS_BLADE: Weapon = {
       { name: 'Breaching', threshold: 6 },
       // Phage(S) not simulated — established pattern
     ],
+    traits: ['Psychic'],     
   }],
 };
 
@@ -546,6 +576,7 @@ export const POWER_SCYTHE: Weapon = {
       { name: 'Breaching', threshold: 5 },
       // ReapingBlow(2) not simulator — established pattern
     ],
+    traits: ['Power'],     
   }],
 };
 
@@ -563,6 +594,7 @@ export const ACHEA_PATTERN_FORCE_SWORD: Weapon = {
     specialRules: [
       { name: 'Breaching', threshold: 5 },
     ],
+    traits: ['Psychic'],     
   }],
 };
 
@@ -581,6 +613,7 @@ export const CARSORAN_POWER_AXE: Weapon = {
       { name: 'Breaching', threshold: 5 },
       { name: 'Shred', threshold: 6},
     ],
+    traits: ['Power'],     
   }],
 };
 
@@ -597,6 +630,7 @@ export const CARSORAN_POWER_TABAR: Weapon = {
       { name: 'Breaching', threshold: 5 },
       { name: 'Shred', threshold: 5 },
     ],
+    traits: ['Power'],     
   }],
 };
 
@@ -614,5 +648,6 @@ export const POWER_DAGGER: Weapon = {
     specialRules: [
       { name: 'Breaching', threshold: 5 },
     ],
+    traits: ['Power'],     
   }],
 };

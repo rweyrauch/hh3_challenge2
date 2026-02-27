@@ -12,6 +12,7 @@ import type { DiceRoller }    from './dice.js';
 import type { CombatState, CombatantState }  from '../models/combatState.js';
 import type { Character }     from '../models/character.js';
 import type { WeaponProfile } from '../models/weapon.js';
+import { isSwordProfile } from '../models/weapon.js';
 import { getHitTargetNumber, getWoundTargetNumber, getEffectiveSave } from './tables.js';
 import { getStrikeModifiers } from './gambitEffects.js';
 
@@ -84,7 +85,11 @@ function resolveAttackSequence(
   // Calling rollD3() unconditionally would make the dice sequence
   // non-deterministic for every other gambit.
   const d3Result = attacker.selectedGambit === 'flurry-of-blows' ? dice.rollD3() : 1;
-  const mods = getStrikeModifiers(attacker.selectedGambit, state, isForPlayer, d3Result);
+  const rawMods = getStrikeModifiers(attacker.selectedGambit, state, isForPlayer, d3Result);
+  // Sword of the Order: -1A and CriticalHit(6+) only apply when using a sword weapon.
+  const mods = (attacker.selectedGambit === 'sword-of-the-order' && !isSwordProfile(profile))
+    ? { ...rawMods, attacksDelta: 0, criticalHitThreshold: null }
+    : rawMods;
 
   // Defender's gambit may override their Toughness (Steadfast Resilience, Tempered by War)
   const defenderMods = getStrikeModifiers(

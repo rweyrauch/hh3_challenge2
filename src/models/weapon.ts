@@ -43,7 +43,7 @@ export type SpecialRule =
   | { name: 'Force'; characteristic: 'S' | 'A' | 'D' | 'AP' | 'I' | 'WS' }  // WP check (2d6≤WP): doubles characteristic X; doubles trigger Perils of the Warp
   | { name: 'Armourbane' }              // AP 1 vs vehicles; infantry get no benefit — logged only
   | { name: 'Deflagrate'; value: number }  // unsaved wounds generate extra S(X)/AP-/D1 hits
-  | { name: 'Psyker' };               // marks model as a Psyker for Hatred(Psykers) targeting
+  | { name: 'Psyker' };              // marks model as a Psyker for Hatred(Psykers) targeting
   // Rules intentionally not simulated:
   //   Bypass(X+) — Phase sword's bypass of all saves; omitted (no Bypass special rule added)
   //   Phage(S)   — established pattern (daemon weapons); omit from profiles
@@ -60,6 +60,8 @@ export interface WeaponProfile {
   ap: number | null;
   damage: number;
   specialRules: SpecialRule[];
+  /** Free-form trait keywords (e.g. 'Sword of the Order', 'Power'). */
+  traits?: string[];
   /**
    * If true, roll a D3 at the start of the attack sequence and add it to
    * the Attacks total (after applying the attacksModifier).
@@ -74,4 +76,15 @@ export interface Weapon {
   type: 'melee' | 'ranged';
   /** Only melee profiles are used in Challenges. */
   profiles: WeaponProfile[];
+}
+
+/**
+ * Return true if this weapon profile qualifies for the Dark Angels
+ * 'Sword of the Order' gambit — i.e., it carries the 'Sword of the Order'
+ * trait, or its profile name contains 'sword' (covers Power Sword, Chainsword,
+ * Terranic Greatsword, etc.).
+ */
+export function isSwordProfile(profile: WeaponProfile): boolean {
+  if (profile.traits?.includes('Sword of the Order')) return true;
+  return profile.profileName.toLowerCase().includes('sword');
 }
