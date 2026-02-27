@@ -89,6 +89,10 @@ export function updateCombatScreen(
       usedOnce.add('brutal-but-kunnin');
       usedOnce.add('kunnin-but-brutal');
     }
+    // Dirty Fighter: only selectable in round 1 (once per Challenge)
+    if (state.round > 1) {
+      usedOnce.add('dirty-fighter');
+    }
     // Bite of the Betrayed: only eligible in round 1 vs EC/WE/SoH/DG opponents
     const BITE_QUALIFYING_FACTIONS = new Set<string>([
       'emperors-children', 'world-eaters', 'sons-of-horus', 'death-guard',

@@ -55,6 +55,14 @@ export const IRON_WARRIORS_GAMBITS: Gambit[] = [
 
 export const NIGHT_LORDS_GAMBITS: Gambit[] = [
   {
+    id: 'dirty-fighter',
+    name: 'Dirty Fighter',
+    description: 'Only selectable during the first Face-Off Step. At the end of the Face-Off Step, resolve steps 1–4 of the Strike Step once as if this model had Attacks Characteristic 1. The Focus Step then resolves as normal.',
+    timings: ['faceOff'],
+    firstMoverOnly: false,
+    oncePerChallenge: true,
+  },
+  {
     id: 'nostraman-courage',
     name: 'Nostraman Courage',
     description: 'Once per Challenge. At the start of any Strike Step, return this model to its unit and replace it with another model from the same unit. (No effect in a 1v1 duel without a unit to draw from.)',

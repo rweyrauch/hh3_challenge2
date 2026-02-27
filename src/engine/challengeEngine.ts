@@ -20,7 +20,7 @@ import type { Character }   from '../models/character.js';
 import type { GambitId }    from '../models/gambit.js';
 import type { WeaponProfile } from '../models/weapon.js';
 import { resolveFocusStep }  from './focusStep.js';
-import { resolveStrikeStep } from './strikeStep.js';
+import { resolveStrikeStep, resolveDirtyFighterPreStrike } from './strikeStep.js';
 import { resolveGloryStep }  from './gloryStep.js';
 import { selectAIGambit }    from '../ai/heuristicAI.js';
 
@@ -229,6 +229,23 @@ export class ChallengeEngine {
       const profile = this.selectAIWeapon();
       let next: CombatState = { ...state, ai: { ...state.ai, selectedWeaponProfile: profile } };
       next = addLog(next, `AI selects weapon: ${profile.profileName}`, 'info');
+
+      // ── Dirty Fighter: pre-strike before the Focus Roll ──────────────────
+      // Fires at the end of the Face-Off Step (round 1 only), after weapons
+      // are confirmed, before the Focus Roll.
+      if (
+        state.round === 1 &&
+        (next.player.selectedGambit === 'dirty-fighter' ||
+         next.ai.selectedGambit     === 'dirty-fighter')
+      ) {
+        const dfResult = resolveDirtyFighterPreStrike(
+          this.dice, next, this.playerChar, this.aiChar,
+        );
+        for (const msg of dfResult.log) {
+          next = addLog(next, msg, msg.includes('CASUALTY') ? 'danger' : 'info');
+        }
+        next = dfResult.updatedState;
+      }
 
       // Resolve Focus Roll
       const focusResult = resolveFocusStep(

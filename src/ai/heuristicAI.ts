@@ -128,6 +128,13 @@ export function scoreGambit(
       }
       break;
 
+    // ── Night Lords faction gambits ────────────────────────────────────────
+
+    case 'dirty-fighter':
+      // Round-1 pre-strike with 1 attack; always valuable as a free hit
+      score += 3;
+      break;
+
     // ── Emperor's Children faction gambits ────────────────────────────────
 
     case 'bite-of-the-betrayed':
@@ -167,6 +174,8 @@ export function selectAIGambit(
         (id === 'brutal-but-kunnin' || id === 'kunnin-but-brutal') &&
         state.ai.usedBrutalButKunnin
       ) return false;
+      // Dirty Fighter: only eligible in round 1
+      if (id === 'dirty-fighter' && state.round > 1) return false;
       // Bite of the Betrayed: only eligible in round 1 vs EC/WE/SoH/DG opponents
       if (id === 'bite-of-the-betrayed') {
         const biteQualifyingFactions = new Set<string>([

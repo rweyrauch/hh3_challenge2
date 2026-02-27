@@ -65,6 +65,7 @@ export type GambitId =
   // ── Night Lords (VIII) ───────────────────────────────────────────────────
   | 'nostraman-courage'       // all NL: once/challenge; swap this model for another (N/A in 1v1)
   | 'a-death-long-foreseen'   // Konrad Curze: available on 5+; WP checks for FNP/+A/+I
+  | 'dirty-fighter'           // Sevatar: round 1 only; resolve 1 pre-strike attack before Focus
   // ── World Eaters (XII) ───────────────────────────────────────────────────
   | 'violent-overkill'        // all WE: excess wounds spill to other enemies (N/A in 1v1)
   // ── Death Guard (XIV) ────────────────────────────────────────────────────

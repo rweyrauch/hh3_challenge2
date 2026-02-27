@@ -72,6 +72,7 @@ function resolveAttackSequence(
   state: CombatState,
   everyStrikeActive: boolean,
   forceBoost: string | null = null,
+  forcedAttacks: number | null = null,
 ): AttackResult {
   const log: string[] = [];
 
@@ -158,6 +159,9 @@ function resolveAttackSequence(
 
   // Single-attack cap (Guard Up / Withdraw)
   if (mods.singleAttackCap) atkA = 1;
+
+  // Dirty Fighter pre-strike: hard-override to the specified attack count
+  if (forcedAttacks !== null) atkA = forcedAttacks;
 
   const defWS = defenderChar.stats.WS;
   const defT  = defenderChar.stats.T;
@@ -784,6 +788,134 @@ function resolveForceCheck(
   }
 
   return { forceBoost: isSuccess ? forceRule.characteristic : null, perilsWounds };
+}
+
+/**
+ * Resolve the Dirty Fighter pre-strike (Night Lords / Sevatar).
+ *
+ * At the end of the Face-Off Step (before the Focus Roll), the model that
+ * selected Dirty Fighter resolves steps 1–4 of the Strike Step once with
+ * Attacks Characteristic of 1 and no Focus-winner bonus.  The Focus Step
+ * then proceeds as normal.
+ *
+ * If both sides somehow selected Dirty Fighter the player fires first; the
+ * AI fires second only if the player survived.
+ */
+export function resolveDirtyFighterPreStrike(
+  dice: DiceRoller,
+  state: CombatState,
+  playerChar: Character,
+  aiChar: Character,
+): { updatedState: CombatState; log: string[] } {
+  const log: string[] = [];
+
+  const playerHasDF = state.player.selectedGambit === 'dirty-fighter';
+  const aiHasDF     = state.ai.selectedGambit     === 'dirty-fighter';
+  if (!playerHasDF && !aiHasDF) return { updatedState: state, log };
+
+  /**
+   * Return the model's selected weapon profile, falling back to the first
+   * melee profile if the weapon hasn't been chosen yet (weapon selection
+   * normally happens at the start of the Focus Step, but Dirty Fighter fires
+   * before it — the player will have pre-selected on the selection screen).
+   */
+  const getProfile = (char: Character, selected: WeaponProfile | null): WeaponProfile => {
+    if (selected !== null) return selected;
+    return char.weapons.find(w => w.type === 'melee')?.profiles[0]
+      ?? char.weapons[0].profiles[0];
+  };
+
+  let updatedState = { ...state };
+
+  // ── Player's Dirty Fighter pre-strike ─────────────────────────────────────
+  if (playerHasDF && !updatedState.player.isCasualty) {
+    log.push(`Dirty Fighter: ${playerChar.name} makes a pre-strike (1 attack) before the Focus Roll.`);
+    const profile = getProfile(playerChar, updatedState.player.selectedWeaponProfile);
+
+    const forceResult = resolveForceCheck(dice, playerChar, profile, log);
+    if (forceResult.perilsWounds > 0) {
+      const newW = Math.max(0, updatedState.player.currentWounds - forceResult.perilsWounds);
+      updatedState = {
+        ...updatedState,
+        player: { ...updatedState.player, currentWounds: newW, isCasualty: newW <= 0 },
+      };
+    }
+
+    if (!updatedState.player.isCasualty) {
+      const result = resolveAttackSequence(
+        dice,
+        updatedState.player, updatedState.ai,
+        playerChar, aiChar,
+        profile,
+        0,      // no Focus-winner attack bonus
+        true,
+        updatedState,
+        updatedState.ai.selectedGambit === 'every-strike-foreseen',
+        forceResult.forceBoost,
+        1,      // forcedAttacks = 1
+      );
+      log.push(...result.log);
+      updatedState = {
+        ...updatedState,
+        ai: {
+          ...updatedState.ai,
+          currentWounds:  result.defenderWoundsRemaining,
+          isCasualty:     result.defenderIsCasualty,
+        },
+        player: {
+          ...updatedState.player,
+          woundsInflictedThisChallenge:
+            updatedState.player.woundsInflictedThisChallenge + result.totalDamage,
+        },
+      };
+    }
+  }
+
+  // ── AI's Dirty Fighter pre-strike ─────────────────────────────────────────
+  if (aiHasDF && !updatedState.ai.isCasualty) {
+    log.push(`Dirty Fighter: ${aiChar.name} makes a pre-strike (1 attack) before the Focus Roll.`);
+    const profile = getProfile(aiChar, updatedState.ai.selectedWeaponProfile);
+
+    const forceResult = resolveForceCheck(dice, aiChar, profile, log);
+    if (forceResult.perilsWounds > 0) {
+      const newW = Math.max(0, updatedState.ai.currentWounds - forceResult.perilsWounds);
+      updatedState = {
+        ...updatedState,
+        ai: { ...updatedState.ai, currentWounds: newW, isCasualty: newW <= 0 },
+      };
+    }
+
+    if (!updatedState.ai.isCasualty) {
+      const result = resolveAttackSequence(
+        dice,
+        updatedState.ai, updatedState.player,
+        aiChar, playerChar,
+        profile,
+        0,      // no Focus-winner attack bonus
+        false,
+        updatedState,
+        updatedState.player.selectedGambit === 'every-strike-foreseen',
+        forceResult.forceBoost,
+        1,      // forcedAttacks = 1
+      );
+      log.push(...result.log);
+      updatedState = {
+        ...updatedState,
+        player: {
+          ...updatedState.player,
+          currentWounds:  result.defenderWoundsRemaining,
+          isCasualty:     result.defenderIsCasualty,
+        },
+        ai: {
+          ...updatedState.ai,
+          woundsInflictedThisChallenge:
+            updatedState.ai.woundsInflictedThisChallenge + result.totalDamage,
+        },
+      };
+    }
+  }
+
+  return { updatedState, log };
 }
 
 /**

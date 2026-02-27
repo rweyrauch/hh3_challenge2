@@ -148,7 +148,7 @@ const SEVATAR: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [NIGHTS_WHISPER],
-  factionGambitIds: ['nostraman-courage'],
+  factionGambitIds: ['nostraman-courage', 'dirty-fighter'],
   specialRules: [{ name: 'Precision', threshold: 4 }],
 };
 
