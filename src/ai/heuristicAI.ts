@@ -11,6 +11,7 @@ import type { CombatState } from '../models/combatState.js';
 import type { Character }   from '../models/character.js';
 import type { GambitId }    from '../models/gambit.js';
 import { getFactionGambits } from '../data/factions/index.js';
+import { isSwordProfile } from '../models/weapon.js';
 
 /**
  * Score a single gambit for the AI to use in the current round.
@@ -100,6 +101,14 @@ export function scoreGambit(
       if (aiI < playerI) score -= 2;
       break;
 
+    // ── Dark Angels faction gambits ───────────────────────────────────────
+
+    case 'sword-of-the-order':
+      // CriticalHit(6+) at cost of -1A; worthwhile when AI has many attacks
+      if (aiChar.stats.A >= 4) score += 2;
+      else score += 1;
+      break;
+
     // ── Custodes faction gambits ───────────────────────────────────────────
 
     case 'every-strike-foreseen':
@@ -126,6 +135,28 @@ export function scoreGambit(
       } else {
         score = -99; // already used
       }
+      break;
+
+    // ── Night Lords faction gambits ────────────────────────────────────────
+
+    case 'dirty-fighter':
+      // Round-1 pre-strike with 1 attack; always valuable as a free hit
+      score += 3;
+      break;
+
+    // ── World Eaters faction gambits ────────────────────────────────────────
+
+    case 'brutal-dismemberment':
+      // +2 CRP if the opponent is killed; valuable when AI is likely to kill
+      if (aiS >= 5 || aiChar.stats.A >= 5) score += 2;
+      else score += 1;
+      break;
+
+    // ── Emperor's Children faction gambits ────────────────────────────────
+
+    case 'bite-of-the-betrayed':
+      // Permanent +1 WS/S/T for the challenge — very valuable in round 1 when eligible
+      score += 4;
       break;
 
     default:
@@ -160,6 +191,26 @@ export function selectAIGambit(
         (id === 'brutal-but-kunnin' || id === 'kunnin-but-brutal') &&
         state.ai.usedBrutalButKunnin
       ) return false;
+      // Dirty Fighter: only eligible in round 1
+      if (id === 'dirty-fighter' && state.round > 1) return false;
+      // Bite of the Betrayed: only eligible in round 1 vs EC/WE/SoH/DG opponents
+      if (id === 'bite-of-the-betrayed') {
+        const biteQualifyingFactions = new Set<string>([
+          'emperors-children', 'world-eaters', 'sons-of-horus', 'death-guard',
+        ]);
+        if (
+          state.ai.biteOfTheBetrayedActive ||
+          state.round > 1 ||
+          !biteQualifyingFactions.has(playerChar.faction)
+        ) return false;
+      }
+      // Sword of the Order: only eligible when the AI has at least one sword weapon
+      if (id === 'sword-of-the-order') {
+        const hasSword = aiChar.weapons.some(
+          w => w.type === 'melee' && w.profiles.some(p => isSwordProfile(p)),
+        );
+        if (!hasSword) return false;
+      }
       // Feint and Riposte only available to first mover
       if (id === 'feint-and-riposte') {
         const hasAdvantage =

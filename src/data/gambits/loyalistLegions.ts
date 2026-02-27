@@ -49,6 +49,14 @@ export const WHITE_SCARS_GAMBITS: Gambit[] = [
     firstMoverOnly: false,
     oncePerChallenge: false,
   },
+  {
+    id: 'seeker-of-atonement',
+    name: 'Seeker of Atonement',
+    description: 'If this model is reduced to 0 Wounds in the Strike Step, its Controlling Player may roll a dice. On a 4+, this model is not Removed as a Casualty but instead remains Engaged with a Wounds Characteristic of 1, and its Controlling Player gains Challenge Advantage.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
 ];
 
 // ── Space Wolves (VI) ────────────────────────────────────────────────────────
@@ -115,6 +123,22 @@ export const IMPERIAL_FISTS_GAMBITS: Gambit[] = [
     firstMoverOnly: false,
     oncePerChallenge: false,
   },
+  {
+    id: 'the-line-unbroken',
+    name: 'The Line Unbroken',
+    description: 'When this Gambit is selected and this model does not have Challenge Advantage, this model\'s Attacks Characteristic is modified by +2.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
+  {
+    id: 'hammerblow',
+    name: 'Hammerblow',
+    description: 'This model gains the Hammerblow Weapon Profile and may not make attacks with any other Weapon this Strike Step. Hammerblow: I, fixed 2A, +0S, AP2, D3, Critical Hit(6+), Power.',
+    timings: ['strike'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
 ];
 
 // ── Blood Angels (IX) ────────────────────────────────────────────────────────
@@ -135,6 +159,14 @@ export const BLOOD_ANGELS_GAMBITS: Gambit[] = [
     timings: ['focus'],
     firstMoverOnly: false,
     oncePerChallenge: true,
+  },
+  {
+    id: 'archein-of-wisdom',
+    name: 'Archein of Wisdom',
+    description: 'Gain a positive modifier to the Focus Roll equal to the number of successful Hit Tests made by the opponent in the previous Strike Step. Has no effect in the first round (before any Strike Step has been resolved).',
+    timings: ['focus'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
   },
 ];
 

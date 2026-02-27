@@ -28,6 +28,7 @@ export type GambitId =
   // ── White Scars (V) ──────────────────────────────────────────────────────
   | 'the-path-of-the-warrior' // all WS: predict 1-3/4-6 before roll; if correct ignore negatives
   | 'death-by-a-thousand-cuts'// Jaghatai Khan: enemy S -1 in Strike Step if enemy has been wounded
+  | 'seeker-of-atonement'     // Hibou Khan: on 4+ survive at W1 and gain Challenge Advantage
   // ── Space Wolves (VI) ────────────────────────────────────────────────────
   | 'no-prey-escapes'         // all SW: Glory Step unavailable until a casualty occurs
   | 'a-saga-woven-of-glory'   // all SW: unit gains +1A after killing opponent (no-op in 1v1)
@@ -37,9 +38,12 @@ export type GambitId =
   | 'deaths-champion'         // Sigismund: attacks gain CriticalHit(5+)
   | 'executioners-tax'        // Fafnir Rann: roll 2d6 discard highest, attacks gain CriticalHit(6+)
   | 'bulwark-of-the-imperium' // Rogal Dorn: wound rolls of 1-4 against this model always fail
+  | 'the-line-unbroken'       // Camba Diaz: +2 Attacks when this model does not have Challenge Advantage
+  | 'hammerblow'              // Alexis Polux: must use Hammerblow profile (fixed 2A, +0S, AP2, D3, CritHit6+)
   // ── Blood Angels (IX) ────────────────────────────────────────────────────
   | 'thrall-of-the-red-thirst'// all BA: ignore wound penalties, +1 Damage, no OS bonus
   | 'angelic-descent'         // Sanguinius: +Focus bonus equal to enemy Bulky(X)
+  | 'archein-of-wisdom'       // Raldoron: +Focus equal to opponent's hits from previous Strike Step
   // ── Iron Hands (X) ───────────────────────────────────────────────────────
   | 'legion-of-one'           // all IH: double OS bonus (no-op in 1v1 duel)
   | 'tempered-by-war'         // Ferrus Manus: T set to 8 for Strike Step
@@ -61,8 +65,10 @@ export type GambitId =
   // ── Night Lords (VIII) ───────────────────────────────────────────────────
   | 'nostraman-courage'       // all NL: once/challenge; swap this model for another (N/A in 1v1)
   | 'a-death-long-foreseen'   // Konrad Curze: available on 5+; WP checks for FNP/+A/+I
+  | 'dirty-fighter'           // Sevatar: round 1 only; resolve 1 pre-strike attack before Focus
   // ── World Eaters (XII) ───────────────────────────────────────────────────
   | 'violent-overkill'        // all WE: excess wounds spill to other enemies (N/A in 1v1)
+  | 'brutal-dismemberment'    // all WE: +2 CRP if enemy removed as casualty in Strike Step
   // ── Death Guard (XIV) ────────────────────────────────────────────────────
   | 'steadfast-resilience'    // all DG: T = opponent's WS for Strike Step
   | 'witchblood'              // Calas Typhon: once/battle; WP check → +2A/+2S or 1 wound

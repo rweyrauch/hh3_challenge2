@@ -12,6 +12,7 @@ import type { CombatState } from '../../models/combatState.js';
 import type { Character } from '../../models/character.js';
 import type { GambitId } from '../../models/gambit.js';
 import type { WeaponProfile } from '../../models/weapon.js';
+import { isSwordProfile } from '../../models/weapon.js';
 import { renderStatBlock } from '../components/statBlock.js';
 import { renderWoundTracker } from '../components/woundTracker.js';
 import { renderGambitsPanel } from '../components/gambitsPanel.js';
@@ -88,6 +89,28 @@ export function updateCombatScreen(
     if (state.player.usedBrutalButKunnin) {
       usedOnce.add('brutal-but-kunnin');
       usedOnce.add('kunnin-but-brutal');
+    }
+    // Dirty Fighter: only selectable in round 1 (once per Challenge)
+    if (state.round > 1) {
+      usedOnce.add('dirty-fighter');
+    }
+    // Bite of the Betrayed: only eligible in round 1 vs EC/WE/SoH/DG opponents
+    const BITE_QUALIFYING_FACTIONS = new Set<string>([
+      'emperors-children', 'world-eaters', 'sons-of-horus', 'death-guard',
+    ]);
+    if (
+      state.player.biteOfTheBetrayedActive ||
+      state.round > 1 ||
+      !BITE_QUALIFYING_FACTIONS.has(aiChar.faction)
+    ) {
+      usedOnce.add('bite-of-the-betrayed');
+    }
+    // Sword of the Order: only available when the player has selected a sword weapon
+    if (
+      !state.player.selectedWeaponProfile ||
+      !isSwordProfile(state.player.selectedWeaponProfile)
+    ) {
+      usedOnce.add('sword-of-the-order');
     }
     const bannedGambit = state.player.feintAndRiposteBan ?? state.ai.feintAndRiposteBan;
 

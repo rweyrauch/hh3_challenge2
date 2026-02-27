@@ -41,6 +41,7 @@ export const POWER_SWORD_ASSASSIN: Weapon = {
     specialRules: [
       { name: 'Breaching', threshold: 6 },
     ],
+    traits: ['Power']     
   }],
 };
 
@@ -64,6 +65,7 @@ export const PHASE_SWORD: Weapon = {
       // Bypass(6+) not simulated — Phase sword would bypass all saves on 6+;
       // this effect is outside the scope of the Challenge simulator.
     ],
+    traits: ['Power']      
   }],
 };
 

@@ -62,6 +62,18 @@ export interface CombatantState {
    * of each new Face-Off.
    */
   feintAndRiposteBan: GambitId | null;
+  /**
+   * Number of successful Hit Tests the opponent made against this model in
+   * the most recently resolved Strike Step.  Used by Archein of Wisdom to
+   * grant a matching Focus Roll bonus.  0 before any Strike Step has occurred.
+   */
+  hitsReceivedLastStrikeStep: number;
+  /**
+   * True if this model has activated the Bite of the Betrayed gambit in round 1
+   * of this Challenge.  The +1 WS/S/T bonus then persists for all subsequent
+   * rounds (even when a different gambit is selected later).
+   */
+  biteOfTheBetrayedActive: boolean;
 }
 
 /** Immutable-snapshot of the full Challenge state after each engine step. */

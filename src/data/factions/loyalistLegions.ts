@@ -41,6 +41,7 @@ import {
   SUBJUGATOR,
   DURENDA,
   SOLARITE_POWER_GAUNTLET,
+  HAMMERBLOW,
   BLADE_ENCARMINE,
   SPEAR_OF_TELESTO,
   MOONSILVER_BLADE,
@@ -80,6 +81,7 @@ const LION_EL_JONSON: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
+  traits: ['Loyalist', 'Dark Angels']
 };
 
 const CORSWAIN: Character = {
@@ -96,6 +98,7 @@ const CORSWAIN: Character = {
   weapons: [CORSWAIN_THE_BLADE],
   factionGambitIds: ['sword-of-the-order'],
   specialRules: [],
+  traits: ['Loyalist', 'Dark Angels']  
 };
 
 const MARDUK_SEDRAS: Character = {
@@ -112,6 +115,7 @@ const MARDUK_SEDRAS: Character = {
   weapons: [DEATH_OF_WORLDS],
   factionGambitIds: ['sword-of-the-order'],
   specialRules: [],
+  traits: ['Loyalist', 'Dark Angels']  
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -135,6 +139,7 @@ const JAGHATAI_KHAN: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
+  traits: ['Loyalist', 'White Scars']  
 };
 
 const QIN_XA: Character = {
@@ -151,6 +156,7 @@ const QIN_XA: Character = {
   weapons: [TAILS_OF_THE_DRAGON],
   factionGambitIds: ['the-path-of-the-warrior'],
   specialRules: [],
+  traits: ['Loyalist', 'White Scars']   
 };
 
 const HIBOU_KHAN: Character = {
@@ -165,8 +171,9 @@ const HIBOU_KHAN: Character = {
     Sv: 2, Inv: 5,
   },
   weapons: [BREATH_OF_THE_STORM],
-  factionGambitIds: ['the-path-of-the-warrior'],
+  factionGambitIds: ['the-path-of-the-warrior', 'seeker-of-atonement'],
   specialRules: [],
+  traits: ['Loyalist', 'White Scars'] 
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -190,6 +197,7 @@ const LEMAN_RUSS: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 5 },
   ],
+  traits: ['Loyalist', 'Space Wolves']   
 };
 
 const HVARL_RED_BLADE: Character = {
@@ -206,6 +214,7 @@ const HVARL_RED_BLADE: Character = {
   weapons: [HEARTH_SPLITTER],
   factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
   specialRules: [],
+  traits: ['Loyalist', 'Space Wolves']   
 };
 
 const GEIGOR_FELL_HAND: Character = {
@@ -222,6 +231,7 @@ const GEIGOR_FELL_HAND: Character = {
   weapons: [THE_FELL_HAND],
   factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
   specialRules: [],
+  traits: ['Loyalist', 'Space Wolves']   
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -245,6 +255,7 @@ const ROGAL_DORN: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
+  traits: ['Loyalist', 'Imperial Fists']   
 };
 
 const SIGISMUND: Character = {
@@ -264,6 +275,7 @@ const SIGISMUND: Character = {
     { name: 'EternalWarrior', value: 1 },
     { name: 'Precision', threshold: 4 },
   ],
+  traits: ['Loyalist', 'Imperial Fists']  
 };
 
 const FAFNIR_RANN: Character = {
@@ -280,6 +292,7 @@ const FAFNIR_RANN: Character = {
   weapons: [HEADSMAN_AND_HUNTER],
   factionGambitIds: ['a-wall-unyielding', 'executioners-tax'],
   specialRules: [],
+  traits: ['Loyalist', 'Imperial Fists']  
 };
 
 const EVANDER_GARRIUS: Character = {
@@ -296,6 +309,7 @@ const EVANDER_GARRIUS: Character = {
   weapons: [SUBJUGATOR],
   factionGambitIds: ['a-wall-unyielding'],
   specialRules: [],
+  traits: ['Loyalist', 'Imperial Fists']  
 };
 
 const CAMBA_DIAZ: Character = {
@@ -310,8 +324,9 @@ const CAMBA_DIAZ: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [DURENDA],
-  factionGambitIds: ['a-wall-unyielding'],
+  factionGambitIds: ['a-wall-unyielding', 'the-line-unbroken'],
   specialRules: [],
+  traits: ['Loyalist', 'Imperial Fists']  
 };
 
 const ALEXIS_POLUX: Character = {
@@ -325,9 +340,10 @@ const ALEXIS_POLUX: Character = {
     I: 1, A: 3, LD: 9, CL: 9, WP: 8, IN: 8,
     Sv: 2, Inv: 4,
   },
-  weapons: [SOLARITE_POWER_GAUNTLET],
-  factionGambitIds: ['a-wall-unyielding'],
+  weapons: [SOLARITE_POWER_GAUNTLET, HAMMERBLOW],
+  factionGambitIds: ['a-wall-unyielding', 'hammerblow'],
   specialRules: [],
+  traits: ['Loyalist', 'Imperial Fists']  
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -351,6 +367,7 @@ const SANGUINIUS: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 6 },
   ],
+  traits: ['Loyalist', 'Blood Angels']  
 };
 
 const RALDORON: Character = {
@@ -365,8 +382,9 @@ const RALDORON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [ENCARMINE_WARBLADE],
-  factionGambitIds: ['thrall-of-the-red-thirst'],
+  factionGambitIds: ['thrall-of-the-red-thirst', 'archein-of-wisdom'],
   specialRules: [],
+  traits: ['Loyalist', 'Blood Angels']    
 };
 
 const DOMINION_ZEPHON: Character = {
@@ -383,6 +401,7 @@ const DOMINION_ZEPHON: Character = {
   weapons: [SPIRITUM_SANGUIS],
   factionGambitIds: ['thrall-of-the-red-thirst'],
   specialRules: [{ name: 'EternalWarrior', value: 1 }],
+  traits: ['Loyalist', 'Blood Angels']    
 };
 
 const ASTER_CROHNE: Character = {
@@ -399,6 +418,7 @@ const ASTER_CROHNE: Character = {
   weapons: [SAIPHAN_SHARD_AXE],
   factionGambitIds: ['thrall-of-the-red-thirst'],
   specialRules: [],
+  traits: ['Loyalist', 'Blood Angels']    
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -422,6 +442,7 @@ const FERRUS_MANUS: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 5 },
   ],
+  traits: ['Loyalist', 'Iron Hands']    
 };
 
 const SHADRAK_MEDUSON: Character = {
@@ -438,6 +459,7 @@ const SHADRAK_MEDUSON: Character = {
   weapons: [ALBIAN_POWER_GLADIUS],
   factionGambitIds: ['legion-of-one'],
   specialRules: [],
+  traits: ['Loyalist', 'Iron Hands'] 
 };
 
 const IRON_FATHER: Character = {
@@ -453,7 +475,8 @@ const IRON_FATHER: Character = {
   },
   weapons: [ARTIFICER_POWER_AXE],
   factionGambitIds: ['legion-of-one'],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 2}, { name: 'FeelNoPain', value: 5}],
+  traits: ['Loyalist', 'Iron Hands']   
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -477,6 +500,7 @@ const ROBOUTE_GUILLIMAN: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
+  traits: ['Loyalist', 'Ultramarines']   
 };
 
 const REMUS_VENTANUS: Character = {
@@ -493,6 +517,7 @@ const REMUS_VENTANUS: Character = {
   weapons: [PHAETON],
   factionGambitIds: ['aegis-of-wisdom'],
   specialRules: [],
+  traits: ['Loyalist', 'Ultramarines']   
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -516,6 +541,7 @@ const VULKAN: Character = {
     { name: 'EternalWarrior', value: 3 },
     { name: 'Bulky', value: 5 },
   ],
+  traits: ['Loyalist', 'Salamanders']   
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -539,6 +565,7 @@ const CORVUS_CORAX: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 6 },
   ],
+  traits: ['Loyalist', 'Raven Guard']   
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -560,6 +587,7 @@ const SAUL_TARVITZ: Character = {
   weapons: [CHARNABAL_BROADSWORD],
   factionGambitIds: ['paragon-of-excellence', 'bite-of-the-betrayed'],
   specialRules: [],
+  traits: ['Loyalist', 'Emperor\'s Children']   
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -586,6 +614,7 @@ const FIREWING_ENIGMATII: Character = {
   specialRules: [
     { name: 'Bulky', value: 2 },
   ],
+  traits: ['Dark Angels']   
 };
 
 // ── Excindio Battle-Automata (Dark Angels) ───────────────────────────────────

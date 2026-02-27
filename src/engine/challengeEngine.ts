@@ -20,7 +20,7 @@ import type { Character }   from '../models/character.js';
 import type { GambitId }    from '../models/gambit.js';
 import type { WeaponProfile } from '../models/weapon.js';
 import { resolveFocusStep }  from './focusStep.js';
-import { resolveStrikeStep } from './strikeStep.js';
+import { resolveStrikeStep, resolveDirtyFighterPreStrike } from './strikeStep.js';
 import { resolveGloryStep }  from './gloryStep.js';
 import { selectAIGambit }    from '../ai/heuristicAI.js';
 
@@ -72,6 +72,8 @@ export function buildInitialState(playerChar: Character, aiChar: Character): Com
     tauntAndBaitCount: 0,
     usedBrutalButKunnin: false,
     feintAndRiposteBan: null,
+    hitsReceivedLastStrikeStep: 0,
+    biteOfTheBetrayedActive: false,
   });
 
   return {
@@ -155,6 +157,11 @@ export class ChallengeEngine {
         next = { ...next, player: { ...next.player, tauntAndBaitCount: state.player.tauntAndBaitCount + 1 } };
       }
 
+      // Bite of the Betrayed: activate persistent +1 WS/S/T for this model
+      if (gambitId === 'bite-of-the-betrayed') {
+        next = { ...next, player: { ...next.player, biteOfTheBetrayedActive: true } };
+      }
+
       next = addLog(next, `Player selects gambit: ${gambitId}`, 'info');
 
       // Now AI selects its gambit
@@ -175,6 +182,11 @@ export class ChallengeEngine {
       // Taunt and Bait: increment counter for AI
       if (aiGambitId === 'taunt-and-bait') {
         next = { ...next, ai: { ...next.ai, tauntAndBaitCount: state.ai.tauntAndBaitCount + 1 } };
+      }
+
+      // Bite of the Betrayed: activate persistent +1 WS/S/T for AI
+      if (aiGambitId === 'bite-of-the-betrayed') {
+        next = { ...next, ai: { ...next.ai, biteOfTheBetrayedActive: true } };
       }
 
       next = addLog(next, `AI selects gambit: ${aiGambitId}`, 'info');
@@ -218,6 +230,23 @@ export class ChallengeEngine {
       let next: CombatState = { ...state, ai: { ...state.ai, selectedWeaponProfile: profile } };
       next = addLog(next, `AI selects weapon: ${profile.profileName}`, 'info');
 
+      // ── Dirty Fighter: pre-strike before the Focus Roll ──────────────────
+      // Fires at the end of the Face-Off Step (round 1 only), after weapons
+      // are confirmed, before the Focus Roll.
+      if (
+        state.round === 1 &&
+        (next.player.selectedGambit === 'dirty-fighter' ||
+         next.ai.selectedGambit     === 'dirty-fighter')
+      ) {
+        const dfResult = resolveDirtyFighterPreStrike(
+          this.dice, next, this.playerChar, this.aiChar,
+        );
+        for (const msg of dfResult.log) {
+          next = addLog(next, msg, msg.includes('CASUALTY') ? 'danger' : 'info');
+        }
+        next = dfResult.updatedState;
+      }
+
       // Resolve Focus Roll
       const focusResult = resolveFocusStep(
         this.dice, next,
@@ -260,6 +289,14 @@ export class ChallengeEngine {
     for (const msg of strikeResult.log) {
       next = addLog(next, msg, msg.includes('CASUALTY') ? 'danger' : 'info');
     }
+
+    // Record hit counts for Archein of Wisdom: each side tracks hits their
+    // opponent landed on them in this Strike Step, for use in the next Focus Roll.
+    next = {
+      ...next,
+      player: { ...next.player, hitsReceivedLastStrikeStep: strikeResult.aiResult.hits },
+      ai:     { ...next.ai,     hitsReceivedLastStrikeStep: strikeResult.playerResult.hits },
+    };
 
     // The Undying Fire: if model survived the Strike Step (not a casualty), it
     // regains D3 Wounds (max Base Wounds) before entering the Glory Step.

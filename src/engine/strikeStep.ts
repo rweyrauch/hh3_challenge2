@@ -12,6 +12,7 @@ import type { DiceRoller }    from './dice.js';
 import type { CombatState, CombatantState }  from '../models/combatState.js';
 import type { Character }     from '../models/character.js';
 import type { WeaponProfile } from '../models/weapon.js';
+import { isSwordProfile } from '../models/weapon.js';
 import { getHitTargetNumber, getWoundTargetNumber, getEffectiveSave } from './tables.js';
 import { getStrikeModifiers } from './gambitEffects.js';
 
@@ -72,6 +73,7 @@ function resolveAttackSequence(
   state: CombatState,
   everyStrikeActive: boolean,
   forceBoost: string | null = null,
+  forcedAttacks: number | null = null,
 ): AttackResult {
   const log: string[] = [];
 
@@ -83,7 +85,11 @@ function resolveAttackSequence(
   // Calling rollD3() unconditionally would make the dice sequence
   // non-deterministic for every other gambit.
   const d3Result = attacker.selectedGambit === 'flurry-of-blows' ? dice.rollD3() : 1;
-  const mods = getStrikeModifiers(attacker.selectedGambit, state, isForPlayer, d3Result);
+  const rawMods = getStrikeModifiers(attacker.selectedGambit, state, isForPlayer, d3Result);
+  // Sword of the Order: -1A and CriticalHit(6+) only apply when using a sword weapon.
+  const mods = (attacker.selectedGambit === 'sword-of-the-order' && !isSwordProfile(profile))
+    ? { ...rawMods, attacksDelta: 0, criticalHitThreshold: null }
+    : rawMods;
 
   // Defender's gambit may override their Toughness (Steadfast Resilience, Tempered by War)
   const defenderMods = getStrikeModifiers(
@@ -98,11 +104,22 @@ function resolveAttackSequence(
     log.push(`Force: WP check succeeded — ${boostDesc}`);
   }
 
-  let atkWS = (forceBoost === 'WS' ? attackerChar.stats.WS * 2 : attackerChar.stats.WS) + mods.wsDelta;
+  // Bite of the Betrayed: persistent +1 WS and +1 S when attacking; +1 T when defending
+  const biteAtkBonus = attacker.biteOfTheBetrayedActive ? 1 : 0;
+  const biteDefBonus = defender.biteOfTheBetrayedActive ? 1 : 0;
+  if (biteAtkBonus > 0) {
+    log.push(`Bite of the Betrayed: ${attackerChar.name} has +1 WS and +1 S.`);
+  }
+  if (biteDefBonus > 0) {
+    log.push(`Bite of the Betrayed: ${defenderChar.name} has +1 T.`);
+  }
+
+  let atkWS = (forceBoost === 'WS' ? attackerChar.stats.WS * 2 : attackerChar.stats.WS) + mods.wsDelta + biteAtkBonus;
 
   // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n, 'mult' = S*n)
   const sm = profile.strengthModifier;
   let atkS = forceBoost === 'S' ? attackerChar.stats.S * 2 : attackerChar.stats.S;
+  if (biteAtkBonus > 0) atkS += 1; // bite bonus to base S before weapon modifier
   if (sm.kind === 'add')   atkS += sm.value;
   if (sm.kind === 'fixed') atkS  = sm.value;
   if (sm.kind === 'mult')  atkS *= sm.value;
@@ -148,10 +165,15 @@ function resolveAttackSequence(
   // Single-attack cap (Guard Up / Withdraw)
   if (mods.singleAttackCap) atkA = 1;
 
+  // Dirty Fighter pre-strike: hard-override to the specified attack count
+  if (forcedAttacks !== null) atkA = forcedAttacks;
+
   const defWS = defenderChar.stats.WS;
   const defT  = defenderChar.stats.T;
+  // Bite of the Betrayed: +1 T to the defender's base Toughness
+  const defTWithBite = defT + biteDefBonus;
   // Steadfast Resilience / Tempered by War may override defender's effective Toughness
-  const effectiveDefT = defenderMods.overrideDefenderToughness ?? defT;
+  const effectiveDefT = defenderMods.overrideDefenderToughness ?? defTWithBite;
 
   // Effective Strength and Damage for wound/damage calc
   const effectiveS = Math.max(1, atkS + mods.strengthDelta);
@@ -774,6 +796,134 @@ function resolveForceCheck(
 }
 
 /**
+ * Resolve the Dirty Fighter pre-strike (Night Lords / Sevatar).
+ *
+ * At the end of the Face-Off Step (before the Focus Roll), the model that
+ * selected Dirty Fighter resolves steps 1–4 of the Strike Step once with
+ * Attacks Characteristic of 1 and no Focus-winner bonus.  The Focus Step
+ * then proceeds as normal.
+ *
+ * If both sides somehow selected Dirty Fighter the player fires first; the
+ * AI fires second only if the player survived.
+ */
+export function resolveDirtyFighterPreStrike(
+  dice: DiceRoller,
+  state: CombatState,
+  playerChar: Character,
+  aiChar: Character,
+): { updatedState: CombatState; log: string[] } {
+  const log: string[] = [];
+
+  const playerHasDF = state.player.selectedGambit === 'dirty-fighter';
+  const aiHasDF     = state.ai.selectedGambit     === 'dirty-fighter';
+  if (!playerHasDF && !aiHasDF) return { updatedState: state, log };
+
+  /**
+   * Return the model's selected weapon profile, falling back to the first
+   * melee profile if the weapon hasn't been chosen yet (weapon selection
+   * normally happens at the start of the Focus Step, but Dirty Fighter fires
+   * before it — the player will have pre-selected on the selection screen).
+   */
+  const getProfile = (char: Character, selected: WeaponProfile | null): WeaponProfile => {
+    if (selected !== null) return selected;
+    return char.weapons.find(w => w.type === 'melee')?.profiles[0]
+      ?? char.weapons[0].profiles[0];
+  };
+
+  let updatedState = { ...state };
+
+  // ── Player's Dirty Fighter pre-strike ─────────────────────────────────────
+  if (playerHasDF && !updatedState.player.isCasualty) {
+    log.push(`Dirty Fighter: ${playerChar.name} makes a pre-strike (1 attack) before the Focus Roll.`);
+    const profile = getProfile(playerChar, updatedState.player.selectedWeaponProfile);
+
+    const forceResult = resolveForceCheck(dice, playerChar, profile, log);
+    if (forceResult.perilsWounds > 0) {
+      const newW = Math.max(0, updatedState.player.currentWounds - forceResult.perilsWounds);
+      updatedState = {
+        ...updatedState,
+        player: { ...updatedState.player, currentWounds: newW, isCasualty: newW <= 0 },
+      };
+    }
+
+    if (!updatedState.player.isCasualty) {
+      const result = resolveAttackSequence(
+        dice,
+        updatedState.player, updatedState.ai,
+        playerChar, aiChar,
+        profile,
+        0,      // no Focus-winner attack bonus
+        true,
+        updatedState,
+        updatedState.ai.selectedGambit === 'every-strike-foreseen',
+        forceResult.forceBoost,
+        1,      // forcedAttacks = 1
+      );
+      log.push(...result.log);
+      updatedState = {
+        ...updatedState,
+        ai: {
+          ...updatedState.ai,
+          currentWounds:  result.defenderWoundsRemaining,
+          isCasualty:     result.defenderIsCasualty,
+        },
+        player: {
+          ...updatedState.player,
+          woundsInflictedThisChallenge:
+            updatedState.player.woundsInflictedThisChallenge + result.totalDamage,
+        },
+      };
+    }
+  }
+
+  // ── AI's Dirty Fighter pre-strike ─────────────────────────────────────────
+  if (aiHasDF && !updatedState.ai.isCasualty) {
+    log.push(`Dirty Fighter: ${aiChar.name} makes a pre-strike (1 attack) before the Focus Roll.`);
+    const profile = getProfile(aiChar, updatedState.ai.selectedWeaponProfile);
+
+    const forceResult = resolveForceCheck(dice, aiChar, profile, log);
+    if (forceResult.perilsWounds > 0) {
+      const newW = Math.max(0, updatedState.ai.currentWounds - forceResult.perilsWounds);
+      updatedState = {
+        ...updatedState,
+        ai: { ...updatedState.ai, currentWounds: newW, isCasualty: newW <= 0 },
+      };
+    }
+
+    if (!updatedState.ai.isCasualty) {
+      const result = resolveAttackSequence(
+        dice,
+        updatedState.ai, updatedState.player,
+        aiChar, playerChar,
+        profile,
+        0,      // no Focus-winner attack bonus
+        false,
+        updatedState,
+        updatedState.player.selectedGambit === 'every-strike-foreseen',
+        forceResult.forceBoost,
+        1,      // forcedAttacks = 1
+      );
+      log.push(...result.log);
+      updatedState = {
+        ...updatedState,
+        player: {
+          ...updatedState.player,
+          currentWounds:  result.defenderWoundsRemaining,
+          isCasualty:     result.defenderIsCasualty,
+        },
+        ai: {
+          ...updatedState.ai,
+          woundsInflictedThisChallenge:
+            updatedState.ai.woundsInflictedThisChallenge + result.totalDamage,
+        },
+      };
+    }
+  }
+
+  return { updatedState, log };
+}
+
+/**
  * Resolve the full Strike Step.
  *
  * The model that won Challenge Advantage attacks first.  If they kill the
@@ -797,8 +947,30 @@ export function resolveStrikeStep(
   const playerAttackBonus = advantage === 'player' ? 1 : 0;
   const aiAttackBonus     = advantage === 'ai'     ? 1 : 0;
 
-  const playerProfile = state.player.selectedWeaponProfile!;
-  const aiProfile     = state.ai.selectedWeaponProfile!;
+  let playerProfile = state.player.selectedWeaponProfile!;
+  let aiProfile     = state.ai.selectedWeaponProfile!;
+
+  // ── Hammerblow gambit: force the Hammerblow weapon profile ───────────────
+  // The gambit prohibits any other weapon; override whatever the player
+  // pre-selected on the selection screen.
+  if (state.player.selectedGambit === 'hammerblow') {
+    const hammerblowProfile = playerChar.weapons
+      .flatMap(w => w.profiles)
+      .find(p => p.profileName === 'Hammerblow');
+    if (hammerblowProfile) {
+      playerProfile = hammerblowProfile;
+      log.push(`Hammerblow: ${playerChar.name} must use the Hammerblow weapon profile (no other weapon permitted).`);
+    }
+  }
+  if (state.ai.selectedGambit === 'hammerblow') {
+    const hammerblowProfile = aiChar.weapons
+      .flatMap(w => w.profiles)
+      .find(p => p.profileName === 'Hammerblow');
+    if (hammerblowProfile) {
+      aiProfile = hammerblowProfile;
+      log.push(`Hammerblow: ${aiChar.name} must use the Hammerblow weapon profile (no other weapon permitted).`);
+    }
+  }
 
   let updatedState = { ...state };
   let playerResult: AttackResult;
@@ -1031,6 +1203,39 @@ export function resolveStrikeStep(
       ...updatedState,
       ai: { ...updatedState.ai, currentWounds: newW, isCasualty: newW <= 0 },
     };
+  }
+
+  // ── Seeker of Atonement (Hibou Khan / White Scars) ───────────────────────
+  // If the player with this gambit is reduced to 0 Wounds, roll a d6.
+  // On a 4+, they survive with W1 and their controller gains Challenge Advantage.
+  if (updatedState.player.isCasualty && state.player.selectedGambit === 'seeker-of-atonement') {
+    const roll = dice.rollD6();
+    log.push(`Seeker of Atonement: ${playerChar.name} reduced to 0 Wounds — rolling to survive: ${roll} (need 4+).`);
+    if (roll >= 4) {
+      log.push(`Seeker of Atonement: SUCCESS — ${playerChar.name} remains Engaged with 1 Wound. Player gains Challenge Advantage.`);
+      updatedState = {
+        ...updatedState,
+        player: { ...updatedState.player, isCasualty: false, currentWounds: 1 },
+        challengeAdvantage: 'player',
+      };
+    } else {
+      log.push(`Seeker of Atonement: FAILED — ${playerChar.name} is Removed as a Casualty.`);
+    }
+  }
+
+  if (updatedState.ai.isCasualty && state.ai.selectedGambit === 'seeker-of-atonement') {
+    const roll = dice.rollD6();
+    log.push(`Seeker of Atonement: ${aiChar.name} reduced to 0 Wounds — rolling to survive: ${roll} (need 4+).`);
+    if (roll >= 4) {
+      log.push(`Seeker of Atonement: SUCCESS — ${aiChar.name} remains Engaged with 1 Wound. AI gains Challenge Advantage.`);
+      updatedState = {
+        ...updatedState,
+        ai: { ...updatedState.ai, isCasualty: false, currentWounds: 1 },
+        challengeAdvantage: 'ai',
+      };
+    } else {
+      log.push(`Seeker of Atonement: FAILED — ${aiChar.name} is Removed as a Casualty.`);
+    }
   }
 
   return {

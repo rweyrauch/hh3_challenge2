@@ -26,6 +26,7 @@ export const LION_SWORD: Weapon = {
     strengthModifier:   { kind: 'add', value: 2 },
     ap: 2, damage: 3,
     specialRules: [],
+    traits: ['Power', 'Sword of the Order'],     
   }],
 };
 
@@ -43,6 +44,7 @@ export const WOLF_BLADE: Weapon = {
       { name: 'Shred',     threshold: 4 },
       { name: 'Breaching', threshold: 4 },
     ],
+    traits: ['Chain', 'Sword of the Order'], 
   }],
 };
 
@@ -57,6 +59,7 @@ export const CORSWAIN_THE_BLADE: Weapon = {
     strengthModifier:   { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 2 }],
+    traits: ['Power', 'Sword of the Order'],     
   }],
 };
 
@@ -89,6 +92,7 @@ export const WHITE_TIGER_DAO: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
+    traits: ['Power'],     
   }],
 };
 
@@ -106,6 +110,7 @@ export const TAILS_OF_THE_DRAGON: Weapon = {
       { name: 'CriticalHit', threshold: 5 },
       { name: 'Precision',   threshold: 3 },
     ],
+    traits: ['Power'],         
   }],
 };
 
@@ -123,6 +128,7 @@ export const BREATH_OF_THE_STORM: Weapon = {
       { name: 'CriticalHit', threshold: 6 },
       { name: 'Breaching',   threshold: 4 },
     ],
+    traits: ['Power'],    
   }],
 };
 
@@ -169,6 +175,7 @@ export const HEARTH_SPLITTER: Weapon = {
     strengthModifier:   { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Power'],         
   }],
 };
 
@@ -186,6 +193,7 @@ export const THE_FELL_HAND: Weapon = {
       { name: 'Breaching', threshold: 4 },
       { name: 'Shred',     threshold: 5 },
     ],
+    traits: ['Power'],         
   }],
 };
 
@@ -204,6 +212,7 @@ export const STORMS_TEETH: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'Shred', threshold: 4 }],
+    traits: ['Chain'],         
   }],
 };
 
@@ -235,6 +244,7 @@ export const HEADSMAN_AND_HUNTER: Weapon = {
     strengthModifier:   { kind: 'add', value: 2 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 4 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -249,6 +259,7 @@ export const SUBJUGATOR: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Power'],         
   }],
 };
 
@@ -263,6 +274,7 @@ export const DURENDA: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 5 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -277,6 +289,22 @@ export const SOLARITE_POWER_GAUNTLET: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power']     
+  }],
+};
+
+/** Hammerblow (Alexis Polux gambit): I, fixed 2A (M=1+AM=1), +0S, AP2, D3, Critical Hit(6+), Power */
+export const HAMMERBLOW: Weapon = {
+  name: 'Hammerblow',
+  type: 'melee',
+  profiles: [{
+    profileName: 'Hammerblow',
+    initiativeModifier: { kind: 'none' },
+    attacksModifier:    { kind: 'fixed', value: 2 },
+    strengthModifier:   { kind: 'none' },
+    ap: 2, damage: 3,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -295,6 +323,7 @@ export const BLADE_ENCARMINE: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -309,6 +338,7 @@ export const SPEAR_OF_TELESTO: Weapon = {
     strengthModifier:   { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Power'],         
   }],
 };
 
@@ -323,6 +353,7 @@ export const MOONSILVER_BLADE: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -337,6 +368,7 @@ export const ENCARMINE_WARBLADE: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -351,6 +383,7 @@ export const SPIRITUM_SANGUIS: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Power'],         
   }],
 };
 
@@ -365,6 +398,7 @@ export const SAIPHAN_SHARD_AXE: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 4 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -386,6 +420,7 @@ export const FORGEBREAKER: Weapon = {
     strengthModifier:   { kind: 'add', value: 3 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -400,6 +435,7 @@ export const ALBIAN_POWER_GLADIUS: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -414,6 +450,7 @@ export const ARTIFICER_POWER_AXE: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [],
+    traits: ['Power'],         
   }],
 };
 
@@ -435,6 +472,7 @@ export const GLADIUS_INCANDOR: Weapon = {
       { name: 'Breaching',    threshold: 5 },
       { name: 'DuellistsEdge', value: 1 },
     ],
+    traits: ['Power'],         
   }],
 };
 
@@ -449,6 +487,7 @@ export const HAND_OF_DOMINION: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 3, damage: 3,
     specialRules: [],
+    traits: ['Power'],         
   }],
 };
 
@@ -466,6 +505,7 @@ export const PHAETON: Weapon = {
       { name: 'Breaching',    threshold: 6 },
       { name: 'DuellistsEdge', value: 1 },
     ],
+    traits: ['Power'],         
   }],
 };
 
@@ -484,6 +524,7 @@ export const DAWNBRINGER: Weapon = {
     strengthModifier:   { kind: 'add', value: 2 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -502,6 +543,7 @@ export const TALONIS: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -516,6 +558,7 @@ export const CORVIDINE_TALONS: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -534,6 +577,7 @@ export const LAERAN_BLADE: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -551,6 +595,20 @@ export const BLADES_OF_LUCIUS: Weapon = {
   }],
 };
 
+export const GLORY_AETERNA: Weapon = {
+  name: 'Glory Aeterna',
+  type: 'melee',
+  profiles: [{
+    profileName: 'Glory Aeterna',
+    initiativeModifier: { kind: 'add', value: -2 },
+    attacksModifier:    { kind: 'none' },
+    strengthModifier:   { kind: 'add', value: 2 },
+    ap: 2, damage: 2,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power']  
+  }],
+};
+
 /** Charnabal Broadsword (Saul Tarvitz): I, A, +2S, AP−, D1, Breaching(5+), Duellist's Edge(1) */
 export const CHARNABAL_BROADSWORD: Weapon = {
   name: 'Charnabal Broadsword',
@@ -565,6 +623,7 @@ export const CHARNABAL_BROADSWORD: Weapon = {
       { name: 'Breaching',    threshold: 5 },
       { name: 'DuellistsEdge', value: 1 },
     ],
+    traits: ['Charnabal'],    
   }],
 };
 
@@ -583,6 +642,7 @@ export const LOGOS_ARRAY: Weapon = {
     strengthModifier:   { kind: 'fixed', value: 6 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Shred', threshold: 4 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -600,6 +660,7 @@ export const FORGEBREAKER_DESECRATED: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Power'],         
   }],
 };
 
@@ -621,6 +682,7 @@ export const MERCY_AND_FORGIVENESS: Weapon = {
       { name: 'CriticalHit', threshold: 5 },
       { name: 'Shred',       threshold: 4 },
     ],
+    traits: ['Power'],         
   }],
 };
 
@@ -638,6 +700,7 @@ export const NIGHTS_WHISPER: Weapon = {
       { name: 'CriticalHit', threshold: 6 },
       { name: 'Shred',       threshold: 5 },
     ],
+    traits: ['Chain'],    
   }],
 };
 
@@ -659,6 +722,7 @@ export const GOREFATHER_AND_GORECHILD: Weapon = {
       { name: 'CriticalHit', threshold: 6 },
       { name: 'Shred',       threshold: 5 },
     ],
+    traits: ['Chain'],         
   }],
 };
 
@@ -673,6 +737,7 @@ export const THE_CUTTER: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Chain'],     
   }],
 };
 
@@ -690,6 +755,7 @@ export const GORECHILD_REFORGED: Weapon = {
       { name: 'CriticalHit', threshold: 6 },
       { name: 'Shred',       threshold: 5 },
     ],
+    traits: ['Chain'],     
   }],
 };
 
@@ -708,6 +774,7 @@ export const SILENCE: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power'],     
   }],
 };
 
@@ -721,7 +788,8 @@ export const LACRIMAE: Weapon = {
     attacksModifier:    { kind: 'none' },
     strengthModifier:   { kind: 'add', value: 1 },
     ap: null, damage: 2,
-    specialRules: [],
+    specialRules: [], // Poisoned(3+)
+    traits: ['Power'],    
   }],
 };
 
@@ -740,6 +808,7 @@ export const BLADE_OF_AHN_NUNURTA: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Psychic'],    
   }],
 };
 
@@ -754,6 +823,7 @@ export const CORVIDAEAN_SCEPTRE: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Psychic'],    
   }],
 };
 
@@ -772,6 +842,7 @@ export const WARMASTERS_TALON: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 1,
     specialRules: [{ name: 'Shred', threshold: 6 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -786,6 +857,7 @@ export const WORLDBREAKER: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -800,6 +872,7 @@ export const CTHONIAN_POWER_CLAW: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'Shred', threshold: 5 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -814,6 +887,7 @@ export const MOURN_IT_ALL: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -832,6 +906,7 @@ export const ILLUMINARUM: Weapon = {
     strengthModifier:   { kind: 'add', value: 2 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -846,6 +921,7 @@ export const PATRIARCHS_CLAWS: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 1,
     specialRules: [{ name: 'Shred', threshold: 6 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -860,6 +936,7 @@ export const CRUX_MALIFICA: Weapon = {
     strengthModifier:   { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [],
+        traits: ['Power', 'Psychic'],
   }],
 };
 
@@ -874,6 +951,7 @@ export const DAEMONIC_TALONS: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Psychic'],    
   }],
 };
 
@@ -892,6 +970,7 @@ export const THE_PALE_SPEAR: Weapon = {
     strengthModifier:   { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -906,6 +985,7 @@ export const THE_PRINCE: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 5 }],
+    traits: ['Power'],    
   }],
 };
 
@@ -920,5 +1000,6 @@ export const THE_PROPHET: Weapon = {
     strengthModifier:   { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [],
+    traits: ['Power'],    
   }],
 };

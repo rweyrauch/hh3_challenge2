@@ -25,6 +25,7 @@ export const SOVEREIGN_BLADE: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [],  // Phage(S) not simulated; Reaping Blow no-op in Challenge
+    traits: ['Immaterial'],        
   }],
 };
 
@@ -39,6 +40,7 @@ export const SOVEREIGN_GREATBLADE: Weapon = {
     strengthModifier:   { kind: 'add', value: 3 },
     ap: 2, damage: 3,
     specialRules: [],  // Phage(S) not simulated; Reaping Blow no-op in Challenge
+    traits: ['Immaterial'],        
   }],
 };
 
@@ -56,6 +58,7 @@ export const HIERARCH_BLADE: Weapon = {
       { name: 'DuellistsEdge', value: 1 },
       { name: 'CriticalHit',   threshold: 6 },
     ],
+    traits: ['Immaterial'],        
   }],
 };
 
@@ -70,6 +73,7 @@ export const HIERARCH_GREATBLADE: Weapon = {
     strengthModifier:   { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Immaterial'],    
   }],
 };
 
@@ -87,6 +91,7 @@ export const HARBINGER_BLADE: Weapon = {
       { name: 'Breaching', threshold: 5 },
       { name: 'Shred',     threshold: 6 },
     ],
+    traits: ['Immaterial'],    
   }],
 };
 
@@ -103,6 +108,7 @@ export const BANEAXE: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
+    traits: ['Immaterial'],     
   }],
 };
 
@@ -117,6 +123,7 @@ export const REAPING_CLAWS: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
+    traits: ['Immaterial'],        
   }],
 };
 
@@ -131,5 +138,6 @@ export const BLADE_OF_SAMUS: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Immaterial'],        
   }],
 };

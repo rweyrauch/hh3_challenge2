@@ -73,6 +73,11 @@ export interface FocusContext {
   enemyBulkyValue?: number;
   /** Character ID of the gambit user (for Lucius/Paragon of Excellence). */
   characterId?: string;
+  /**
+   * Number of successful Hit Tests the opponent made against this model in the
+   * previous Strike Step.  Used by Archein of Wisdom.
+   */
+  opponentHitsLastStrikeStep?: number;
 }
 
 /**
@@ -97,12 +102,13 @@ export function getFocusDiceModification(
     suppressPositiveModifiers: false,
   };
 
-  const round           = ctx.round          ?? 1;
-  const currentWounds   = ctx.currentWounds  ?? 99;
-  const enemyBulkyValue = ctx.enemyBulkyValue ?? 0;
-  const characterId     = ctx.characterId    ?? '';
-  const ownWP           = ctx.ownWP          ?? 0;
-  const enemyWP         = ctx.enemyWP        ?? 0;
+  const round                     = ctx.round                     ?? 1;
+  const currentWounds             = ctx.currentWounds             ?? 99;
+  const enemyBulkyValue           = ctx.enemyBulkyValue           ?? 0;
+  const characterId               = ctx.characterId               ?? '';
+  const ownWP                     = ctx.ownWP                     ?? 0;
+  const enemyWP                   = ctx.enemyWP                   ?? 0;
+  const opponentHitsLastStrikeStep = ctx.opponentHitsLastStrikeStep ?? 0;
 
   switch (gambitId) {
     // ── Core gambits ────────────────────────────────────────────────────────
@@ -152,6 +158,11 @@ export function getFocusDiceModification(
       return { ...base, extraDice: 1, discardHighest: true };
 
     // ── Blood Angels ────────────────────────────────────────────────────────
+    case 'archein-of-wisdom':
+      // +Focus equal to hits the opponent made against this model in the
+      // previous Strike Step.  0 if no Strike Step has yet occurred.
+      return { ...base, flatBonus: opponentHitsLastStrikeStep };
+
     case 'thrall-of-the-red-thirst':
       // Ignore wound penalties; +1 Damage handled in strike modifiers.
       return { ...base, suppressWoundPenalties: true };
@@ -214,6 +225,7 @@ export function getFocusDiceModification(
 
   // Suppress TS unused-variable warnings (variables captured in switch cases above)
   void round; void currentWounds; void enemyBulkyValue; void ownWP; void enemyWP;
+  void opponentHitsLastStrikeStep;
 }
 
 // ─── Strike step modifiers ────────────────────────────────────────────────────
@@ -395,6 +407,19 @@ export function getStrikeModifiers(
         minimumWoundRoll: 5,
       };
 
+    case 'the-line-unbroken': {
+      // +2 Attacks only when this model does NOT have Challenge Advantage
+      // (i.e., it fights reactive/second in the Strike Step).
+      const hasAdvantage = forPlayer
+        ? state.challengeAdvantage === 'player'
+        : state.challengeAdvantage === 'ai';
+      return hasAdvantage ? { ...base } : { ...base, attacksDelta: +2 };
+    }
+
+    case 'hammerblow':
+      // Weapon profile override handled in strikeStep.ts — no stat modifiers here.
+      return { ...base };
+
     // ── Blood Angels ────────────────────────────────────────────────────────
     case 'thrall-of-the-red-thirst':
       return {
@@ -479,6 +504,12 @@ export function getStrikeModifiers(
       // Mirror-Form reactive fight is a complex state interaction handled by
       // the engine: if reactive player, allows attacks after reaching 0W.
       return base;
+
+    // ── White Scars ──────────────────────────────────────────────────────────
+    case 'seeker-of-atonement':
+      // Survival roll logic handled in strikeStep.ts after all attacks resolve.
+      // On a 4+, model survives at W1 and its controller gains Challenge Advantage.
+      return { ...base };
 
     // ── Legion Astartes Psychic Discipline gambits ───────────────────────────
     case 'divination-every-strike-foreseen':
