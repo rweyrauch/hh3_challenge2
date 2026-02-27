@@ -289,6 +289,7 @@ export const SOLARITE_POWER_GAUNTLET: Weapon = {
     strengthModifier:   { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power']     
   }],
 };
 
@@ -591,6 +592,20 @@ export const BLADES_OF_LUCIUS: Weapon = {
     strengthModifier:   { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
+  }],
+};
+
+export const GLORY_AETERNA: Weapon = {
+  name: 'Glory Aeterna',
+  type: 'melee',
+  profiles: [{
+    profileName: 'Glory Aeterna',
+    initiativeModifier: { kind: 'add', value: -2 },
+    attacksModifier:    { kind: 'none' },
+    strengthModifier:   { kind: 'add', value: 2 },
+    ap: 2, damage: 2,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power']  
   }],
 };
 
