@@ -43,10 +43,10 @@ export type SpecialRule =
   | { name: 'Force'; characteristic: 'S' | 'A' | 'D' | 'AP' | 'I' | 'WS' }  // WP check (2d6≤WP): doubles characteristic X; doubles trigger Perils of the Warp
   | { name: 'Armourbane' }              // AP 1 vs vehicles; infantry get no benefit — logged only
   | { name: 'Deflagrate'; value: number }  // unsaved wounds generate extra S(X)/AP-/D1 hits
-  | { name: 'Psyker' };              // marks model as a Psyker for Hatred(Psykers) targeting
+  | { name: 'Psyker' }              // marks model as a Psyker for Hatred(Psykers) targeting
+  | { name: 'Phage'; characteristic: 'S' | 'T' };  // each wound reduces attacker S (if 'S') or defender T (if 'T') by 1
 // Rules intentionally not simulated:
 //   Bypass(X+) — Phase sword's bypass of all saves; omitted (no Bypass special rule added)
-//   Phage(S)   — established pattern (daemon weapons); omit from profiles
 //   Reaping Blow(X) — established pattern; no effect in Challenge
 //   Aflame(X), Limited(X) — combat rules outside Challenge scope
 

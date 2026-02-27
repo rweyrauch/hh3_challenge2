@@ -6,7 +6,6 @@
  * Rules intentionally omitted:
  *   Reaping Blow(X) — established pattern; no effect in Challenge Sub-Phase
  *   Impact(X)       — charge-only bonus; no effect in Challenge Sub-Phase
- *   Phage(S)        — established pattern (daemon weapons); omit from profiles
  */
 import type { Weapon } from '../../models/weapon.js';
 
@@ -519,7 +518,7 @@ export const PAIRED_FALAX_BLADES: Weapon = {
 
 /**
  * Barb-hook lash (Rampager Champion / World Eaters).
- * IM+1/AM—/SM—/AP3/D1, CriticalHit(6+). Phage(S) omitted.
+ * IM+1/AM—/SM—/AP3/D1, CriticalHit(6+), Phage(S).
  */
 export const BARB_HOOK_LASH: Weapon = {
   name: 'Barb-hook Lash',
@@ -532,7 +531,7 @@ export const BARB_HOOK_LASH: Weapon = {
     ap: 3, damage: 1,
     specialRules: [
       { name: 'CriticalHit', threshold: 6 },
-      // Phage(S) not simulated — established pattern
+      { name: 'Phage', characteristic: 'S' },
     ],
     traits: ['Power'],
   }],
@@ -542,7 +541,7 @@ export const BARB_HOOK_LASH: Weapon = {
 
 /**
  * Anakatis blade (Anakatis Kul / Word Bearers).
- * IM—/AM—/SM—/AP3/D2, Breaching(6+). Phage(S) omitted.
+ * IM—/AM—/SM—/AP3/D2, Breaching(6+), Phage(S).
  */
 export const ANAKATIS_BLADE: Weapon = {
   name: 'Anakatis Blade',
@@ -555,7 +554,7 @@ export const ANAKATIS_BLADE: Weapon = {
     ap: 3, damage: 2,
     specialRules: [
       { name: 'Breaching', threshold: 6 },
-      // Phage(S) not simulated — established pattern
+      { name: 'Phage', characteristic: 'S' },
     ],
     traits: ['Psychic'],
   }],

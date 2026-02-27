@@ -311,13 +311,16 @@ function resolveAttackSequence(
   let normalWounds = 0;
   let normalBreachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
   let normalShredTriggers = 0;  // wounds that deal +1 Damage (Shred rule)
-  // Phage(T): Merciless Strike reduces defender T by 1 per unsaved wound
+  // Phage(T): Merciless Strike reduces defender T by 1 per wound
   let currentDefT = effectiveDefT;
+  // Phage(S): weapon rule reduces attacker S by 1 per wound
+  let currentEffectiveS = effectiveS;
+  const phageS = profile.specialRules.some(sr => sr.name === 'Phage' && sr.characteristic === 'S');
 
   for (const roll of woundRolls) {
-    // With Phage(T), recompute the wound TN each time as T decreases
-    const tableWoundTN = mods.phageToughness
-      ? getWoundTargetNumber(effectiveS, currentDefT)
+    // With Phage(T) or Phage(S), recompute the wound TN each time as stats change
+    const tableWoundTN = (mods.phageToughness || phageS)
+      ? getWoundTargetNumber(currentEffectiveS, currentDefT)
       : baseWoundTN;
 
     // Poisoned: use whichever TN is easier (lower number = easier to wound)
@@ -341,6 +344,7 @@ function resolveAttackSequence(
     if (isWound) {
       normalWounds++;
       if (mods.phageToughness) currentDefT = Math.max(1, currentDefT - 1);
+      if (phageS) currentEffectiveS = Math.max(1, currentEffectiveS - 1);
       for (const sr of profile.specialRules) {
         // Breaching: wound roll ≥ threshold → this wound ignores normal armour (AP2)
         if (sr.name === 'Breaching' && roll >= sr.threshold) normalBreachingWounds++;
@@ -353,7 +357,7 @@ function resolveAttackSequence(
   const wounds = critWounds + normalWounds;
   const totalBreachingWounds = critBreachingWounds + normalBreachingWounds;
 
-  const phageNote = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
+  const phageNote = (mods.phageToughness ? ' (Phage: T reduces per wound)' : '') + (phageS ? ' (Phage: S reduces per wound)' : '');
   const poisonNote = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
   const hatredNote = woundTestBonus > 0 ? ` (Hatred +1 wound bonus)` : '';
   const effectiveWoundTN = poisonedTN !== null

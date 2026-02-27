@@ -32,7 +32,7 @@ import {
   THE_CUTTER,
   GORECHILD_REFORGED,
   SILENCE,
-  LACRIMAE,
+  LAKRIMAE,
   BLADE_OF_AHN_NUNURTA,
   CORVIDAEAN_SCEPTRE,
   WARMASTERS_TALON,
@@ -255,7 +255,7 @@ const CALAS_TYPHON: Character = {
     I: 5, A: 4, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },
-  weapons: [LACRIMAE],
+  weapons: [LAKRIMAE],
   factionGambitIds: ['steadfast-resilience', 'witchblood'],
   specialRules: [{ name: 'EternalWarrior', value: 1 }],
   traits: ['Traitor', 'Death Guard']
@@ -568,7 +568,7 @@ const RAMPAGER_CHAMPION: Character = {
 // ── Anakatis Kul (Word Bearers) ──────────────────────────────────────────────
 // A mighty Champion of the XVII Legion bearing the cursed Anakatis Blade.
 // FeelNoPain(5+) from the blade's dark blessings; Fear(1); Bulky(2).
-// Phage(S) on the Anakatis Blade is omitted (established pattern).
+// Phage(S) on the Anakatis Blade reduces attacker's Strength by 1 per wound.
 // Stats: M8 WS5 BS4 S5 T5 W3 I5 A3 LD10 CL9 WP4 IN4 Sv3+
 const ANAKATIS_KUL: Character = {
   id: 'anakatis-kul',

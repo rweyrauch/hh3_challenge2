@@ -3,10 +3,6 @@
  *
  * Sources: Daemons of the Ruinstorm — Armoury of the Ruinstorm Daemons.
  *
- * Note on Phage(S): the Sovereign blade and greatblade carry Phage(S), which
- * reduces the enemy's Strength by 1 per unsaved wound. The challenge engine
- * only models Phage(T); Phage(S) is noted in comments but not simulated.
- *
  * Note on Reaping Blow(X): per the rules, this special rule has no effect
  * during the Challenge Sub-Phase. Omitted from profiles.
  */
@@ -14,7 +10,7 @@ import type { Weapon } from '../../models/weapon.js';
 
 // ── Generic daemon melee weapons ─────────────────────────────────────────────
 
-/** Sovereign blade: I, A, S, AP2, D2 [Phage(S) — not simulated; Reaping Blow(1) — no effect in Challenge] */
+/** Sovereign blade: I, A, S, AP2, D2, Phage(S) [Reaping Blow(1) — no effect in Challenge] */
 export const SOVEREIGN_BLADE: Weapon = {
   name: 'Sovereign Blade',
   type: 'melee',
@@ -24,12 +20,12 @@ export const SOVEREIGN_BLADE: Weapon = {
     attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
-    specialRules: [],  // Phage(S) not simulated; Reaping Blow no-op in Challenge
+    specialRules: [{ name: 'Phage', characteristic: 'S' }],
     traits: ['Immaterial'],
   }],
 };
 
-/** Sovereign greatblade: -2I, A, +3S, AP2, D3 [Phage(S) — not simulated; Reaping Blow(2) — no effect in Challenge] */
+/** Sovereign greatblade: -2I, A, +3S, AP2, D3, Phage(S) [Reaping Blow(2) — no effect in Challenge] */
 export const SOVEREIGN_GREATBLADE: Weapon = {
   name: 'Sovereign Greatblade',
   type: 'melee',
@@ -39,7 +35,7 @@ export const SOVEREIGN_GREATBLADE: Weapon = {
     attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 3,
-    specialRules: [],  // Phage(S) not simulated; Reaping Blow no-op in Challenge
+    specialRules: [{ name: 'Phage', characteristic: 'S' }],
     traits: ['Immaterial'],
   }],
 };

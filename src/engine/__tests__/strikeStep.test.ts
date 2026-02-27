@@ -1208,4 +1208,63 @@ describe('Psychic Discipline mechanics (Conflagration, Every Strike Foreseen, Ha
     const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
     expect(result.playerResult.wounds).toBe(0);   // no Hatred bonus → all fail
   });
+
+  it('Phage(S): reduces attacker Strength by 1 after each wound', () => {
+    // Attacker: WS7, S5, A3 + advantage = 4 attacks, no Inv, W4
+    // Defender: WS2, T4, Sv7 (no armour), Inv4+, W10
+    // Weapon: AP null, D1, Phage(S)
+    //
+    // Wound TNs recalculate each roll as S decreases:
+    //   Roll 1: S5 vs T4 → 3+. Roll 5 → wound. S → 4.
+    //   Roll 2: S4 vs T4 → 4+. Roll 4 → wound. S → 3.
+    //   Roll 3: S3 vs T4 → 5+. Roll 5 → wound. S → 2.
+    //   Roll 4: S2 vs T4 → 6+. Roll 5 → fail (5 < 6).
+    // → 3 wounds.
+    // Save: AP null, Sv7>6 (no armour), Inv4+ → effectiveSave 4+. Rolls 1,1,1 → all fail.
+    // 3 × D1 = 3 damage. W10 − 3 = 7. Not casualty.
+    // AI attacks (A6, WS2 vs WS7 = TN 6+): 6 rolls of 1 → all miss.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'phage-s-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 5, A: 3, W: 4, Inv: null },
+      specialRules: [],
+    };
+    const defender: Character = {
+      ...WARBOSS,
+      id: 'phage-s-defender',
+      stats: { ...WARBOSS.stats, WS: 2, T: 4, Sv: 7, Inv: 4, W: 10 },
+      specialRules: [],
+    };
+    const phageWeapon = {
+      profileName: 'Phage(S) Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: null, damage: 1,
+      specialRules: [{ name: 'Phage' as const, characteristic: 'S' as const }],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, defender),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, defender).player,
+        selectedWeaponProfile: phageWeapon,
+      },
+      ai: {
+        ...makeState(attacker, defender).ai,
+        selectedWeaponProfile: defender.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5, 5, 5,   // 4 hit rolls (WS7 vs WS2 = 2+; all hit)
+      5, 4, 5, 5,   // wound rolls: 3+✓(→S4), 4+✓(→S3), 5+✓(→S2), 6+ fail
+      1, 1, 1,      // 3 save rolls (Inv4+, all fail)
+      1,1,1,1,1,1,  // 6 AI hit rolls (WS2 vs WS7 = 6+; all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, defender, 'player');
+    // Fourth roll (5) fails the raised TN of 6+ after S was reduced by three wounds
+    expect(result.playerResult.wounds).toBe(3);
+    expect(result.playerResult.unsavedWounds).toBe(3);
+    expect(result.updatedState.ai.currentWounds).toBe(7); // W10 − 3 = 7
+  });
 });
