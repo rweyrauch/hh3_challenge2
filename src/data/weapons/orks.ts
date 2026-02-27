@@ -3,60 +3,41 @@
  *
  * Weapon stat sources: Xenos Forces of the Age of Darkness (Orks fan supplement).
  */
-import type { Weapon } from '../../models/weapon.js';
+import { type Weapon, profile } from '../../models/weapon.js';
 
 /** Choppa: I, A, S, AP-, D1 */
 export const CHOPPA: Weapon = {
   name: 'Choppa',
   type: 'melee',
-  profiles: [
-    {
-      profileName: 'Choppa',
-      initiativeModifier: { kind: 'none' },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'none' },
-      ap: null,              // AP '-'
-      damage: 1,
-      specialRules: [],
-      traits: ['Choppa'],
-    },
-  ],
+  profiles: [profile({ profileName: 'Choppa', ap: null, damage: 1, traits: ['Choppa'] })],
 };
 
 /** Power Klaw: -3 IM, A, +4S, AP2, D2, Rending 6+ */
 export const POWER_KLAW: Weapon = {
   name: 'Power Klaw',
   type: 'melee',
-  profiles: [
-    {
-      profileName: 'Power Klaw',
-      initiativeModifier: { kind: 'add', value: -3 },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'add', value: 4 },
-      ap: 2,
-      damage: 2,
-      specialRules: [{ name: 'Rending', threshold: 6 }],
-      traits: ['Power'],
-    },
-  ],
+  profiles: [profile({
+    profileName: 'Power Klaw',
+    initiativeModifier: { kind: 'add', value: -3 },
+    strengthModifier: { kind: 'add', value: 4 },
+    ap: 2, damage: 2,
+    specialRules: [{ name: 'Rending', threshold: 6 }],
+    traits: ['Power'],
+  })],
 };
 
 /** Big Choppa: -1 IM, A, +2S, AP5, D2, Shred 6+ */
 export const BIG_CHOPPA: Weapon = {
   name: 'Big Choppa',
   type: 'melee',
-  profiles: [
-    {
-      profileName: 'Big Choppa',
-      initiativeModifier: { kind: 'add', value: -1 },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'add', value: 2 },
-      ap: 5,
-      damage: 2,
-      specialRules: [{ name: 'Shred', threshold: 6 }],
-      traits: ['Choppa'],
-    },
-  ],
+  profiles: [profile({
+    profileName: 'Big Choppa',
+    initiativeModifier: { kind: 'add', value: -1 },
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 5, damage: 2,
+    specialRules: [{ name: 'Shred', threshold: 6 }],
+    traits: ['Choppa'],
+  })],
 };
 
 /**
@@ -67,53 +48,12 @@ export const BIG_CHOPPA: Weapon = {
 export const SLUGGA: Weapon = {
   name: 'Slugga',
   type: 'ranged',
-  profiles: [
-    {
-      profileName: 'Slugga',
-      initiativeModifier: { kind: 'none' },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'none' },
-      ap: null,
-      damage: 1,
-      specialRules: [],
-    },
-  ],
-};
-
-/**
- * Force staff (Weirdboy). IM+1/AM—/SM+2/AP4/D1.
- * Force(D) — WP check (2d6 ≤ WP): success doubles D characteristic; doubles trigger
- * Perils of the Warp (D3 unsaveable wounds to the user), resolved at Strike Step start.
- */
-export const FORCE_STAFF: Weapon = {
-  name: 'Force Staff',
-  type: 'melee',
-  profiles: [
-    {
-      profileName: 'Force Staff',
-      initiativeModifier: { kind: 'add', value: 1 },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'add', value: 2 },
-      ap: 4, damage: 1,
-      specialRules: [{ name: 'Force', characteristic: 'D' }],
-      traits: ['Psychic'],
-    },
-  ],
+  profiles: [profile({ profileName: 'Slugga', ap: null, damage: 1 })],
 };
 
 /** Stikkbombs — ranged, not used in Challenge */
 export const STIKKBOMBS: Weapon = {
   name: 'Stikkbombs',
   type: 'ranged',
-  profiles: [
-    {
-      profileName: 'Stikkbombs',
-      initiativeModifier: { kind: 'none' },
-      attacksModifier: { kind: 'none' },
-      strengthModifier: { kind: 'none' },
-      ap: null,
-      damage: 1,
-      specialRules: [],
-    },
-  ],
+  profiles: [profile({ profileName: 'Stikkbombs', ap: null, damage: 1 })],
 };

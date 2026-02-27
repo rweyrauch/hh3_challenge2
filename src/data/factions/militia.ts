@@ -33,10 +33,8 @@ import {
   CHARNABAL_SABRE,
   CHARNABAL_TABAR,
   MILITIA_PARAGON_BLADE,
-  MILITIA_POWER_SWORD,
-  MILITIA_POWER_AXE,
-  MILITIA_POWER_FIST,
 } from '../weapons/militia.js';
+import { POWER_SWORD, POWER_AXE, POWER_FIST } from '../weapons/legionAstartes.js';
 
 // ════════════════════════════════════════════════════════════════
 // FORCE COMMANDER
@@ -58,9 +56,9 @@ const MILITIA_FORCE_COMMANDER: Character = {
     CHARNABAL_SABRE,
     CHARNABAL_TABAR,
     MILITIA_PARAGON_BLADE,
-    MILITIA_POWER_SWORD,
-    MILITIA_POWER_AXE,
-    MILITIA_POWER_FIST,
+    POWER_SWORD,
+    POWER_AXE,
+    POWER_FIST,
   ],
   factionGambitIds: [],
   specialRules: [],
@@ -87,9 +85,9 @@ const MILITIA_FORCE_COMMANDER_MOUNTED: Character = {
     CHARNABAL_SABRE,
     CHARNABAL_TABAR,
     MILITIA_PARAGON_BLADE,
-    MILITIA_POWER_SWORD,
-    MILITIA_POWER_AXE,
-    MILITIA_POWER_FIST,
+    POWER_SWORD,
+    POWER_AXE,
+    POWER_FIST,
   ],
   factionGambitIds: [],
   specialRules: [
@@ -115,9 +113,9 @@ const MILITIA_DISCIPLINE_MASTER: Character = {
   },
   weapons: [
     MILITIA_CCW,
-    MILITIA_POWER_SWORD,
-    MILITIA_POWER_AXE,
-    MILITIA_POWER_FIST,
+    POWER_SWORD,
+    POWER_AXE,
+    POWER_FIST,
   ],
   factionGambitIds: [],
   specialRules: [],
@@ -142,9 +140,9 @@ const MILITIA_DISCIPLINE_MASTER_MOUNTED: Character = {
   },
   weapons: [
     MILITIA_CCW,
-    MILITIA_POWER_SWORD,
-    MILITIA_POWER_AXE,
-    MILITIA_POWER_FIST,
+    POWER_SWORD,
+    POWER_AXE,
+    POWER_FIST,
   ],
   factionGambitIds: [],
   specialRules: [
@@ -172,9 +170,9 @@ const MILITIA_LIEUTENANT: Character = {
     MILITIA_CCW,
     CHARNABAL_SABRE,
     CHARNABAL_TABAR,
-    MILITIA_POWER_SWORD,
-    MILITIA_POWER_AXE,
-    MILITIA_POWER_FIST,
+    POWER_SWORD,
+    POWER_AXE,
+    POWER_FIST,
   ],
   factionGambitIds: [],
   specialRules: [],
@@ -200,9 +198,9 @@ const MILITIA_LANCEMASTER: Character = {
   },
   weapons: [
     MILITIA_CCW,
-    MILITIA_POWER_SWORD,
-    MILITIA_POWER_AXE,
-    MILITIA_POWER_FIST,
+    POWER_SWORD,
+    POWER_AXE,
+    POWER_FIST,
   ],
   factionGambitIds: [],
   specialRules: [

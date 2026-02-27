@@ -9,8 +9,8 @@
  *   - Blood Axes → Kunnin' but Brutal gambit
  */
 import type { Character } from '../../models/character.js';
-import { CHAINSWORD, POWER_SWORD } from '../weapons/legionAstartes.js';
-import { CHOPPA, POWER_KLAW, SLUGGA, STIKKBOMBS, BIG_CHOPPA, FORCE_STAFF } from '../weapons/orks.js';
+import { CHAINSWORD, POWER_SWORD, FORCE_STAFF } from '../weapons/legionAstartes.js';
+import { CHOPPA, POWER_KLAW, SLUGGA, STIKKBOMBS, BIG_CHOPPA } from '../weapons/orks.js';
 
 /** Warboss (Goffs) */
 const WARBOSS_GOFFS: Character = {
