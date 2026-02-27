@@ -102,12 +102,12 @@ export function getFocusDiceModification(
     suppressPositiveModifiers: false,
   };
 
-  const round                     = ctx.round                     ?? 1;
-  const currentWounds             = ctx.currentWounds             ?? 99;
-  const enemyBulkyValue           = ctx.enemyBulkyValue           ?? 0;
-  const characterId               = ctx.characterId               ?? '';
-  const ownWP                     = ctx.ownWP                     ?? 0;
-  const enemyWP                   = ctx.enemyWP                   ?? 0;
+  const round = ctx.round ?? 1;
+  const currentWounds = ctx.currentWounds ?? 99;
+  const enemyBulkyValue = ctx.enemyBulkyValue ?? 0;
+  const characterId = ctx.characterId ?? '';
+  const ownWP = ctx.ownWP ?? 0;
+  const enemyWP = ctx.enemyWP ?? 0;
   const opponentHitsLastStrikeStep = ctx.opponentHitsLastStrikeStep ?? 0;
 
   switch (gambitId) {
@@ -317,7 +317,7 @@ export function getStrikeModifiers(
   };
 
   const attacker = forPlayer ? state.player : state.ai;
-  const defender = forPlayer ? state.ai    : state.player;
+  const defender = forPlayer ? state.ai : state.player;
 
   switch (gambitId) {
     // ── Core gambits ────────────────────────────────────────────────────────

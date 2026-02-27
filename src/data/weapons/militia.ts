@@ -25,8 +25,8 @@ export const MILITIA_CCW: Weapon = {
   profiles: [{
     profileName: 'Close Combat Weapon',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: null, damage: 1,
     specialRules: [],
   }],
@@ -41,14 +41,14 @@ export const CHARNABAL_SABRE: Weapon = {
   profiles: [{
     profileName: 'Charnabal Sabre',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: null, damage: 1,
     specialRules: [
-      { name: 'Breaching',      threshold: 6 },
+      { name: 'Breaching', threshold: 6 },
       { name: 'DuellistsEdge', value: 1 },
     ],
-    traits: ['Charnabal'],        
+    traits: ['Charnabal'],
   }],
 };
 
@@ -59,14 +59,14 @@ export const CHARNABAL_TABAR: Weapon = {
   profiles: [{
     profileName: 'Charnabal Tabar',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: null, damage: 1,
     specialRules: [
-      { name: 'Breaching',      threshold: 6 },
+      { name: 'Breaching', threshold: 6 },
       { name: 'DuellistsEdge', value: 1 },
     ],
-    traits: ['Charnabal'],     
+    traits: ['Charnabal'],
   }],
 };
 
@@ -79,8 +79,8 @@ export const MILITIA_PARAGON_BLADE: Weapon = {
   profiles: [{
     profileName: 'Paragon Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
   }],
@@ -95,11 +95,11 @@ export const MILITIA_POWER_SWORD: Weapon = {
   profiles: [{
     profileName: 'Power Sword',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
-    traits: ['Power'],     
+    traits: ['Power'],
   }],
 };
 
@@ -110,11 +110,11 @@ export const MILITIA_POWER_AXE: Weapon = {
   profiles: [{
     profileName: 'Power Axe',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 5 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -125,10 +125,10 @@ export const MILITIA_POWER_FIST: Weapon = {
   profiles: [{
     profileName: 'Power Fist',
     initiativeModifier: { kind: 'add', value: -3 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 4 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };

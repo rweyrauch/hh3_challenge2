@@ -20,16 +20,16 @@ export const BIOMANTIC_SLAM: Weapon = {
   profiles: [
     {
       profileName: 'Biomantic Slam',
-      initiativeModifier: { kind: 'add',   value: -3 },
-      attacksModifier:    { kind: 'add',   value: 1  },
-      strengthModifier:   { kind: 'fixed', value: 12 },
+      initiativeModifier: { kind: 'add', value: -3 },
+      attacksModifier: { kind: 'add', value: 1 },
+      strengthModifier: { kind: 'fixed', value: 12 },
       ap: 2,
       damage: 2,
       specialRules: [
         { name: 'Armourbane' },
         { name: 'Force', characteristic: 'D' },
       ],
-      traits: ['Psychic'],      
+      traits: ['Psychic'],
     },
   ],
 };
@@ -45,16 +45,16 @@ export const CONFLAGRATION: Weapon = {
   profiles: [
     {
       profileName: 'Conflagration',
-      initiativeModifier: { kind: 'add',   value: -1 },
-      attacksModifier:    { kind: 'fixed', value: 6  },
-      strengthModifier:   { kind: 'fixed', value: 5  },
+      initiativeModifier: { kind: 'add', value: -1 },
+      attacksModifier: { kind: 'fixed', value: 6 },
+      strengthModifier: { kind: 'fixed', value: 5 },
       ap: 4,
       damage: 1,
       attacksExtraD3: true,
       specialRules: [
         { name: 'Deflagrate', value: 5 },
       ],
-      traits: ['Psychic'],        
+      traits: ['Psychic'],
     },
   ],
 };

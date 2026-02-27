@@ -21,11 +21,11 @@ export const SOVEREIGN_BLADE: Weapon = {
   profiles: [{
     profileName: 'Sovereign Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [],  // Phage(S) not simulated; Reaping Blow no-op in Challenge
-    traits: ['Immaterial'],        
+    traits: ['Immaterial'],
   }],
 };
 
@@ -36,11 +36,11 @@ export const SOVEREIGN_GREATBLADE: Weapon = {
   profiles: [{
     profileName: 'Sovereign Greatblade',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 3 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 3,
     specialRules: [],  // Phage(S) not simulated; Reaping Blow no-op in Challenge
-    traits: ['Immaterial'],        
+    traits: ['Immaterial'],
   }],
 };
 
@@ -51,14 +51,14 @@ export const HIERARCH_BLADE: Weapon = {
   profiles: [{
     profileName: 'Hierarch Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [
       { name: 'DuellistsEdge', value: 1 },
-      { name: 'CriticalHit',   threshold: 6 },
+      { name: 'CriticalHit', threshold: 6 },
     ],
-    traits: ['Immaterial'],        
+    traits: ['Immaterial'],
   }],
 };
 
@@ -69,11 +69,11 @@ export const HIERARCH_GREATBLADE: Weapon = {
   profiles: [{
     profileName: 'Hierarch Greatblade',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Immaterial'],    
+    traits: ['Immaterial'],
   }],
 };
 
@@ -84,14 +84,14 @@ export const HARBINGER_BLADE: Weapon = {
   profiles: [{
     profileName: 'Harbinger Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 5 },
-      { name: 'Shred',     threshold: 6 },
+      { name: 'Shred', threshold: 6 },
     ],
-    traits: ['Immaterial'],    
+    traits: ['Immaterial'],
   }],
 };
 
@@ -104,11 +104,11 @@ export const BANEAXE: Weapon = {
   profiles: [{
     profileName: 'Baneaxe',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Immaterial'],     
+    traits: ['Immaterial'],
   }],
 };
 
@@ -119,11 +119,11 @@ export const REAPING_CLAWS: Weapon = {
   profiles: [{
     profileName: 'Reaping Claws',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
-    traits: ['Immaterial'],        
+    traits: ['Immaterial'],
   }],
 };
 
@@ -134,10 +134,10 @@ export const BLADE_OF_SAMUS: Weapon = {
   profiles: [{
     profileName: 'Blade of Samus',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Immaterial'],        
+    traits: ['Immaterial'],
   }],
 };

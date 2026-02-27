@@ -5,16 +5,16 @@
  * effectiveness of every opening gambit over N simulations, then ranks
  * them by a composite score.
  */
-import type { Character }   from '../models/character.js';
-import type { GambitId }    from '../models/gambit.js';
+import type { Character } from '../models/character.js';
+import type { GambitId } from '../models/gambit.js';
 import type { CombatState } from '../models/combatState.js';
 import { ChallengeEngine, buildInitialState } from './challengeEngine.js';
 import type { PlayerInput } from './challengeEngine.js';
-import { RealDiceRoller }   from './dice.js';
-import { scoreGambit }      from '../ai/heuristicAI.js';
+import { RealDiceRoller } from './dice.js';
+import { scoreGambit } from '../ai/heuristicAI.js';
 import { getFactionGambits } from '../data/factions/index.js';
 
-export const SIMULATIONS_PER_GAMBIT = 500;
+export const SIMULATIONS_PER_GAMBIT = 1000;
 
 export interface SimResult {
   winner: 'player' | 'ai' | 'draw';
@@ -91,9 +91,9 @@ export function runSingleSimulation(
   weaponIdx: number,
   profileIdx: number,
 ): SimResult {
-  const dice   = new RealDiceRoller();
+  const dice = new RealDiceRoller();
   const engine = new ChallengeEngine(playerChar, aiChar, dice);
-  let   state  = buildInitialState(playerChar, aiChar);
+  let state = buildInitialState(playerChar, aiChar);
 
   // Pre-select the player's weapon so the engine never pauses for weapon input.
   const preSelected =
@@ -121,17 +121,17 @@ export function runSingleSimulation(
     // Auto-advance until the engine needs player input or the challenge ends.
     while (!result.waitingForInput && state.phase !== 'ended') {
       result = engine.advance(state);
-      state  = result.state;
+      state = result.state;
     }
   }
 
   // Determine winner: casualty takes priority, then CRP total.
   let winner: 'player' | 'ai' | 'draw';
-  if      (state.ai.isCasualty && !state.player.isCasualty) winner = 'player';
+  if (state.ai.isCasualty && !state.player.isCasualty) winner = 'player';
   else if (state.player.isCasualty && !state.ai.isCasualty) winner = 'ai';
-  else if (state.playerCRP > state.aiCRP)                    winner = 'player';
-  else if (state.aiCRP > state.playerCRP)                    winner = 'ai';
-  else                                                        winner = 'draw';
+  else if (state.playerCRP > state.aiCRP) winner = 'player';
+  else if (state.aiCRP > state.playerCRP) winner = 'ai';
+  else winner = 'draw';
 
   return { winner, playerCRP: state.playerCRP, aiCRP: state.aiCRP };
 }
@@ -152,8 +152,8 @@ export function analyseGambit(
     return { gambitId, gambitName, winRate: 0, avgCRPDelta: 0, compositeScore: 0 };
   }
 
-  const wins        = results.filter(r => r.winner === 'player').length;
-  const winRate     = wins / n;
+  const wins = results.filter(r => r.winner === 'player').length;
+  const winRate = wins / n;
   const avgCRPDelta = results.reduce((sum, r) => sum + (r.playerCRP - r.aiCRP), 0) / n;
   const compositeScore =
     winRate * 0.7 + clamp(avgCRPDelta / totalMaxWounds, 0, 1) * 0.3;
@@ -178,10 +178,10 @@ export async function runAllSimulations(
   simsPerGambit: number = SIMULATIONS_PER_GAMBIT,
   onProgress: (done: number, total: number) => void,
 ): Promise<GambitStats[]> {
-  const gambits       = getFactionGambits(playerChar);
+  const gambits = getFactionGambits(playerChar);
   const totalMaxWounds = playerChar.stats.W + aiChar.stats.W;
-  const total         = gambits.length * simsPerGambit;
-  let   done          = 0;
+  const total = gambits.length * simsPerGambit;
+  let done = 0;
 
   const allStats: GambitStats[] = [];
 

@@ -48,8 +48,8 @@ const RUINSTORM_SOVEREIGN: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
-    { name: 'Fear',           value: 1 },
-    { name: 'Bulky',          value: 7 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 7 },
   ],
 };
 
@@ -68,8 +68,8 @@ const RUINSTORM_SOVEREIGN_WINGS: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
-    { name: 'Fear',           value: 1 },
-    { name: 'Bulky',          value: 8 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 8 },
   ],
 };
 
@@ -93,8 +93,8 @@ const RUINSTORM_HIERARCH: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
-    { name: 'Fear',           value: 1 },
-    { name: 'Bulky',          value: 5 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 5 },
   ],
 };
 
@@ -113,8 +113,8 @@ const RUINSTORM_HIERARCH_WINGS: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
-    { name: 'Fear',           value: 1 },
-    { name: 'Bulky',          value: 6 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 6 },
   ],
 };
 
@@ -138,8 +138,8 @@ const RUINSTORM_HARBINGER: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
-    { name: 'Fear',           value: 1 },
-    { name: 'Bulky',          value: 3 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 3 },
   ],
 };
 
@@ -165,8 +165,8 @@ const KABANDHA: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 2 },
-    { name: 'Fear',           value: 2 },
-    { name: 'Bulky',          value: 12 },
+    { name: 'Fear', value: 2 },
+    { name: 'Bulky', value: 12 },
   ],
 };
 
@@ -192,8 +192,8 @@ const CORBAX_UTTERBLIGHT: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 2 },
-    { name: 'Fear',           value: 1 },
-    { name: 'Bulky',          value: 8 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 8 },
   ],
 };
 
@@ -219,8 +219,8 @@ const SAMUS: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
-    { name: 'Fear',           value: 1 },
-    { name: 'Bulky',          value: 8 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 8 },
   ],
 };
 

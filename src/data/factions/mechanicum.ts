@@ -40,9 +40,9 @@ const ANACHARIS_SCORIA: Character = {
   weapons: [VODIAN_SCEPTRE, SCORIAN_TALONS],
   factionGambitIds: [],
   specialRules: [
-    { name: 'Fear',           value: 1 },
+    { name: 'Fear', value: 1 },
     { name: 'EternalWarrior', value: 1 },
-    { name: 'FeelNoPain',     threshold: 5 },
+    { name: 'FeelNoPain', threshold: 5 },
   ],
 };
 

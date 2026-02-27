@@ -14,15 +14,15 @@
  *   strike-ai    → glory        (after both attacks resolved)
  *   glory        → faceOff      (if challenge continues) | ended
  */
-import type { DiceRoller }  from './dice.js';
+import type { DiceRoller } from './dice.js';
 import type { CombatState, CombatantState, LogEntry } from '../models/combatState.js';
-import type { Character }   from '../models/character.js';
-import type { GambitId }    from '../models/gambit.js';
+import type { Character } from '../models/character.js';
+import type { GambitId } from '../models/gambit.js';
 import type { WeaponProfile } from '../models/weapon.js';
-import { resolveFocusStep }  from './focusStep.js';
+import { resolveFocusStep } from './focusStep.js';
 import { resolveStrikeStep, resolveDirtyFighterPreStrike } from './strikeStep.js';
-import { resolveGloryStep }  from './gloryStep.js';
-import { selectAIGambit }    from '../ai/heuristicAI.js';
+import { resolveGloryStep } from './gloryStep.js';
+import { selectAIGambit } from '../ai/heuristicAI.js';
 
 /** Input that the human player provides per phase. */
 export interface PlayerInput {
@@ -98,13 +98,13 @@ export function buildInitialState(playerChar: Character, aiChar: Character): Com
  */
 export class ChallengeEngine {
   private readonly playerChar: Character;
-  private readonly aiChar:     Character;
-  private readonly dice:       DiceRoller;
+  private readonly aiChar: Character;
+  private readonly dice: DiceRoller;
 
   constructor(playerChar: Character, aiChar: Character, dice: DiceRoller) {
     this.playerChar = playerChar;
-    this.aiChar     = aiChar;
-    this.dice       = dice;
+    this.aiChar = aiChar;
+    this.dice = dice;
   }
 
   /**
@@ -116,11 +116,11 @@ export class ChallengeEngine {
    */
   advance(state: CombatState, input?: PlayerInput): AdvanceResult {
     switch (state.phase) {
-      case 'faceOff':  return this.advanceFaceOff(state, input);
-      case 'focus':    return this.advanceFocus(state, input);
+      case 'faceOff': return this.advanceFaceOff(state, input);
+      case 'focus': return this.advanceFocus(state, input);
       case 'strike-player': return this.advanceStrikePlayer(state);
-      case 'strike-ai':     return this.advanceStrikeAi(state, input);
-      case 'glory':    return this.advanceGlory(state, input);
+      case 'strike-ai': return this.advanceStrikeAi(state, input);
+      case 'glory': return this.advanceGlory(state, input);
       default:
         return { state, waitingForInput: false };
     }
@@ -236,7 +236,7 @@ export class ChallengeEngine {
       if (
         state.round === 1 &&
         (next.player.selectedGambit === 'dirty-fighter' ||
-         next.ai.selectedGambit     === 'dirty-fighter')
+          next.ai.selectedGambit === 'dirty-fighter')
       ) {
         const dfResult = resolveDirtyFighterPreStrike(
           this.dice, next, this.playerChar, this.aiChar,
@@ -264,7 +264,7 @@ export class ChallengeEngine {
         testTheFoeAdvantage: null, // consume the pending advantage
         // Guard Up bonuses are consumed
         player: { ...next.player, guardUpFocusBonus: 0 },
-        ai:     { ...next.ai,     guardUpFocusBonus: 0 },
+        ai: { ...next.ai, guardUpFocusBonus: 0 },
         phase: focusResult.advantage === 'player' ? 'strike-player' : 'strike-ai',
       };
 
@@ -295,7 +295,7 @@ export class ChallengeEngine {
     next = {
       ...next,
       player: { ...next.player, hitsReceivedLastStrikeStep: strikeResult.aiResult.hits },
-      ai:     { ...next.ai,     hitsReceivedLastStrikeStep: strikeResult.playerResult.hits },
+      ai: { ...next.ai, hitsReceivedLastStrikeStep: strikeResult.playerResult.hits },
     };
 
     // The Undying Fire: if model survived the Strike Step (not a casualty), it
@@ -317,15 +317,15 @@ export class ChallengeEngine {
       if (combatant.currentWounds >= combatant.baseWounds) continue; // already at full
 
       const healRoll = this.dice.rollD3();
-      const before   = combatant.currentWounds;
-      const after    = Math.min(before + healRoll, combatant.baseWounds);
-      const actual   = after - before;
+      const before = combatant.currentWounds;
+      const after = Math.min(before + healRoll, combatant.baseWounds);
+      const actual = after - before;
       next = { ...next, [side]: { ...combatant, currentWounds: after } };
       const label = side === 'player' ? 'Player' : 'AI';
       next = addLog(
         next,
         `The Undying Fire (${label}): regains ${actual} wound(s)` +
-          ` (D3=${healRoll}; W${before}→${after}, max W${combatant.baseWounds}).`,
+        ` (D3=${healRoll}; W${before}→${after}, max W${combatant.baseWounds}).`,
         'success',
       );
     }
@@ -366,13 +366,13 @@ export class ChallengeEngine {
     let next = {
       ...state,
       playerCRP: gloryResult.playerCRP,
-      aiCRP:     gloryResult.aiCRP,
+      aiCRP: gloryResult.aiCRP,
     };
     for (const msg of gloryResult.log) {
       next = addLog(next, msg,
         gloryResult.winner === 'player' ? 'success'
-        : gloryResult.winner === 'ai'   ? 'danger'
-        : 'warning',
+          : gloryResult.winner === 'ai' ? 'danger'
+            : 'warning',
       );
     }
 
@@ -388,8 +388,8 @@ export class ChallengeEngine {
       next = addLog(next,
         `Challenge ended. Player CRP: ${next.playerCRP}, AI CRP: ${next.aiCRP}`,
         next.playerCRP > next.aiCRP ? 'success'
-        : next.aiCRP > next.playerCRP ? 'danger'
-        : 'warning',
+          : next.aiCRP > next.playerCRP ? 'danger'
+            : 'warning',
       );
       return { state: next, waitingForInput: false };
     }
@@ -403,8 +403,8 @@ export class ChallengeEngine {
       // Test the Foe: carry over advantage
       testTheFoeAdvantage:
         state.player.selectedGambit === 'test-the-foe' ? 'player'
-        : state.ai.selectedGambit   === 'test-the-foe' ? 'ai'
-        : null,
+          : state.ai.selectedGambit === 'test-the-foe' ? 'ai'
+            : null,
       player: {
         ...next.player,
         selectedGambit: null,
@@ -433,7 +433,7 @@ export class ChallengeEngine {
    * Prefer highest (S × A) product; in Round 1 prefer highest CI.
    */
   private selectAIWeapon(): WeaponProfile {
-    const char  = this.aiChar;
+    const char = this.aiChar;
     const round = 0; // accessed inside closure
 
     let bestProfile: WeaponProfile | null = null;
@@ -460,23 +460,23 @@ export class ChallengeEngine {
 
   private resolveStrength(baseS: number, profile: WeaponProfile): number {
     const sm = profile.strengthModifier;
-    if (sm.kind === 'none')  return baseS;
-    if (sm.kind === 'add')   return baseS + sm.value;
-    if (sm.kind === 'mult')  return baseS * sm.value;
+    if (sm.kind === 'none') return baseS;
+    if (sm.kind === 'add') return baseS + sm.value;
+    if (sm.kind === 'mult') return baseS * sm.value;
     return sm.value; // fixed
   }
 
   private resolveAttacks(baseA: number, profile: WeaponProfile): number {
     const am = profile.attacksModifier;
-    if (am.kind === 'none')  return baseA;
-    if (am.kind === 'add')   return baseA + am.value;
+    if (am.kind === 'none') return baseA;
+    if (am.kind === 'add') return baseA + am.value;
     return am.value; // fixed
   }
 
   private resolveCI(baseI: number, profile: WeaponProfile): number {
     const im = profile.initiativeModifier;
-    if (im.kind === 'none')  return baseI;
-    if (im.kind === 'add')   return baseI + im.value;
+    if (im.kind === 'none') return baseI;
+    if (im.kind === 'add') return baseI + im.value;
     return im.value; // fixed
   }
 }

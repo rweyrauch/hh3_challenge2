@@ -112,7 +112,7 @@ const BIGBOSS_BLOOD_AXES: Character = {
 };
 
 const FREEBOOTER_KAPTIN: Character = {
- id: 'freebooter-kaptin',
+  id: 'freebooter-kaptin',
   name: 'Freebooter Kaptin',
   faction: 'orks',
   subFaction: 'freebooters',
