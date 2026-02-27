@@ -14,8 +14,8 @@ export const VODIAN_SCEPTRE: Weapon = {
   profiles: [{
     profileName: 'The Vodian Sceptre',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier:    { kind: 'add', value: -2 },
-    strengthModifier:   { kind: 'add', value: 3 },
+    attacksModifier: { kind: 'add', value: -2 },
+    strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [],  // Shock (Pinning, Stunned, Suppressed) not simulated
   }],
@@ -28,8 +28,8 @@ export const SCORIAN_TALONS: Weapon = {
   profiles: [{
     profileName: 'Scorian talons',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
   }],
@@ -42,8 +42,8 @@ export const ARC_SCOURGES: Weapon = {
   profiles: [{
     profileName: 'Pair of Arc scourges',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'add', value: 1 },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'add', value: 1 },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 2,
     specialRules: [],  // Shock (Suppressed) not simulated
   }],

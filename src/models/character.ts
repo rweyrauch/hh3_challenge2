@@ -23,19 +23,19 @@ export type ModelSubType =
 
 /** The numeric stats used in Challenge resolution. */
 export interface CharacterStats {
-  M:   number;  // Movement      (not used in Challenge)
-  WS:  number;  // Weapon Skill
-  BS:  number;  // Ballistic Skill (not used in Challenge)
-  S:   number;  // Strength
-  T:   number;  // Toughness
-  W:   number;  // Wounds
-  I:   number;  // Initiative
-  A:   number;  // Attacks
-  LD:  number;  // Leadership
-  CL:  number;  // Cool           (not used in Challenge)
-  WP:  number;  // Willpower      (not used in Challenge)
-  IN:  number;  // Intelligence   (not used in Challenge)
-  Sv:  number;  // Armour Save    (e.g. 3 means 3+)
+  M: number;  // Movement      (not used in Challenge)
+  WS: number;  // Weapon Skill
+  BS: number;  // Ballistic Skill (not used in Challenge)
+  S: number;  // Strength
+  T: number;  // Toughness
+  W: number;  // Wounds
+  I: number;  // Initiative
+  A: number;  // Attacks
+  LD: number;  // Leadership
+  CL: number;  // Cool           (not used in Challenge)
+  WP: number;  // Willpower      (not used in Challenge)
+  IN: number;  // Intelligence   (not used in Challenge)
+  Sv: number;  // Armour Save    (e.g. 3 means 3+)
   Inv: number | null;  // Invulnerable Save, null = '-'
 }
 

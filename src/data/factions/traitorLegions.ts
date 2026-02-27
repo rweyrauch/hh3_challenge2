@@ -71,7 +71,7 @@ const FULGRIM: Character = {
     { name: 'Bulky', value: 4 },
     { name: 'SublimeSwordsman' },
   ],
-  traits: ['Traitor', 'Emperor\'s Children']   
+  traits: ['Traitor', 'Emperor\'s Children']
 };
 
 const CAPTAIN_LUCIUS: Character = {
@@ -90,7 +90,7 @@ const CAPTAIN_LUCIUS: Character = {
   // instead of the standard +2; handled by the engine via characterId check.
   factionGambitIds: ['paragon-of-excellence'],
   specialRules: [],
-  traits: ['Traitor', 'Emperor\'s Children']   
+  traits: ['Traitor', 'Emperor\'s Children']
 };
 
 const LORD_COMMANDER_EIDOLON: Character = {
@@ -106,8 +106,8 @@ const LORD_COMMANDER_EIDOLON: Character = {
   },
   weapons: [GLORY_AETERNA],
   factionGambitIds: ['paragon-of-excellence'],
-  specialRules: [{name: 'Bulky', value: 2}],
-  traits: ['Traitor', 'Emperor\'s Children']   
+  specialRules: [{ name: 'Bulky', value: 2 }],
+  traits: ['Traitor', 'Emperor\'s Children']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -131,7 +131,7 @@ const PERTURABO: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 6 },
   ],
-  traits: ['Traitor', 'Iron Warriors']   
+  traits: ['Traitor', 'Iron Warriors']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -155,7 +155,7 @@ const KONRAD_CURZE: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
-  traits: ['Traitor', 'Night Lords']   
+  traits: ['Traitor', 'Night Lords']
 };
 
 const SEVATAR: Character = {
@@ -172,7 +172,7 @@ const SEVATAR: Character = {
   weapons: [NIGHTS_WHISPER],
   factionGambitIds: ['nostraman-courage', 'dirty-fighter'],
   specialRules: [{ name: 'Precision', threshold: 4 }],
-  traits: ['Traitor', 'Night Lords']   
+  traits: ['Traitor', 'Night Lords']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -196,7 +196,7 @@ const ANGRON: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
-  traits: ['Traitor', 'World Eaters']   
+  traits: ['Traitor', 'World Eaters']
 };
 
 const KHARN_THE_BLOODY: Character = {
@@ -216,7 +216,7 @@ const KHARN_THE_BLOODY: Character = {
     { name: 'EternalWarrior', value: 1 },
     { name: 'Precision', threshold: 5 },
   ],
-  traits: ['Traitor', 'World Eaters']    
+  traits: ['Traitor', 'World Eaters']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -241,7 +241,7 @@ const MORTARION: Character = {
     { name: 'Bulky', value: 5 },
     { name: 'PraeternaturalResilience' },
   ],
-  traits: ['Traitor', 'Death Guard']    
+  traits: ['Traitor', 'Death Guard']
 };
 
 const CALAS_TYPHON: Character = {
@@ -258,7 +258,7 @@ const CALAS_TYPHON: Character = {
   weapons: [LACRIMAE],
   factionGambitIds: ['steadfast-resilience', 'witchblood'],
   specialRules: [{ name: 'EternalWarrior', value: 1 }],
-  traits: ['Traitor', 'Death Guard']  
+  traits: ['Traitor', 'Death Guard']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -282,7 +282,7 @@ const MAGNUS_THE_RED: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 5 },
   ],
-  traits: ['Traitor', 'Thousand Sons']    
+  traits: ['Traitor', 'Thousand Sons']
 };
 
 const AHZEK_AHRIMAN: Character = {
@@ -299,7 +299,7 @@ const AHZEK_AHRIMAN: Character = {
   weapons: [CORVIDAEAN_SCEPTRE],
   factionGambitIds: ['prophetic-duellist'],
   specialRules: [],
-  traits: ['Traitor', 'Thousand Sons']   
+  traits: ['Traitor', 'Thousand Sons']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -323,7 +323,7 @@ const HORUS_LUPERCAL: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 6 },
   ],
-  traits: ['Traitor', 'Sons of Horus']   
+  traits: ['Traitor', 'Sons of Horus']
 };
 
 const EZEKYLE_ABADDON: Character = {
@@ -340,7 +340,7 @@ const EZEKYLE_ABADDON: Character = {
   weapons: [CTHONIAN_POWER_CLAW],
   factionGambitIds: ['merciless-strike'],
   specialRules: [{ name: 'EternalWarrior', value: 1 }],
-  traits: ['Traitor', 'Sons of Horus']     
+  traits: ['Traitor', 'Sons of Horus']
 };
 
 const HORUS_AXIMAND: Character = {
@@ -357,7 +357,7 @@ const HORUS_AXIMAND: Character = {
   weapons: [MOURN_IT_ALL],
   factionGambitIds: ['merciless-strike'],
   specialRules: [],
-  traits: ['Traitor', 'Sons of Horus']     
+  traits: ['Traitor', 'Sons of Horus']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -381,7 +381,7 @@ const LORGAR: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
-  traits: ['Traitor', 'Word Bearers']     
+  traits: ['Traitor', 'Word Bearers']
 };
 
 const KOR_PHAERON: Character = {
@@ -398,7 +398,7 @@ const KOR_PHAERON: Character = {
   weapons: [PATRIARCHS_CLAWS],
   factionGambitIds: ['beseech-the-gods'],
   specialRules: [],
-  traits: ['Traitor', 'Word Bearers']    
+  traits: ['Traitor', 'Word Bearers']
 };
 
 const EREBUS: Character = {
@@ -415,7 +415,7 @@ const EREBUS: Character = {
   weapons: [CRUX_MALIFICA],
   factionGambitIds: ['beseech-the-gods'],
   specialRules: [],
-  traits: ['Traitor', 'Word Bearers']    
+  traits: ['Traitor', 'Word Bearers']
 };
 
 const ARGEL_TAL: Character = {
@@ -432,7 +432,7 @@ const ARGEL_TAL: Character = {
   weapons: [DAEMONIC_TALONS],
   factionGambitIds: ['beseech-the-gods'],
   specialRules: [],
-  traits: ['Traitor', 'Word Bearers']    
+  traits: ['Traitor', 'Word Bearers']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -456,7 +456,7 @@ const ALPHARIUS: Character = {
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
   ],
-  traits: ['Alpha Legion']    
+  traits: ['Alpha Legion']
 };
 
 const ARMILLUS_DYNAT: Character = {
@@ -473,7 +473,7 @@ const ARMILLUS_DYNAT: Character = {
   weapons: [THE_PRINCE, THE_PROPHET],
   factionGambitIds: ['i-am-alpharius'],
   specialRules: [],
-  traits: ['Alpha Legion']    
+  traits: ['Alpha Legion']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -500,7 +500,7 @@ const PHOENIX_CHAMPION: Character = {
   specialRules: [
     { name: 'Bulky', value: 2 },
   ],
-  traits: ['Emperor\'s Children']    
+  traits: ['Emperor\'s Children']
 };
 
 // ── Palatine Prefector (Emperor's Children) ──────────────────────────────────
@@ -520,7 +520,7 @@ const PALATINE_PREFECTOR: Character = {
   weapons: [PALATINE_BLADE],
   factionGambitIds: ['paragon-of-excellence'],
   specialRules: [],
-  traits: ['Emperor\'s Children']   
+  traits: ['Emperor\'s Children']
 };
 
 // ── Palatine Prefector (Jump Pack) ───────────────────────────────────────────
@@ -541,7 +541,7 @@ const PALATINE_PREFECTOR_JUMP_PACK: Character = {
   specialRules: [
     { name: 'Bulky', value: 2 },
   ],
-  traits: ['Emperor\'s Children']   
+  traits: ['Emperor\'s Children']
 };
 
 // ── Rampager Champion (World Eaters) ─────────────────────────────────────────
@@ -562,7 +562,7 @@ const RAMPAGER_CHAMPION: Character = {
   weapons: [METEOR_HAMMER, EXCORIATOR_CHAINAXE, PAIRED_FALAX_BLADES, BARB_HOOK_LASH],
   factionGambitIds: ['violent-overkill'],
   specialRules: [],
-  traits: ['World Eaters']   
+  traits: ['World Eaters']
 };
 
 // ── Anakatis Kul (Word Bearers) ──────────────────────────────────────────────
@@ -585,10 +585,10 @@ const ANAKATIS_KUL: Character = {
   factionGambitIds: ['beseech-the-gods'],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
-    { name: 'Fear',       value: 1 },
-    { name: 'Bulky',      value: 2 },
+    { name: 'Fear', value: 1 },
+    { name: 'Bulky', value: 2 },
   ],
-  traits: ['Traitor', 'Word Bearers']   
+  traits: ['Traitor', 'Word Bearers']
 };
 
 // ════════════════════════════════════════════════════════════════

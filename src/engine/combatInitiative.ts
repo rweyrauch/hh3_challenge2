@@ -24,7 +24,7 @@ export function calculateCombatInitiative(
   profile: WeaponProfile,
 ): number {
   const baseI = stats.I;
-  const im    = profile.initiativeModifier;
+  const im = profile.initiativeModifier;
 
   let ci: number = baseI;
   switch (im.kind) {
@@ -77,8 +77,8 @@ export function buildFocusTotal(
   guardUpBonus: number,
 ): number {
   const diceTotal = diceResults.reduce((a, b) => a + b, 0);
-  const heavyMod  = isHeavy ? -1 : 0;
-  const lightMod  = isLight ? +1 : 0;
+  const heavyMod = isHeavy ? -1 : 0;
+  const lightMod = isLight ? +1 : 0;
 
   return (
     diceTotal

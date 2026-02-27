@@ -6,31 +6,31 @@
  *
  * Rules reference: HH3 Challenge Sub-Phase, Step 3 (Focus).
  */
-import type { DiceRoller }     from './dice.js';
-import type { CombatState }    from '../models/combatState.js';
-import type { Character }      from '../models/character.js';
-import type { WeaponProfile }  from '../models/weapon.js';
+import type { DiceRoller } from './dice.js';
+import type { CombatState } from '../models/combatState.js';
+import type { Character } from '../models/character.js';
+import type { WeaponProfile } from '../models/weapon.js';
 import { calculateCombatInitiative, buildFocusTotal, getDuellistsEdgeBonus }
   from './combatInitiative.js';
 import { getFocusDiceModification, type FocusContext } from './gambitEffects.js';
-import type { GambitId }       from '../models/gambit.js';
+import type { GambitId } from '../models/gambit.js';
 
 /** Result of one model's Focus Roll. */
 export interface FocusRollResult {
   diceRolled: number[];    // raw dice before any discard
-  diceKept:   number[];    // dice after discard rules applied
-  diceTotal:  number;      // sum of kept dice
-  ci:         number;      // Combat Initiative contribution
-  modifiers:  number;      // sum of all other bonuses/penalties
-  total:      number;      // grand total = diceTotal + ci + modifiers
+  diceKept: number[];    // dice after discard rules applied
+  diceTotal: number;      // sum of kept dice
+  ci: number;      // Combat Initiative contribution
+  modifiers: number;      // sum of all other bonuses/penalties
+  total: number;      // grand total = diceTotal + ci + modifiers
 }
 
 /** Full output of the Focus Step. */
 export interface FocusStepResult {
   playerRoll: FocusRollResult;
-  aiRoll:     FocusRollResult;
+  aiRoll: FocusRollResult;
   /** Which side gains Challenge Advantage (never null after this step). */
-  advantage:  'player' | 'ai';
+  advantage: 'player' | 'ai';
   /** +1 Attack bonus applied to the winner's Strike step. */
   winnerAttackBonus: 1;
   /** Log messages generated during resolution. */
@@ -124,7 +124,7 @@ function rollFocus(
 
   return {
     diceRolled: rawDice,
-    diceKept:   keptDice,
+    diceKept: keptDice,
     diceTotal,
     ci,
     modifiers: total - diceTotal - ci,
@@ -167,7 +167,7 @@ export function resolveFocusStep(
   }
 
   const playerProfile = state.player.selectedWeaponProfile!;
-  const aiProfile     = state.ai.selectedWeaponProfile!;
+  const aiProfile = state.ai.selectedWeaponProfile!;
 
   let attempt = 0;
   let playerRoll: FocusRollResult;
@@ -176,27 +176,27 @@ export function resolveFocusStep(
 
   // Abyssal Strike: player replaces own I with opponent's I for Focus Roll
   const playerGambit = state.player.selectedGambit;
-  const aiGambit     = state.ai.selectedGambit;
+  const aiGambit = state.ai.selectedGambit;
 
   // Build context for each side (used by state-dependent gambits)
   const playerCtx: FocusContext = {
-    round:                      state.round,
-    currentWounds:              state.player.currentWounds,
-    baseWounds:                 state.player.baseWounds,
-    ownWP:                      playerChar.stats.WP,
-    enemyWP:                    aiChar.stats.WP,
-    enemyBulkyValue:            getBulkyValue(aiChar),
-    characterId:                playerChar.id,
+    round: state.round,
+    currentWounds: state.player.currentWounds,
+    baseWounds: state.player.baseWounds,
+    ownWP: playerChar.stats.WP,
+    enemyWP: aiChar.stats.WP,
+    enemyBulkyValue: getBulkyValue(aiChar),
+    characterId: playerChar.id,
     opponentHitsLastStrikeStep: state.player.hitsReceivedLastStrikeStep,
   };
   const aiCtx: FocusContext = {
-    round:                      state.round,
-    currentWounds:              state.ai.currentWounds,
-    baseWounds:                 state.ai.baseWounds,
-    ownWP:                      aiChar.stats.WP,
-    enemyWP:                    playerChar.stats.WP,
-    enemyBulkyValue:            getBulkyValue(playerChar),
-    characterId:                aiChar.id,
+    round: state.round,
+    currentWounds: state.ai.currentWounds,
+    baseWounds: state.ai.baseWounds,
+    ownWP: aiChar.stats.WP,
+    enemyWP: playerChar.stats.WP,
+    enemyBulkyValue: getBulkyValue(playerChar),
+    characterId: aiChar.id,
     opponentHitsLastStrikeStep: state.ai.hitsReceivedLastStrikeStep,
   };
 
@@ -205,7 +205,7 @@ export function resolveFocusStep(
     if (attempt > 1) log.push('Tie! Re-rolling Focus...');
 
     let effectivePlayerChar = playerChar;
-    let effectiveAiChar     = aiChar;
+    let effectiveAiChar = aiChar;
 
     // Abyssal Strike: player's CI uses opponent's I
     if (playerGambit === 'abyssal-strike') {
@@ -266,8 +266,8 @@ export function resolveFocusStep(
 
   return {
     playerRoll: playerRoll!,
-    aiRoll:     aiRoll!,
-    advantage:  advantage!,
+    aiRoll: aiRoll!,
+    advantage: advantage!,
     winnerAttackBonus: 1,
     log,
   };

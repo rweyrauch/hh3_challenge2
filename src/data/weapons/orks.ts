@@ -13,12 +13,12 @@ export const CHOPPA: Weapon = {
     {
       profileName: 'Choppa',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'none' },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'none' },
       ap: null,              // AP '-'
       damage: 1,
       specialRules: [],
-      traits: ['Choppa'],      
+      traits: ['Choppa'],
     },
   ],
 };
@@ -31,12 +31,12 @@ export const POWER_KLAW: Weapon = {
     {
       profileName: 'Power Klaw',
       initiativeModifier: { kind: 'add', value: -3 },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'add', value: 4 },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 4 },
       ap: 2,
       damage: 2,
       specialRules: [{ name: 'Rending', threshold: 6 }],
-      traits: ['Power'],      
+      traits: ['Power'],
     },
   ],
 };
@@ -49,12 +49,12 @@ export const BIG_CHOPPA: Weapon = {
     {
       profileName: 'Big Choppa',
       initiativeModifier: { kind: 'add', value: -1 },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'add', value: 2 },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 2 },
       ap: 5,
       damage: 2,
       specialRules: [{ name: 'Shred', threshold: 6 }],
-      traits: ['Choppa'],      
+      traits: ['Choppa'],
     },
   ],
 };
@@ -71,8 +71,8 @@ export const SLUGGA: Weapon = {
     {
       profileName: 'Slugga',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'none' },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'none' },
       ap: null,
       damage: 1,
       specialRules: [],
@@ -92,8 +92,8 @@ export const FORCE_STAFF: Weapon = {
     {
       profileName: 'Force Staff',
       initiativeModifier: { kind: 'add', value: 1 },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'add', value: 2 },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 2 },
       ap: 4, damage: 1,
       specialRules: [{ name: 'Force', characteristic: 'D' }],
       traits: ['Psychic'],
@@ -109,8 +109,8 @@ export const STIKKBOMBS: Weapon = {
     {
       profileName: 'Stikkbombs',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'none' },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'none' },
       ap: null,
       damage: 1,
       specialRules: [],

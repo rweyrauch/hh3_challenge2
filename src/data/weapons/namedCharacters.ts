@@ -22,11 +22,11 @@ export const LION_SWORD: Weapon = {
   profiles: [{
     profileName: 'The Lion Sword',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 3,
     specialRules: [],
-    traits: ['Power', 'Sword of the Order'],     
+    traits: ['Power', 'Sword of the Order'],
   }],
 };
 
@@ -37,14 +37,14 @@ export const WOLF_BLADE: Weapon = {
   profiles: [{
     profileName: 'The Wolf Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
-      { name: 'Shred',     threshold: 4 },
+      { name: 'Shred', threshold: 4 },
       { name: 'Breaching', threshold: 4 },
     ],
-    traits: ['Chain', 'Sword of the Order'], 
+    traits: ['Chain', 'Sword of the Order'],
   }],
 };
 
@@ -55,11 +55,11 @@ export const CORSWAIN_THE_BLADE: Weapon = {
   profiles: [{
     profileName: 'The Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 2 }],
-    traits: ['Power', 'Sword of the Order'],     
+    traits: ['Power', 'Sword of the Order'],
   }],
 };
 
@@ -70,8 +70,8 @@ export const DEATH_OF_WORLDS: Weapon = {
   profiles: [{
     profileName: 'The Death of Worlds',
     initiativeModifier: { kind: 'add', value: 2 },
-    attacksModifier:    { kind: 'fixed', value: 4 },
-    strengthModifier:   { kind: 'add', value: 5 },
+    attacksModifier: { kind: 'fixed', value: 4 },
+    strengthModifier: { kind: 'add', value: 5 },
     ap: 2, damage: 3,
     specialRules: [],
   }],
@@ -88,11 +88,11 @@ export const WHITE_TIGER_DAO: Weapon = {
   profiles: [{
     profileName: 'White Tiger Dao',
     initiativeModifier: { kind: 'add', value: 2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
-    traits: ['Power'],     
+    traits: ['Power'],
   }],
 };
 
@@ -103,14 +103,14 @@ export const TAILS_OF_THE_DRAGON: Weapon = {
   profiles: [{
     profileName: 'The Tails of the Dragon',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [
       { name: 'CriticalHit', threshold: 5 },
-      { name: 'Precision',   threshold: 3 },
+      { name: 'Precision', threshold: 3 },
     ],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -121,14 +121,14 @@ export const BREATH_OF_THE_STORM: Weapon = {
   profiles: [{
     profileName: 'The Breath of the Storm',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'CriticalHit', threshold: 6 },
-      { name: 'Breaching',   threshold: 4 },
+      { name: 'Breaching', threshold: 4 },
     ],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -143,8 +143,8 @@ export const AXE_OF_HELWINTER: Weapon = {
   profiles: [{
     profileName: 'The Axe of Helwinter',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [],
   }],
@@ -157,8 +157,8 @@ export const SWORD_OF_BALENIGHT: Weapon = {
   profiles: [{
     profileName: 'The Sword of Balenight',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
   }],
@@ -171,11 +171,11 @@ export const HEARTH_SPLITTER: Weapon = {
   profiles: [{
     profileName: 'Hearth-splitter',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -186,14 +186,14 @@ export const THE_FELL_HAND: Weapon = {
   profiles: [{
     profileName: 'The Fell-Hand',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 4 },
-      { name: 'Shred',     threshold: 5 },
+      { name: 'Shred', threshold: 5 },
     ],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -208,11 +208,11 @@ export const STORMS_TEETH: Weapon = {
   profiles: [{
     profileName: "Storm's Teeth",
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'Shred', threshold: 4 }],
-    traits: ['Chain'],         
+    traits: ['Chain'],
   }],
 };
 
@@ -223,11 +223,11 @@ export const THE_BLACK_SWORD: Weapon = {
   profiles: [{
     profileName: 'The Black Sword',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 1,
     specialRules: [
-      { name: 'CriticalHit',   threshold: 6 },
+      { name: 'CriticalHit', threshold: 6 },
       { name: 'DuellistsEdge', value: 2 },
     ],
   }],
@@ -240,11 +240,11 @@ export const HEADSMAN_AND_HUNTER: Weapon = {
   profiles: [{
     profileName: 'The Headsman and the Hunter',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 4 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -255,11 +255,11 @@ export const SUBJUGATOR: Weapon = {
   profiles: [{
     profileName: 'Subjugator',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 4 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -270,11 +270,11 @@ export const DURENDA: Weapon = {
   profiles: [{
     profileName: 'Durenda',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 5 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -285,11 +285,11 @@ export const SOLARITE_POWER_GAUNTLET: Weapon = {
   profiles: [{
     profileName: 'Solarite Power Gauntlet',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 4 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Power']     
+    traits: ['Power']
   }],
 };
 
@@ -300,11 +300,11 @@ export const HAMMERBLOW: Weapon = {
   profiles: [{
     profileName: 'Hammerblow',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'fixed', value: 2 },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'fixed', value: 2 },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -319,11 +319,11 @@ export const BLADE_ENCARMINE: Weapon = {
   profiles: [{
     profileName: 'Blade Encarmine',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -334,11 +334,11 @@ export const SPEAR_OF_TELESTO: Weapon = {
   profiles: [{
     profileName: 'Spear of Telesto',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier:    { kind: 'add', value: -2 },
-    strengthModifier:   { kind: 'add', value: 3 },
+    attacksModifier: { kind: 'add', value: -2 },
+    strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -349,11 +349,11 @@ export const MOONSILVER_BLADE: Weapon = {
   profiles: [{
     profileName: 'Moonsilver Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -364,11 +364,11 @@ export const ENCARMINE_WARBLADE: Weapon = {
   profiles: [{
     profileName: 'Encarmine Warblade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -379,11 +379,11 @@ export const SPIRITUM_SANGUIS: Weapon = {
   profiles: [{
     profileName: 'Spiritum Sanguis',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -394,11 +394,11 @@ export const SAIPHAN_SHARD_AXE: Weapon = {
   profiles: [{
     profileName: 'Saiphan Shard-axe',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'add', value: 1 },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'add', value: 1 },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 4 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -416,11 +416,11 @@ export const FORGEBREAKER: Weapon = {
   profiles: [{
     profileName: 'Forgebreaker',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 3 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -431,11 +431,11 @@ export const ALBIAN_POWER_GLADIUS: Weapon = {
   profiles: [{
     profileName: 'Albian Power Gladius',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -446,11 +446,11 @@ export const ARTIFICER_POWER_AXE: Weapon = {
   profiles: [{
     profileName: 'Artificer Power Axe',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 3, damage: 1,
     specialRules: [],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -465,14 +465,14 @@ export const GLADIUS_INCANDOR: Weapon = {
   profiles: [{
     profileName: 'Gladius Incandor',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [
-      { name: 'Breaching',    threshold: 5 },
+      { name: 'Breaching', threshold: 5 },
       { name: 'DuellistsEdge', value: 1 },
     ],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -483,11 +483,11 @@ export const HAND_OF_DOMINION: Weapon = {
   profiles: [{
     profileName: 'Hand of Dominion',
     initiativeModifier: { kind: 'add', value: -3 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 4 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 4 },
     ap: 3, damage: 3,
     specialRules: [],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -498,14 +498,14 @@ export const PHAETON: Weapon = {
   profiles: [{
     profileName: 'Phaeton',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'add', value: 1 },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'add', value: 1 },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
-      { name: 'Breaching',    threshold: 6 },
+      { name: 'Breaching', threshold: 6 },
       { name: 'DuellistsEdge', value: 1 },
     ],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -520,11 +520,11 @@ export const DAWNBRINGER: Weapon = {
   profiles: [{
     profileName: 'Dawnbringer',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -539,11 +539,11 @@ export const TALONIS: Weapon = {
   profiles: [{
     profileName: 'Talonis',
     initiativeModifier: { kind: 'add', value: 4 },
-    attacksModifier:    { kind: 'fixed', value: 3 },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'fixed', value: 3 },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -554,11 +554,11 @@ export const CORVIDINE_TALONS: Weapon = {
   profiles: [{
     profileName: 'Corvidine Talons',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier:    { kind: 'add', value: 2 },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'add', value: 2 },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -573,11 +573,11 @@ export const LAERAN_BLADE: Weapon = {
   profiles: [{
     profileName: 'Laeran Blade',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -588,8 +588,8 @@ export const BLADES_OF_LUCIUS: Weapon = {
   profiles: [{
     profileName: 'Blades of Lucius',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'DuellistsEdge', value: 1 }],
   }],
@@ -601,11 +601,11 @@ export const GLORY_AETERNA: Weapon = {
   profiles: [{
     profileName: 'Glory Aeterna',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Power']  
+    traits: ['Power']
   }],
 };
 
@@ -616,14 +616,14 @@ export const CHARNABAL_BROADSWORD: Weapon = {
   profiles: [{
     profileName: 'Charnabal Broadsword',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: null, damage: 1,
     specialRules: [
-      { name: 'Breaching',    threshold: 5 },
+      { name: 'Breaching', threshold: 5 },
       { name: 'DuellistsEdge', value: 1 },
     ],
-    traits: ['Charnabal'],    
+    traits: ['Charnabal'],
   }],
 };
 
@@ -638,11 +638,11 @@ export const LOGOS_ARRAY: Weapon = {
   profiles: [{
     profileName: 'The Logos Array',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'add', value: 2 },
-    strengthModifier:   { kind: 'fixed', value: 6 },
+    attacksModifier: { kind: 'add', value: 2 },
+    strengthModifier: { kind: 'fixed', value: 6 },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Shred', threshold: 4 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -656,11 +656,11 @@ export const FORGEBREAKER_DESECRATED: Weapon = {
   profiles: [{
     profileName: 'Forgebreaker (Desecrated)',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 4 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -675,14 +675,14 @@ export const MERCY_AND_FORGIVENESS: Weapon = {
   profiles: [{
     profileName: 'Mercy and Forgiveness',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'add', value: 2 },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'add', value: 2 },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 1,
     specialRules: [
       { name: 'CriticalHit', threshold: 5 },
-      { name: 'Shred',       threshold: 4 },
+      { name: 'Shred', threshold: 4 },
     ],
-    traits: ['Power'],         
+    traits: ['Power'],
   }],
 };
 
@@ -693,14 +693,14 @@ export const NIGHTS_WHISPER: Weapon = {
   profiles: [{
     profileName: "Night's Whisper",
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 1,
     specialRules: [
       { name: 'CriticalHit', threshold: 6 },
-      { name: 'Shred',       threshold: 5 },
+      { name: 'Shred', threshold: 5 },
     ],
-    traits: ['Chain'],    
+    traits: ['Chain'],
   }],
 };
 
@@ -715,14 +715,14 @@ export const GOREFATHER_AND_GORECHILD: Weapon = {
   profiles: [{
     profileName: 'Gorefather and Gorechild',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'add', value: 1 },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'add', value: 1 },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [
       { name: 'CriticalHit', threshold: 6 },
-      { name: 'Shred',       threshold: 5 },
+      { name: 'Shred', threshold: 5 },
     ],
-    traits: ['Chain'],         
+    traits: ['Chain'],
   }],
 };
 
@@ -733,11 +733,11 @@ export const THE_CUTTER: Weapon = {
   profiles: [{
     profileName: 'The Cutter',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Chain'],     
+    traits: ['Chain'],
   }],
 };
 
@@ -748,14 +748,14 @@ export const GORECHILD_REFORGED: Weapon = {
   profiles: [{
     profileName: 'Gorechild Reforged',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [
       { name: 'CriticalHit', threshold: 6 },
-      { name: 'Shred',       threshold: 5 },
+      { name: 'Shred', threshold: 5 },
     ],
-    traits: ['Chain'],     
+    traits: ['Chain'],
   }],
 };
 
@@ -770,11 +770,11 @@ export const SILENCE: Weapon = {
   profiles: [{
     profileName: 'Silence',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Power'],     
+    traits: ['Power'],
   }],
 };
 
@@ -785,11 +785,11 @@ export const LACRIMAE: Weapon = {
   profiles: [{
     profileName: 'Lacrimae',
     initiativeModifier: { kind: 'add', value: -1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: null, damage: 2,
     specialRules: [], // Poisoned(3+)
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -804,11 +804,11 @@ export const BLADE_OF_AHN_NUNURTA: Weapon = {
   profiles: [{
     profileName: 'Blade of Ahn-nunurta',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Psychic'],    
+    traits: ['Psychic'],
   }],
 };
 
@@ -819,11 +819,11 @@ export const CORVIDAEAN_SCEPTRE: Weapon = {
   profiles: [{
     profileName: 'Corvidaean Sceptre',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Psychic'],    
+    traits: ['Psychic'],
   }],
 };
 
@@ -838,11 +838,11 @@ export const WARMASTERS_TALON: Weapon = {
   profiles: [{
     profileName: "Warmaster's Talon",
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 1,
     specialRules: [{ name: 'Shred', threshold: 6 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -853,11 +853,11 @@ export const WORLDBREAKER: Weapon = {
   profiles: [{
     profileName: 'Worldbreaker',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 4 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 4 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -868,11 +868,11 @@ export const CTHONIAN_POWER_CLAW: Weapon = {
   profiles: [{
     profileName: 'Cthonian Power Claw',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 4 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'Shred', threshold: 5 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -883,11 +883,11 @@ export const MOURN_IT_ALL: Weapon = {
   profiles: [{
     profileName: 'Mourn-it-all',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -902,11 +902,11 @@ export const ILLUMINARUM: Weapon = {
   profiles: [{
     profileName: 'Illuminarum',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -917,11 +917,11 @@ export const PATRIARCHS_CLAWS: Weapon = {
   profiles: [{
     profileName: "Patriarch's Claws",
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 1,
     specialRules: [{ name: 'Shred', threshold: 6 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -932,11 +932,11 @@ export const CRUX_MALIFICA: Weapon = {
   profiles: [{
     profileName: 'Crux Malifica',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 3 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [],
-        traits: ['Power', 'Psychic'],
+    traits: ['Power', 'Psychic'],
   }],
 };
 
@@ -947,11 +947,11 @@ export const DAEMONIC_TALONS: Weapon = {
   profiles: [{
     profileName: 'Daemonic Talons',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Psychic'],    
+    traits: ['Psychic'],
   }],
 };
 
@@ -966,11 +966,11 @@ export const THE_PALE_SPEAR: Weapon = {
   profiles: [{
     profileName: 'The Pale Spear',
     initiativeModifier: { kind: 'add', value: 1 },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'add', value: 1 },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -981,11 +981,11 @@ export const THE_PRINCE: Weapon = {
   profiles: [{
     profileName: 'The Prince',
     initiativeModifier: { kind: 'none' },
-    attacksModifier:    { kind: 'none' },
-    strengthModifier:   { kind: 'none' },
+    attacksModifier: { kind: 'none' },
+    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 5 }],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };
 
@@ -996,10 +996,10 @@ export const THE_PROPHET: Weapon = {
   profiles: [{
     profileName: 'The Prophet',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier:    { kind: 'add', value: -1 },
-    strengthModifier:   { kind: 'add', value: 3 },
+    attacksModifier: { kind: 'add', value: -1 },
+    strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [],
-    traits: ['Power'],    
+    traits: ['Power'],
   }],
 };

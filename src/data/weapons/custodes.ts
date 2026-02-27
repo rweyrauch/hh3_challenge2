@@ -16,15 +16,15 @@ export const APOLLONIAN_SPEAR: Weapon = {
     {
       profileName: 'The Apollonian Spear (Melee)',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'add', value: 2 },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 2 },
       ap: 2,
       damage: 2,
       specialRules: [
         { name: 'CriticalHit', threshold: 5 },
         { name: 'DuellistsEdge', value: 2 },
       ],
-      traits: ['Power'],       
+      traits: ['Power'],
     },
   ],
 };
@@ -37,12 +37,12 @@ export const SENTINEL_WARBLADE: Weapon = {
     {
       profileName: 'Sentinel Warblade',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'none' }, // 'S' = same as model's S
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'none' }, // 'S' = same as model's S
       ap: 2,
       damage: 1,
       specialRules: [],
-      traits: ['Power'],       
+      traits: ['Power'],
     },
   ],
 };
@@ -55,12 +55,12 @@ export const GUARDIAN_SPEAR: Weapon = {
     {
       profileName: 'Guardian Spear',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'add', value: 1 },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 1 },
       ap: 2,
       damage: 1,
       specialRules: [],
-      traits: ['Power'],       
+      traits: ['Power'],
     },
   ],
 };
@@ -73,8 +73,8 @@ export const PARAGON_SPEAR: Weapon = {
     {
       profileName: 'Paragon Spear',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'none' },
-      strengthModifier:   { kind: 'add', value: 1 },
+      attacksModifier: { kind: 'none' },
+      strengthModifier: { kind: 'add', value: 1 },
       ap: 2,
       damage: 1,
       specialRules: [{ name: 'CriticalHit', threshold: 6 }],
@@ -90,12 +90,12 @@ export const MISERICORDIA: Weapon = {
     {
       profileName: 'Misericordia',
       initiativeModifier: { kind: 'none' },
-      attacksModifier:    { kind: 'fixed', value: 1 },
-      strengthModifier:   { kind: 'none' },
+      attacksModifier: { kind: 'fixed', value: 1 },
+      strengthModifier: { kind: 'none' },
       ap: 3,
       damage: 1,
       specialRules: [],
-      traits: ['Power'],       
+      traits: ['Power'],
     },
   ],
 };

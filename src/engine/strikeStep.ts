@@ -8,9 +8,9 @@
  *
  * Rules reference: HH3 Challenge Sub-Phase, Step 4 (Strike).
  */
-import type { DiceRoller }    from './dice.js';
-import type { CombatState, CombatantState }  from '../models/combatState.js';
-import type { Character }     from '../models/character.js';
+import type { DiceRoller } from './dice.js';
+import type { CombatState, CombatantState } from '../models/combatState.js';
+import type { Character } from '../models/character.js';
 import type { WeaponProfile } from '../models/weapon.js';
 import { isSwordProfile } from '../models/weapon.js';
 import { getHitTargetNumber, getWoundTargetNumber, getEffectiveSave } from './tables.js';
@@ -100,7 +100,7 @@ function resolveAttackSequence(
   if (forceBoost !== null) {
     const boostDesc = forceBoost === 'AP' ? 'AP → AP2'
       : forceBoost === 'I' ? 'I (attack order already resolved)'
-      : `${forceBoost}×2`;
+        : `${forceBoost}×2`;
     log.push(`Force: WP check succeeded — ${boostDesc}`);
   }
 
@@ -120,15 +120,15 @@ function resolveAttackSequence(
   const sm = profile.strengthModifier;
   let atkS = forceBoost === 'S' ? attackerChar.stats.S * 2 : attackerChar.stats.S;
   if (biteAtkBonus > 0) atkS += 1; // bite bonus to base S before weapon modifier
-  if (sm.kind === 'add')   atkS += sm.value;
-  if (sm.kind === 'fixed') atkS  = sm.value;
-  if (sm.kind === 'mult')  atkS *= sm.value;
+  if (sm.kind === 'add') atkS += sm.value;
+  if (sm.kind === 'fixed') atkS = sm.value;
+  if (sm.kind === 'mult') atkS *= sm.value;
 
   // Apply weapon profile Attacks modifier, then gambit delta/override
   const am = profile.attacksModifier;
   let baseA = forceBoost === 'A' ? attackerChar.stats.A * 2 : attackerChar.stats.A;
-  if (am.kind === 'add')   baseA += am.value;
-  if (am.kind === 'fixed') baseA  = am.value;
+  if (am.kind === 'add') baseA += am.value;
+  if (am.kind === 'fixed') baseA = am.value;
   // Conflagration: weapon has 6+D3 attacks (attacksExtraD3 flag)
   if (profile.attacksExtraD3 ?? false) baseA += weaponD3;
 
@@ -139,9 +139,9 @@ function resolveAttackSequence(
   // Taunt and Bait: reduce own WS/A to enemy's (or enemy-1 if equal)
   if (attacker.selectedGambit === 'taunt-and-bait') {
     const defWS = defenderChar.stats.WS;
-    const defA  = defenderChar.stats.A;
+    const defA = defenderChar.stats.A;
     atkWS = atkWS <= defWS ? defWS - 1 : defWS;
-    atkA  = atkA  <= defA  ? defA  - 1 : defA;
+    atkA = atkA <= defA ? defA - 1 : defA;
   }
 
   // Minimum 1 attack
@@ -169,7 +169,7 @@ function resolveAttackSequence(
   if (forcedAttacks !== null) atkA = forcedAttacks;
 
   const defWS = defenderChar.stats.WS;
-  const defT  = defenderChar.stats.T;
+  const defT = defenderChar.stats.T;
   // Bite of the Betrayed: +1 T to the defender's base Toughness
   const defTWithBite = defT + biteDefBonus;
   // Steadfast Resilience / Tempered by War may override defender's effective Toughness
@@ -208,7 +208,7 @@ function resolveAttackSequence(
   let hitTNOverride: number | null = null;
   if (attacker.selectedGambit === 'divination-every-strike-foreseen') {
     const [d1, d2] = dice.rollNd6(2);
-    const total   = d1 + d2;
+    const total = d1 + d2;
     const success = total <= attackerChar.stats.WP;
     log.push(
       `Every Strike Foreseen: ${d1}+${d2}=${total} vs WP${attackerChar.stats.WP} — ` +
@@ -297,20 +297,20 @@ function resolveAttackSequence(
   // counting as a roll of 6 for variable special rules (Breaching, Shred) triggered
   // by the Wound Test.
   let critBreachingWounds = 0;
-  let critShredTriggers   = 0;
+  let critShredTriggers = 0;
   for (const sr of profile.specialRules) {
     if (sr.name === 'Breaching' && 6 >= sr.threshold) critBreachingWounds += critHits;
-    if (sr.name === 'Shred'     && 6 >= sr.threshold) critShredTriggers   += critHits;
+    if (sr.name === 'Shred' && 6 >= sr.threshold) critShredTriggers += critHits;
   }
   critBreachingWounds = Math.min(critBreachingWounds, critHits);
-  critShredTriggers   = Math.min(critShredTriggers, critHits);
+  critShredTriggers = Math.min(critShredTriggers, critHits);
   const critWounds = critHits;
 
   // Normal hits go through the wound test as usual
   const woundRolls = dice.rollNd6(normalHits);
-  let normalWounds          = 0;
+  let normalWounds = 0;
   let normalBreachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
-  let normalShredTriggers   = 0;  // wounds that deal +1 Damage (Shred rule)
+  let normalShredTriggers = 0;  // wounds that deal +1 Damage (Shred rule)
   // Phage(T): Merciless Strike reduces defender T by 1 per unsaved wound
   let currentDefT = effectiveDefT;
 
@@ -345,17 +345,17 @@ function resolveAttackSequence(
         // Breaching: wound roll ≥ threshold → this wound ignores normal armour (AP2)
         if (sr.name === 'Breaching' && roll >= sr.threshold) normalBreachingWounds++;
         // Shred: wound roll ≥ threshold → this wound gains +1 Damage
-        if (sr.name === 'Shred'     && roll >= sr.threshold) normalShredTriggers++;
+        if (sr.name === 'Shred' && roll >= sr.threshold) normalShredTriggers++;
       }
     }
   }
 
-  const wounds               = critWounds + normalWounds;
+  const wounds = critWounds + normalWounds;
   const totalBreachingWounds = critBreachingWounds + normalBreachingWounds;
 
-  const phageNote    = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
-  const poisonNote   = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
-  const hatredNote   = woundTestBonus > 0 ? ` (Hatred +1 wound bonus)` : '';
+  const phageNote = mods.phageToughness ? ' (Phage: T reduces per wound)' : '';
+  const poisonNote = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
+  const hatredNote = woundTestBonus > 0 ? ` (Hatred +1 wound bonus)` : '';
   const effectiveWoundTN = poisonedTN !== null
     ? Math.max(2, Math.min(baseWoundTN, poisonedTN) - woundTestBonus)
     : Math.max(2, baseWoundTN - woundTestBonus);
@@ -378,20 +378,20 @@ function resolveAttackSequence(
   }
 
   // ── Saving Throws ────────────────────────────────────────────────────────
-  const defSv  = defenderChar.stats.Sv;
+  const defSv = defenderChar.stats.Sv;
   const defInv = defenderChar.stats.Inv;
   // Split wounds into four save pools: (crit | normal) × (weapon AP | AP2 breaching)
   const critNormalCount = critWounds - critBreachingWounds;
   const normNormalCount = normalWounds - normalBreachingWounds;
   const effectiveSave = getEffectiveSave(defSv, defInv, weaponAP);
   // Breaching wounds are always treated as AP2 for saves regardless of weapon AP
-  const breachSave    = totalBreachingWounds > 0 ? getEffectiveSave(defSv, defInv, 2) : null;
+  const breachSave = totalBreachingWounds > 0 ? getEffectiveSave(defSv, defInv, 2) : null;
 
-  let saved             = 0;
+  let saved = 0;
   let unsavedCritWounds = 0;
   // Tracks wounds that fail saves (before FNP) for Deflagrate triggering
   let deflagrateUnsavedCount = 0;
-  let evsfUsed          = false; // Every Strike Foreseen may only re-roll ONE failed save
+  let evsfUsed = false; // Every Strike Foreseen may only re-roll ONE failed save
 
   // Pool 1: crit wounds at weapon AP — track each failure as an unsaved crit wound
   const critNormSaveRolls = dice.rollNd6(critNormalCount);
@@ -473,7 +473,7 @@ function resolveAttackSequence(
 
   const saveRolls = [...critNormSaveRolls, ...normalSaveRolls, ...critBreachSaveRolls, ...normBreachSaveRolls];
   if (effectiveSave !== null || breachSave !== null) {
-    const allNormRolls   = [...critNormSaveRolls, ...normalSaveRolls];
+    const allNormRolls = [...critNormSaveRolls, ...normalSaveRolls];
     const allBreachRolls = [...critBreachSaveRolls, ...normBreachSaveRolls];
     const saveLine = totalBreachingWounds > 0
       ? `Normal saves [${allNormRolls.join(',')}] vs ${effectiveSave ?? '-'}+, Breaching saves [${allBreachRolls.join(',')}] vs ${breachSave ?? '-'}+ → ${saved} saved`
@@ -550,7 +550,7 @@ function resolveAttackSequence(
   const unsavedCritShredWounds = critHits > 0 && !mods.damageSetToOne
     ? Math.round((critShredTriggers / critHits) * unsavedCritWounds)
     : 0;
-  const shredDmgPerWound     = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
+  const shredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
   const critShredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 2) - ewReduction);
   let totalDamage =
     (unsavedCritWounds - unsavedCritShredWounds) * critDmgPerWound +
@@ -626,7 +626,7 @@ function resolveSpitefulDemise(
   const woundTN = getWoundTargetNumber(6, defenderChar.stats.T);
   const woundRoll = dice.rollD6();
   const breaching = woundRoll >= 5;
-  const isWound   = (woundTN <= 6 && woundRoll >= woundTN) || breaching;
+  const isWound = (woundTN <= 6 && woundRoll >= woundTN) || breaching;
   log.push(`Spiteful Demise: Wound roll ${woundRoll} needing ${woundTN}+${breaching ? ' (Breaching)' : ''} → ${isWound ? 'wound' : 'no wound'}`);
   if (!isWound) return { newWounds: defenderState.currentWounds, isCasualty: false };
 
@@ -647,7 +647,7 @@ function resolveSpitefulDemise(
     if (sr.name === 'EternalWarrior') ewReduction = sr.value;
   }
   const damage = Math.max(1, 2 - ewReduction);
-  const newWounds  = Math.max(0, defenderState.currentWounds - damage);
+  const newWounds = Math.max(0, defenderState.currentWounds - damage);
   const isCasualty = newWounds <= 0;
   log.push(
     `Spiteful Demise: ${damage} damage. ${defenderChar.name}: ${defenderState.currentWounds} → ${newWounds}` +
@@ -721,7 +721,7 @@ function resolveDeflagrateGroup(
   if (wounds === 0) return { damage: 0 };
 
   // AP -: defender always gets their best save (lower number = better)
-  const defSv  = defenderChar.stats.Sv;
+  const defSv = defenderChar.stats.Sv;
   const defInv = defenderChar.stats.Inv;
   const bestSave = defInv !== null ? Math.min(defSv, defInv) : defSv;
   const saveRolls = dice.rollNd6(wounds);
@@ -775,9 +775,9 @@ function resolveForceCheck(
   const forceRule = profile.specialRules.find(sr => sr.name === 'Force');
   if (!forceRule || forceRule.name !== 'Force') return { forceBoost: null, perilsWounds: 0 };
 
-  const wp       = attackerChar.stats.WP;
+  const wp = attackerChar.stats.WP;
   const [d1, d2] = dice.rollNd6(2);
-  const total     = d1 + d2;
+  const total = d1 + d2;
   const isDoubles = d1 === d2;
   const isSuccess = total <= wp;
 
@@ -815,7 +815,7 @@ export function resolveDirtyFighterPreStrike(
   const log: string[] = [];
 
   const playerHasDF = state.player.selectedGambit === 'dirty-fighter';
-  const aiHasDF     = state.ai.selectedGambit     === 'dirty-fighter';
+  const aiHasDF = state.ai.selectedGambit === 'dirty-fighter';
   if (!playerHasDF && !aiHasDF) return { updatedState: state, log };
 
   /**
@@ -864,8 +864,8 @@ export function resolveDirtyFighterPreStrike(
         ...updatedState,
         ai: {
           ...updatedState.ai,
-          currentWounds:  result.defenderWoundsRemaining,
-          isCasualty:     result.defenderIsCasualty,
+          currentWounds: result.defenderWoundsRemaining,
+          isCasualty: result.defenderIsCasualty,
         },
         player: {
           ...updatedState.player,
@@ -908,8 +908,8 @@ export function resolveDirtyFighterPreStrike(
         ...updatedState,
         player: {
           ...updatedState.player,
-          currentWounds:  result.defenderWoundsRemaining,
-          isCasualty:     result.defenderIsCasualty,
+          currentWounds: result.defenderWoundsRemaining,
+          isCasualty: result.defenderIsCasualty,
         },
         ai: {
           ...updatedState.ai,
@@ -945,10 +945,10 @@ export function resolveStrikeStep(
 
   // Determine attack bonus (+1 Attacks for Focus Roll winner)
   const playerAttackBonus = advantage === 'player' ? 1 : 0;
-  const aiAttackBonus     = advantage === 'ai'     ? 1 : 0;
+  const aiAttackBonus = advantage === 'ai' ? 1 : 0;
 
   let playerProfile = state.player.selectedWeaponProfile!;
-  let aiProfile     = state.ai.selectedWeaponProfile!;
+  let aiProfile = state.ai.selectedWeaponProfile!;
 
   // ── Hammerblow gambit: force the Hammerblow weapon profile ───────────────
   // The gambit prohibits any other weapon; override whatever the player
@@ -999,7 +999,7 @@ export function resolveStrikeStep(
   // On success, characteristic X is doubled for the attack sequence.
   // If doubles are rolled the attacker suffers Perils of the Warp (D3 wounds).
   const playerForceResult = resolveForceCheck(dice, playerChar, playerProfile, log);
-  const playerForceBoost  = playerForceResult.forceBoost;
+  const playerForceBoost = playerForceResult.forceBoost;
   if (playerForceResult.perilsWounds > 0) {
     const newW = Math.max(0, updatedState.player.currentWounds - playerForceResult.perilsWounds);
     updatedState = {
@@ -1009,7 +1009,7 @@ export function resolveStrikeStep(
   }
 
   const aiForceResult = resolveForceCheck(dice, aiChar, aiProfile, log);
-  const aiForceBoost  = aiForceResult.forceBoost;
+  const aiForceBoost = aiForceResult.forceBoost;
   if (aiForceResult.perilsWounds > 0) {
     const newW = Math.max(0, updatedState.ai.currentWounds - aiForceResult.perilsWounds);
     updatedState = {
@@ -1037,7 +1037,7 @@ export function resolveStrikeStep(
       ai: {
         ...updatedState.ai,
         currentWounds: playerResult.defenderWoundsRemaining,
-        isCasualty:    playerResult.defenderIsCasualty,
+        isCasualty: playerResult.defenderIsCasualty,
         // Guard Up: enemy missed attacks accumulate as focus bonus
         guardUpFocusBonus: state.ai.selectedGambit === 'guard-up'
           ? 0  // guard up is on the AI; misses by player would boost AI
@@ -1105,7 +1105,7 @@ export function resolveStrikeStep(
       player: {
         ...updatedState.player,
         currentWounds: aiResult.defenderWoundsRemaining,
-        isCasualty:    aiResult.defenderIsCasualty,
+        isCasualty: aiResult.defenderIsCasualty,
       },
       ai: {
         ...updatedState.ai,
@@ -1154,7 +1154,7 @@ export function resolveStrikeStep(
       player: {
         ...updatedState.player,
         currentWounds: aiResult!.defenderWoundsRemaining,
-        isCasualty:    aiResult!.defenderIsCasualty,
+        isCasualty: aiResult!.defenderIsCasualty,
       },
       ai: {
         ...updatedState.ai,
@@ -1168,7 +1168,7 @@ export function resolveStrikeStep(
       ai: {
         ...updatedState.ai,
         currentWounds: playerResult!.defenderWoundsRemaining,
-        isCasualty:    playerResult!.defenderIsCasualty,
+        isCasualty: playerResult!.defenderIsCasualty,
       },
       player: {
         ...updatedState.player,
@@ -1183,7 +1183,7 @@ export function resolveStrikeStep(
   // the Eversor suffers 1 wound (AP2, D1, allocated after Strike Step).
   // Self-wound cannot be prevented by invulnerable save (per rules text).
   const playerBioOverload = state.player.selectedGambit === 'biological-overload';
-  const aiBioOverload     = state.ai.selectedGambit === 'biological-overload';
+  const aiBioOverload = state.ai.selectedGambit === 'biological-overload';
 
   if (playerBioOverload && playerResult!.hitRollOnes > 0) {
     const selfWounds = playerResult!.hitRollOnes;
@@ -1241,7 +1241,7 @@ export function resolveStrikeStep(
   return {
     firstAttacker: advantage,
     playerResult: playerResult!,
-    aiResult:     aiResult!,
+    aiResult: aiResult!,
     updatedState,
     log,
   };

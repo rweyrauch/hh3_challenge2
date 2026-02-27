@@ -61,12 +61,12 @@ export function resolveGloryStep(
 
   // ── Determine winner ─────────────────────────────────────────────────────
   const playerDead = player.isCasualty;
-  const aiDead     = ai.isCasualty;
-  const bothDead   = playerDead && aiDead;
+  const aiDead = ai.isCasualty;
+  const bothDead = playerDead && aiDead;
 
   let winner: 'player' | 'ai' | 'draw';
   let rawPlayerCRP = 0;
-  let rawAiCRP     = 0;
+  let rawAiCRP = 0;
 
   if (bothDead) {
     // Both removed as casualties → draw
@@ -91,7 +91,7 @@ export function resolveGloryStep(
   } else {
     // Neither dead — compare wounds inflicted this round
     const playerWounds = player.woundsInflictedThisChallenge;
-    const aiWounds     = ai.woundsInflictedThisChallenge;
+    const aiWounds = ai.woundsInflictedThisChallenge;
 
     if (playerWounds > aiWounds) {
       winner = 'player';
@@ -109,7 +109,7 @@ export function resolveGloryStep(
 
   // ── Taunt and Bait bonus ─────────────────────────────────────────────────
   const playerTauntBonus = getTauntAndBaitCRPBonus(player.tauntAndBaitCount, winner === 'player');
-  const aiTauntBonus     = getTauntAndBaitCRPBonus(ai.tauntAndBaitCount, winner === 'ai');
+  const aiTauntBonus = getTauntAndBaitCRPBonus(ai.tauntAndBaitCount, winner === 'ai');
 
   if (playerTauntBonus > 0) {
     log.push(`Taunt and Bait bonus: Player +${playerTauntBonus} CRP.`);
@@ -122,7 +122,7 @@ export function resolveGloryStep(
   // +2 CRP to the selecting side if the opponent was removed as a casualty
   // during the Strike Step.
   const playerBDBonus = player.selectedGambit === 'brutal-dismemberment' && ai.isCasualty ? 2 : 0;
-  const aiBDBonus     = ai.selectedGambit     === 'brutal-dismemberment' && player.isCasualty ? 2 : 0;
+  const aiBDBonus = ai.selectedGambit === 'brutal-dismemberment' && player.isCasualty ? 2 : 0;
 
   if (playerBDBonus > 0) {
     log.push(`Brutal Dismemberment: Player gains +2 CRP (enemy removed as casualty).`);
@@ -134,7 +134,7 @@ export function resolveGloryStep(
   return {
     winner,
     playerCRP: state.playerCRP + rawPlayerCRP + playerTauntBonus + playerBDBonus,
-    aiCRP:     state.aiCRP     + rawAiCRP     + aiTauntBonus     + aiBDBonus,
+    aiCRP: state.aiCRP + rawAiCRP + aiTauntBonus + aiBDBonus,
     withdrawUsed: false,
     log,
   };
