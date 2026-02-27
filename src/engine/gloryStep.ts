@@ -118,10 +118,23 @@ export function resolveGloryStep(
     log.push(`Taunt and Bait bonus: AI +${aiTauntBonus} CRP.`);
   }
 
+  // ── Brutal Dismemberment bonus ────────────────────────────────────────────
+  // +2 CRP to the selecting side if the opponent was removed as a casualty
+  // during the Strike Step.
+  const playerBDBonus = player.selectedGambit === 'brutal-dismemberment' && ai.isCasualty ? 2 : 0;
+  const aiBDBonus     = ai.selectedGambit     === 'brutal-dismemberment' && player.isCasualty ? 2 : 0;
+
+  if (playerBDBonus > 0) {
+    log.push(`Brutal Dismemberment: Player gains +2 CRP (enemy removed as casualty).`);
+  }
+  if (aiBDBonus > 0) {
+    log.push(`Brutal Dismemberment: AI gains +2 CRP (enemy removed as casualty).`);
+  }
+
   return {
     winner,
-    playerCRP: state.playerCRP + rawPlayerCRP + playerTauntBonus,
-    aiCRP:     state.aiCRP     + rawAiCRP     + aiTauntBonus,
+    playerCRP: state.playerCRP + rawPlayerCRP + playerTauntBonus + playerBDBonus,
+    aiCRP:     state.aiCRP     + rawAiCRP     + aiTauntBonus     + aiBDBonus,
     withdrawUsed: false,
     log,
   };

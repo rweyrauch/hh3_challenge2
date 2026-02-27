@@ -168,7 +168,7 @@ const ANGRON: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [GOREFATHER_AND_GORECHILD],
-  factionGambitIds: ['violent-overkill'],
+  factionGambitIds: ['violent-overkill', 'brutal-dismemberment'],
   specialRules: [
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
@@ -187,7 +187,7 @@ const KHARN_THE_BLOODY: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [THE_CUTTER, GORECHILD_REFORGED],
-  factionGambitIds: ['violent-overkill'],
+  factionGambitIds: ['violent-overkill', 'brutal-dismemberment'],
   specialRules: [
     { name: 'EternalWarrior', value: 1 },
     { name: 'Precision', threshold: 5 },

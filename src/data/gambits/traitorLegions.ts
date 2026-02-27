@@ -84,6 +84,14 @@ export const NIGHT_LORDS_GAMBITS: Gambit[] = [
 
 export const WORLD_EATERS_GAMBITS: Gambit[] = [
   {
+    id: 'brutal-dismemberment',
+    name: 'Brutal Dismemberment',
+    description: 'If the enemy model is Removed as a Casualty during the Strike Step, the Controlling Player gains +2 additional Combat Resolution Points during the subsequent Glory Step.',
+    timings: ['strike', 'glory'],
+    firstMoverOnly: false,
+    oncePerChallenge: false,
+  },
+  {
     id: 'violent-overkill',
     name: 'Violent Overkill',
     description: 'When attacking, if the opponent is removed as a Casualty any remaining wounds must be allocated to other eligible enemy models in the same Combat. (No effect in a 1v1 duel.)',

@@ -135,6 +135,14 @@ export function scoreGambit(
       score += 3;
       break;
 
+    // ── World Eaters faction gambits ────────────────────────────────────────
+
+    case 'brutal-dismemberment':
+      // +2 CRP if the opponent is killed; valuable when AI is likely to kill
+      if (aiS >= 5 || aiChar.stats.A >= 5) score += 2;
+      else score += 1;
+      break;
+
     // ── Emperor's Children faction gambits ────────────────────────────────
 
     case 'bite-of-the-betrayed':

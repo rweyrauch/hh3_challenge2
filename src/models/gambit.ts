@@ -68,6 +68,7 @@ export type GambitId =
   | 'dirty-fighter'           // Sevatar: round 1 only; resolve 1 pre-strike attack before Focus
   // ── World Eaters (XII) ───────────────────────────────────────────────────
   | 'violent-overkill'        // all WE: excess wounds spill to other enemies (N/A in 1v1)
+  | 'brutal-dismemberment'    // all WE: +2 CRP if enemy removed as casualty in Strike Step
   // ── Death Guard (XIV) ────────────────────────────────────────────────────
   | 'steadfast-resilience'    // all DG: T = opponent's WS for Strike Step
   | 'witchblood'              // Calas Typhon: once/battle; WP check → +2A/+2S or 1 wound
