@@ -231,9 +231,37 @@ export function startApp(container: HTMLElement): void {
 }
 
 /**
+ * Gambits available to ALL members of a given subfaction.
+ * Character-specific gambits (e.g. The Lion's Choler, Howl of the Death Wolf)
+ * are omitted — those are granted directly on the named character's record.
+ */
+const SUBFACTION_GAMBIT_IDS: Partial<Record<string, GambitId[]>> = {
+  // Loyalist Legions
+  'dark-angels':       ['sword-of-the-order'],
+  'white-scars':       ['the-path-of-the-warrior'],
+  'space-wolves':      ['no-prey-escapes', 'a-saga-woven-of-glory'],
+  'imperial-fists':    ['a-wall-unyielding'],
+  'blood-angels':      ['thrall-of-the-red-thirst'],
+  'iron-hands':        ['legion-of-one'],
+  'ultramarines':      ['aegis-of-wisdom'],
+  'salamanders':       ['duty-is-sacrifice'],
+  'raven-guard':       ['decapitation-strike'],
+  // Traitor Legions
+  'emperors-children': ['paragon-of-excellence'],
+  'iron-warriors':     ['spiteful-demise'],
+  'night-lords':       ['nostraman-courage'],
+  'world-eaters':      ['violent-overkill', 'brutal-dismemberment'],
+  'death-guard':       ['steadfast-resilience'],
+  'thousand-sons':     ['prophetic-duellist'],
+  'sons-of-horus':     ['merciless-strike'],
+  'word-bearers':      ['beseech-the-gods'],
+  'alpha-legion':      ['i-am-alpharius'],
+};
+
+/**
  * Return a shallow-cloned Character with subFaction set, traits appended
  * (legion name + 'Loyalist'/'Traitor'), and any subfaction-specific weapons
- * appended to the weapons array so engine indices match the selection screen.
+ * and gambits appended so the engine and UI have the full faction roster.
  *
  * Dark Angels: adds Calibanite Warblade and Terranic Greatsword when the
  * character already has a Power Sword.
@@ -263,10 +291,13 @@ function applySubFaction(char: Character, subFaction: string): Character {
     ...(subFaction === 'alpha-legion' ? [POWER_DAGGER] : []),
   ];
 
+  const extraGambitIds: GambitId[] = SUBFACTION_GAMBIT_IDS[subFaction] ?? [];
+
   return {
     ...char,
     subFaction,
-    traits:   [...(char.traits ?? []), ...addedTraits],
-    weapons:  extraWeapons.length > 0 ? [...char.weapons, ...extraWeapons] : char.weapons,
+    traits:          [...(char.traits ?? []), ...addedTraits],
+    weapons:         extraWeapons.length > 0 ? [...char.weapons, ...extraWeapons] : char.weapons,
+    factionGambitIds: [...char.factionGambitIds, ...extraGambitIds],
   };
 }
