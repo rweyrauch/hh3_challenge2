@@ -22,6 +22,8 @@ import {
   ANAKATIS_BLADE,
 } from '../weapons/legionChampions.js';
 import {
+  DECAPITATING_SLASHES,
+  SUNDERING_BLOWS,
   LAERAN_BLADE,
   BLADES_OF_LUCIUS,
   LOGOS_ARRAY,
@@ -100,6 +102,28 @@ const FULGRIM: Character = {
     { name: 'SublimeSwordsman' },
   ],
   traits: ['Traitor', 'Emperor\'s Children']
+};
+
+const FULGRIM_TRANSFIGURED: Character = {
+  id: 'fulgrim-transfigured',
+  name: 'Fulgrim Transfigured',
+  faction: 'emperors-children',
+  type: 'paragon',
+  subTypes: ['Command', 'Paragon'],
+  stats: {
+    M: 14, WS: 8, BS: 6, S: 7, T: 7, W: 7,
+    I: 8, A: 7, LD: 12, CL: 10, WP: 12, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [DECAPITATING_SLASHES, SUNDERING_BLOWS],
+  factionGambitIds: ['paragon-of-excellence'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 3 },
+    { name: 'Bulky', value: 6 },
+    { name: 'Fear', value: 1 },
+    { name: 'SublimeSwordsman' },
+  ],
+  traits: ['Traitor', "Emperor's Children"],
 };
 
 const CAPTAIN_LUCIUS: Character = {
@@ -976,7 +1000,7 @@ const ANAKATIS_KUL: Character = {
 
 export const TRAITOR_LEGION_CHARACTERS: Character[] = [
   // Emperor's Children
-  FULGRIM, CAPTAIN_LUCIUS, LORD_COMMANDER_EIDOLON,
+  FULGRIM, FULGRIM_TRANSFIGURED, CAPTAIN_LUCIUS, LORD_COMMANDER_EIDOLON,
   PHOENIX_CHAMPION, PALATINE_PREFECTOR, PALATINE_PREFECTOR_JUMP_PACK,
   // Iron Warriors
   PERTURABO, NARIK_DREYGUR,

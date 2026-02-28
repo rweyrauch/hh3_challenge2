@@ -498,6 +498,33 @@ export const CORVIDINE_TALONS: Weapon = {
 // EMPEROR'S CHILDREN
 // ════════════════════════════════════════════════════════════════
 
+/** Decapitating Slashes (Fulgrim Transfigured): I, A, S, AP2, D2, Critical Hit(6+), Duellist's Edge(1) */
+export const DECAPITATING_SLASHES: Weapon = {
+  name: 'Decapitating Slashes',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Decapitating Slashes',
+    ap: 2, damage: 2,
+    specialRules: [
+      { name: 'CriticalHit', threshold: 6 },
+      { name: 'DuellistsEdge', value: 1 },
+    ],
+  })],
+};
+
+/** Sundering Blows (Fulgrim Transfigured): -2I, 3A(fixed), +5S, AP2, D4 */
+export const SUNDERING_BLOWS: Weapon = {
+  name: 'Sundering Blows',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Sundering Blows',
+    initiativeModifier: { kind: 'add', value: -2 },
+    attacksModifier: { kind: 'fixed', value: 3 },
+    strengthModifier: { kind: 'add', value: 5 },
+    ap: 2, damage: 4,
+  })],
+};
+
 /** Laeran Blade (Fulgrim): I, A, S, AP2, D2, Duellist's Edge(1) */
 export const LAERAN_BLADE: Weapon = {
   name: 'Laeran Blade',
