@@ -26,13 +26,13 @@ export const FROST_AXE: Weapon = {
   })],
 };
 
-/** Frost sword. IM+1/AM—/SM—/AP3/D1, Breaching(5+). Reaping Blow(1) omitted. */
+/** Frost sword. IM—/AM—/SM—/AP3/D1, Breaching(5+). Reaping Blow(1) omitted. */
 export const FROST_SWORD: Weapon = {
   name: 'Frost Sword',
   type: 'melee',
   profiles: [profile({
     profileName: 'Frost Sword',
-    initiativeModifier: { kind: 'add', value: 1 },
+    initiativeModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [{ name: 'Breaching', threshold: 5 }],
     // Reaping Blow(1) not simulated
@@ -312,7 +312,6 @@ export const PALATINE_BLADE: Weapon = {
       { name: 'Breaching', threshold: 5 },
       { name: 'DuellistsEdge', value: 1 },
     ],
-    traits: ['Power'],
   })],
 };
 
@@ -430,15 +429,14 @@ export const EXCORIATOR_CHAINAXE: Weapon = {
   })],
 };
 
-/** Paired falax blades (Rampager Champion / World Eaters). IM—/AM+2/SM—/AP3/D1. */
+/** Paired falax blades (Rampager Champion / World Eaters). IM—/AM—/SM—/AP3/D1. */
 export const PAIRED_FALAX_BLADES: Weapon = {
   name: 'Paired Falax Blades',
   type: 'melee',
   profiles: [profile({
     profileName: 'Paired Falax Blades',
-    attacksModifier: { kind: 'add', value: 2 },
+    attacksModifier: { kind: 'none' },
     ap: 3, damage: 1,
-    traits: ['Power'],
   })],
 };
 

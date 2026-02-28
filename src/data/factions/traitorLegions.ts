@@ -148,7 +148,7 @@ const KONRAD_CURZE: Character = {
   subTypes: ['Command', 'Paragon'],
   stats: {
     M: 8, WS: 7, BS: 6, S: 6, T: 6, W: 6,
-    I: 7, A: 6, LD: 10, CL: 10, WP: 10, IN: 10,
+    I: 7, A: 6, LD: 10, CL: 10, WP: 8, IN: 10,
     Sv: 2, Inv: 4,
   },
   weapons: [MERCY_AND_FORGIVENESS],
@@ -259,7 +259,7 @@ const CALAS_TYPHON: Character = {
   },
   weapons: [LAKRIMAE],
   factionGambitIds: ['steadfast-resilience', 'witchblood'],
-  specialRules: [{ name: 'EternalWarrior', value: 1 }],
+  specialRules: [{ name: 'EternalWarrior', value: 1 }, { name: 'Bulky', value: 2 }, { name: 'Psykers' }],
   traits: ['Traitor', 'Death Guard']
 };
 
@@ -341,7 +341,7 @@ const EZEKYLE_ABADDON: Character = {
   },
   weapons: [CTHONIAN_POWER_CLAW],
   factionGambitIds: ['merciless-strike'],
-  specialRules: [{ name: 'EternalWarrior', value: 1 }],
+  specialRules: [{ name: 'EternalWarrior', value: 1 }, { name: 'Bulky', value: 2 }],
   traits: ['Traitor', 'Sons of Horus']
 };
 
@@ -408,7 +408,7 @@ const LORGAR: Character = {
   subTypes: ['Command', 'Paragon'],
   stats: {
     M: 8, WS: 6, BS: 6, S: 6, T: 6, W: 6,
-    I: 5, A: 6, LD: 10, CL: 10, WP: 10, IN: 10,
+    I: 5, A: 5, LD: 10, CL: 10, WP: 10, IN: 10,
     Sv: 2, Inv: 4,
   },
   weapons: [ILLUMINARUM],
@@ -429,7 +429,7 @@ const KOR_PHAERON: Character = {
   subTypes: ['Command'],
   stats: {
     M: 6, WS: 5, BS: 4, S: 3, T: 3, W: 3,
-    I: 5, A: 4, LD: 10, CL: 9, WP: 9, IN: 9,
+    I: 3, A: 4, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 5,
   },
   weapons: [PATRIARCHS_CLAWS],
@@ -468,7 +468,11 @@ const ARGEL_TAL: Character = {
   },
   weapons: [DAEMONIC_TALONS],
   factionGambitIds: ['beseech-the-gods'],
-  specialRules: [],
+  specialRules: [
+    { name: 'Bulky', value: 3 },
+    { name: 'Fear', value: 1 },
+    { name: 'FeelNoPain', threshold: 5 },
+  ],
   traits: ['Traitor', 'Word Bearers']
 };
 
