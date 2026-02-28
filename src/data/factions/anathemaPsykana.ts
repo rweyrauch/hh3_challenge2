@@ -13,6 +13,7 @@
  */
 import type { Character } from '../../models/character.js';
 import { SWORD_OF_OBLIVION } from '../weapons/namedCharacters.js';
+import { PARAGON_BLADE, POWER_SWORD } from '../weapons/legionAstartes.js';
 
 // ════════════════════════════════════════════════════════════════
 // JENETIA KROLE
@@ -51,6 +52,31 @@ const JENETIA_KROLE: Character = {
   traits: ['Loyalist', 'Anathema Psykana'],
 };
 
+// ── Knight-Centura ───────────────────────────────────────────────────────────
+// Infantry (Command, Light).  Senior officer of an Anathema Psykana warband.
+// Paragon blade with Critical Hit(6+).  Fear(X) and Hatred(X) per the army list.
+// WP12 (Anathema Psykana are blank); W3; Sv2+/Inv5+.
+const KNIGHT_CENTURA: Character = {
+  id: 'knight-centura',
+  name: 'Knight-Centura',
+  faction: 'anathema-psykana',
+  type: 'infantry',
+  subTypes: ['Command', 'Light'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 3, T: 3, W: 3,
+    I: 5, A: 3, LD: 9, CL: 9, WP: 12, IN: 9,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD],
+  factionGambitIds: ['abyssal-strike'],
+  specialRules: [
+    { name: 'Fear', value: 1 },
+    { name: 'Hatred', target: 'Psyker' },
+  ],
+  traits: ['Loyalist', 'Anathema Psykana'],
+};
+
 export const ANATHEMA_PSYKANA_CHARACTERS: Character[] = [
   JENETIA_KROLE,
+  KNIGHT_CENTURA,
 ];

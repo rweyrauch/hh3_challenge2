@@ -985,6 +985,21 @@ export const GRAVITON_GAUNTLET: Weapon = {
   })],
 };
 
+/** Graviton Crusher (Warsmith): −2I, A, +4S, AP2, D2, Armourbane.
+ * Shock (Pinned) is a shooting/charge rule with no effect in the Challenge Sub-Phase. */
+export const GRAVITON_CRUSHER: Weapon = {
+  name: 'Graviton Crusher',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Graviton Crusher',
+    initiativeModifier: { kind: 'add', value: -2 },
+    strengthModifier: { kind: 'add', value: 4 },
+    ap: 2, damage: 2,
+    specialRules: [{ name: 'Armourbane' }],
+    traits: ['Graviton', 'Power'],
+  })],
+};
+
 // ════════════════════════════════════════════════════════════════
 // SONS OF HORUS (additional)
 // ════════════════════════════════════════════════════════════════

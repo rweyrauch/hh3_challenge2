@@ -20,6 +20,9 @@ import { MECHANICUM_CHARACTERS } from './mechanicum.js';
 import { ANATHEMA_PSYKANA_CHARACTERS } from './anathemaPsykana.js';
 import { BLACKSHIELDS_CHARACTERS } from './blackshields.js';
 import { CULTS_ABOMINATIO_CHARACTERS } from './cultsAbominatio.js';
+import { SKITARII_CHARACTERS } from './skitarii.js';
+import { LEGIO_TITANICUS_CHARACTERS } from './legioTitanicus.js';
+import { SOLAR_AUXILIA_CHARACTERS } from './solarAuxilia.js';
 import { CORE_GAMBITS } from '../gambits/coreGambits.js';
 import { CUSTODES_GAMBITS } from '../gambits/custodes.js';
 import { ORK_GAMBITS } from '../gambits/orks.js';
@@ -40,6 +43,9 @@ export const ALL_CHARACTERS: Character[] = [
   ...ANATHEMA_PSYKANA_CHARACTERS,
   ...BLACKSHIELDS_CHARACTERS,
   ...CULTS_ABOMINATIO_CHARACTERS,
+  ...SKITARII_CHARACTERS,
+  ...LEGIO_TITANICUS_CHARACTERS,
+  ...SOLAR_AUXILIA_CHARACTERS,
 ];
 
 const CHAR_MAP = new Map<string, Character>(
@@ -155,6 +161,9 @@ export function getFactionLabel(faction: string): string {
     'anathema-psykana': 'Anathema Psykana',
     'blackshields': 'Blackshields',
     'cults-abominatio': 'Cults Abominatio',
+    'skitarii': 'Skitarii Conclaves',
+    'legio-titanicus': 'Legio Titanicus',
+    'solar-auxilia': 'Solar Auxilia',
   };
   return labels[faction] ?? faction;
 }
