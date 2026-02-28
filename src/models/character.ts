@@ -77,4 +77,5 @@ export interface Character {
    */
   availablePsychicDisciplines?: PsychicDiscipline[];
   traits?: string[];
+  wargear?: string[];
 }

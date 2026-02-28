@@ -292,7 +292,8 @@ const FAFNIR_RANN: Character = {
   weapons: [HEADSMAN_AND_HUNTER],
   factionGambitIds: ['a-wall-unyielding', 'executioners-tax'],
   specialRules: [],
-  traits: ['Loyalist', 'Imperial Fists']
+  traits: ['Loyalist', 'Imperial Fists', 'Shield'],
+  wargear: ['Boarding shield']
 };
 
 const EVANDER_GARRIUS: Character = {
