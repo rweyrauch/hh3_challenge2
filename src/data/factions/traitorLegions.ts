@@ -48,8 +48,34 @@ import {
   THE_PROPHET,
   GLORY_AETERNA,
   THE_AXE_SERPENTIS,
-  THE_CULLING_BLADE
+  THE_CULLING_BLADE,
+  GRAVITON_GAUNTLET,
+  GRAVITON_CRUSHER,
+  STAFF_OF_DARK_AUTHORITY,
+  RELIQUARY_OF_DUST,
+  AZURDA_CHARIS,
+  RIME_SHARD,
 } from '../weapons/namedCharacters.js';
+import {
+  POWER_SWORD,
+  POWER_AXE,
+  POWER_MAUL,
+  POWER_FIST,
+  POWER_LANCE,
+  LIGHTNING_CLAW,
+  LIGHTNING_CLAWS_PAIR,
+  CHAINFIST,
+  THUNDER_HAMMER,
+  FORCE_SWORD,
+  FORCE_AXE,
+  FORCE_MAUL,
+  FORCE_STAFF,
+  PARAGON_BLADE,
+  CROZIUS_ARCANUM,
+  CHAINBLADE,
+  CHAINAXE,
+} from '../weapons/legionAstartes.js';
+import { BIOMANTIC_SLAM } from '../weapons/psychic.js';
 
 // ════════════════════════════════════════════════════════════════
 // EMPEROR'S CHILDREN  (III Legion)
@@ -116,6 +142,28 @@ const LORD_COMMANDER_EIDOLON: Character = {
 // IRON WARRIORS  (IV Legion)
 // ════════════════════════════════════════════════════════════════
 
+// ── Nârik Dreygur ────────────────────────────────────────────────────────────
+// Infantry (Unique, Command, Heavy) — Feel No Pain(5+)
+// Unique character with a Graviton gauntlet; no faction-specific gambits beyond Iron Warriors
+const NARIK_DREYGUR: Character = {
+  id: 'narik-dreygur',
+  name: 'Nârik Dreygur',
+  faction: 'iron-warriors',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 9,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [GRAVITON_GAUNTLET],
+  factionGambitIds: ['spiteful-demise', 'the-breaker'],
+  specialRules: [
+    { name: 'FeelNoPain', threshold: 5 },
+  ],
+  traits: ['Traitor', 'Iron Warriors'],
+};
+
 const PERTURABO: Character = {
   id: 'perturabo',
   name: 'Perturabo',
@@ -134,6 +182,46 @@ const PERTURABO: Character = {
     { name: 'Bulky', value: 6 },
   ],
   traits: ['Traitor', 'Iron Warriors']
+};
+
+// ── Warsmith ──────────────────────────────────────────────────────────────────
+// Senior Iron Warriors engineer-officer.  Heavy sub-type; T5/W5 in Terminator
+// plate; Bulky(4) from servo-harness and cortex controller bulk.
+// Graviton Crusher is the Warsmith's signature melee weapon.
+const WARSMITH: Character = {
+  id: 'warsmith',
+  name: 'Warsmith',
+  faction: 'iron-warriors',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 6, BS: 5, S: 4, T: 5, W: 5,
+    I: 5, A: 5, LD: 9, CL: 8, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [GRAVITON_CRUSHER, POWER_FIST, POWER_AXE, POWER_MAUL, THUNDER_HAMMER],
+  factionGambitIds: ['spiteful-demise', 'the-breaker'],
+  specialRules: [{ name: 'Bulky', value: 4 }],
+  traits: ['Traitor', 'Iron Warriors'],
+};
+
+// ── Warsmith in Artificer Armour ──────────────────────────────────────────────
+// As Warsmith but in standard artificer armour; T4/W4, no Heavy sub-type.
+const WARSMITH_ARTIFICER: Character = {
+  id: 'warsmith-artificer',
+  name: 'Warsmith in Artificer Armour',
+  faction: 'iron-warriors',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 6, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 5, LD: 9, CL: 8, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_AXE, POWER_MAUL, POWER_SWORD, THUNDER_HAMMER],
+  factionGambitIds: ['spiteful-demise', 'the-breaker'],
+  specialRules: [],
+  traits: ['Traitor', 'Iron Warriors'],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -304,6 +392,47 @@ const AHZEK_AHRIMAN: Character = {
   traits: ['Traitor', 'Thousand Sons']
 };
 
+// ── Magistus Amon ─────────────────────────────────────────────────────────────
+// Infantry (Unique, Command) — The Reliquary of Dust: Poisoned(2+)
+// Psyker character; no Eternal Warrior or special defensive rules relevant to engine.
+const MAGISTUS_AMON: Character = {
+  id: 'magistus-amon',
+  name: 'Magistus Amon',
+  faction: 'thousand-sons',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 6, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [RELIQUARY_OF_DUST],
+  factionGambitIds: ['battle-of-the-wills', 'prophetic-duellist'],
+  specialRules: [],
+  traits: ['Traitor', 'Thousand Sons'],
+};
+
+// ── Prosperine Sorcerer ───────────────────────────────────────────────────────
+// A trained Thousand Sons battle-psyker equipped with a Biomantic Slam.
+// WP9; full access to psychic disciplines.
+const PROSPERINE_SORCERER: Character = {
+  id: 'prosperine-sorcerer',
+  name: 'Prosperine Sorcerer',
+  faction: 'thousand-sons',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [BIOMANTIC_SLAM, FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
+  factionGambitIds: ['battle-of-the-wills', 'prophetic-duellist'],
+  specialRules: [{ name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Traitor', 'Thousand Sons'],
+};
+
 // ════════════════════════════════════════════════════════════════
 // SONS OF HORUS  (XVI Legion)
 // ════════════════════════════════════════════════════════════════
@@ -396,6 +525,91 @@ const VHEREN_ASHURHADDON: Character = {
   traits: ['Traitor', 'Sons of Horus']
 };
 
+// ── Maloghurst the Twisted ────────────────────────────────────────────────────
+// Infantry (Unique, Command) — Slow and Purposeful (not relevant to engine)
+// Broken in Body: Controlling Player chooses whether he accepts Challenges (not simulated here).
+const MALOGHURST_THE_TWISTED: Character = {
+  id: 'maloghurst-the-twisted',
+  name: 'Maloghurst the Twisted',
+  faction: 'sons-of-horus',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 10, CL: 9, WP: 9, IN: 10,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [POWER_SWORD],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [],
+  traits: ['Traitor', 'Sons of Horus'],
+};
+
+// ── Dark Emissary (Infantry) ──────────────────────────────────────────────────
+// Infantry (Unique, Command) — Staff of Dark Authority: Critical Hit(6+)
+const DARK_EMISSARY: Character = {
+  id: 'dark-emissary',
+  name: 'Dark Emissary',
+  faction: 'sons-of-horus',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 10, CL: 10, WP: 9, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [STAFF_OF_DARK_AUTHORITY],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [],
+  traits: ['Traitor', 'Sons of Horus'],
+};
+
+// ── Dark Emissary in Terminator Armour ───────────────────────────────────────
+// Infantry (Unique, Command, Heavy) — Cataphractii variant; Bulky(2)
+const DARK_EMISSARY_TERMINATOR: Character = {
+  id: 'dark-emissary-terminator',
+  name: 'Dark Emissary (Terminator Armour)',
+  faction: 'sons-of-horus',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 5,
+    I: 5, A: 4, LD: 10, CL: 10, WP: 9, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [STAFF_OF_DARK_AUTHORITY],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [
+    { name: 'Bulky', value: 2 },
+  ],
+  traits: ['Traitor', 'Sons of Horus'],
+};
+
+// ── Horus Ascended ────────────────────────────────────────────────────────────
+// Paragon (Unique) — daemonic form; EW(3), Bulky(6), FNP(5+), Fear(1)
+// Cannot be included with Horus Lupercal; uses Worldbreaker and Warmaster's Talon.
+const HORUS_ASCENDED: Character = {
+  id: 'horus-ascended',
+  name: 'Horus Ascended',
+  faction: 'sons-of-horus',
+  type: 'paragon',
+  subTypes: ['Command', 'Paragon'],
+  stats: {
+    M: 8, WS: 9, BS: 7, S: 8, T: 8, W: 8,
+    I: 7, A: 7, LD: 14, CL: 12, WP: 12, IN: 10,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [WARMASTERS_TALON, WORLDBREAKER],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 3 },
+    { name: 'Bulky', value: 6 },
+    { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Fear', value: 1 },
+  ],
+  traits: ['Traitor', 'Sons of Horus'],
+};
+
 // ════════════════════════════════════════════════════════════════
 // WORD BEARERS  (XVII Legion)
 // ════════════════════════════════════════════════════════════════
@@ -476,6 +690,111 @@ const ARGEL_TAL: Character = {
   traits: ['Traitor', 'Word Bearers']
 };
 
+// ── Zardu Layak ───────────────────────────────────────────────────────────────
+// Infantry (Unique, Command, Malefic) — Hatred(Loyalist); Force(D) weapon
+// Zardu Layak is accompanied by Anakatis Kul models (handled separately as a champion).
+// Stats here represent Zardu Layak himself only.
+// Note: the reference data shows S5/T5 for Zardu Layak (boosted from base S4/T4 by wargear/rules).
+const ZARDU_LAYAK: Character = {
+  id: 'zardu-layak',
+  name: 'Zardu Layak',
+  faction: 'word-bearers',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 4, S: 5, T: 5, W: 4,
+    I: 5, A: 3, LD: 11, CL: 10, WP: 9, IN: 7,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [AZURDA_CHARIS],
+  factionGambitIds: ['beseech-the-gods'],
+  specialRules: [
+    { name: 'Hatred', target: 'Loyalist' },
+  ],
+  traits: ['Traitor', 'Word Bearers'],
+};
+
+// ── Diabolist ─────────────────────────────────────────────────────────────────
+// Word Bearers daemon-pact officer.  WP10; Psyker; access to all disciplines.
+// Infantry/Terminator/Mounted variants.
+const DIABOLIST: Character = {
+  id: 'diabolist',
+  name: 'Diabolist',
+  faction: 'word-bearers',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF, CROZIUS_ARCANUM, POWER_SWORD, PARAGON_BLADE],
+  factionGambitIds: ['beseech-the-gods'],
+  specialRules: [{ name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Traitor', 'Word Bearers'],
+};
+
+const DIABOLIST_TERMINATOR: Character = {
+  id: 'diabolist-terminator',
+  name: 'Diabolist (Terminator Armour)',
+  faction: 'word-bearers',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF, CROZIUS_ARCANUM, POWER_SWORD],
+  factionGambitIds: ['beseech-the-gods'],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Traitor', 'Word Bearers'],
+};
+
+const DIABOLIST_MOUNTED: Character = {
+  id: 'diabolist-mounted',
+  name: 'Diabolist (Mounted)',
+  faction: 'word-bearers',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF, CROZIUS_ARCANUM, POWER_SWORD],
+  factionGambitIds: ['beseech-the-gods'],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Traitor', 'Word Bearers'],
+};
+
+// ── Phraetus Disciple ─────────────────────────────────────────────────────────
+// Champion of the Phraetus Anointed Conclave; Saturnine-plate daemon-warrior.
+// T6, Inv4+, Bulky(2), Heavy, Malefic; EternalWarrior(1); slower I3.
+// Uses the Saturnine Terminator weapon pool (no standard power weapons).
+const PHRAETUS_DISCIPLE: Character = {
+  id: 'phraetus-disciple',
+  name: 'Phraetus Disciple',
+  faction: 'word-bearers',
+  type: 'infantry',
+  subTypes: ['Champion', 'Heavy'],
+  stats: {
+    M: 5, WS: 5, BS: 4, S: 4, T: 6, W: 3,
+    I: 3, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_SWORD, POWER_AXE, THUNDER_HAMMER, CHAINBLADE, CHAINAXE],
+  factionGambitIds: ['beseech-the-gods'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 1 },
+    { name: 'Bulky', value: 2 },
+  ],
+  traits: ['Traitor', 'Word Bearers'],
+};
+
 // ════════════════════════════════════════════════════════════════
 // ALPHA LEGION  (XX Legion)
 // ════════════════════════════════════════════════════════════════
@@ -515,6 +834,25 @@ const ARMILLUS_DYNAT: Character = {
   factionGambitIds: ['i-am-alpharius'],
   specialRules: [],
   traits: ['Alpha Legion']
+};
+
+// ── Autilon Skorr ─────────────────────────────────────────────────────────────
+// Infantry (Unique, Command) — Consul-Delegatus; no engine-relevant special rules.
+const AUTILON_SKORR: Character = {
+  id: 'autilon-skorr',
+  name: 'Autilon Skorr',
+  faction: 'alpha-legion',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [RIME_SHARD],
+  factionGambitIds: ['i-am-alpharius'],
+  specialRules: [],
+  traits: ['Traitor', 'Alpha Legion'],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -641,7 +979,8 @@ export const TRAITOR_LEGION_CHARACTERS: Character[] = [
   FULGRIM, CAPTAIN_LUCIUS, LORD_COMMANDER_EIDOLON,
   PHOENIX_CHAMPION, PALATINE_PREFECTOR, PALATINE_PREFECTOR_JUMP_PACK,
   // Iron Warriors
-  PERTURABO,
+  PERTURABO, NARIK_DREYGUR,
+  WARSMITH, WARSMITH_ARTIFICER,
   // Night Lords
   KONRAD_CURZE, SEVATAR,
   // World Eaters
@@ -650,12 +989,16 @@ export const TRAITOR_LEGION_CHARACTERS: Character[] = [
   // Death Guard
   MORTARION, CALAS_TYPHON,
   // Thousand Sons
-  MAGNUS_THE_RED, AHZEK_AHRIMAN,
+  MAGNUS_THE_RED, AHZEK_AHRIMAN, MAGISTUS_AMON,
+  PROSPERINE_SORCERER,
   // Sons of Horus
   HORUS_LUPERCAL, EZEKYLE_ABADDON, HORUS_AXIMAND, TYBALT_MARR, VHEREN_ASHURHADDON,
+  MALOGHURST_THE_TWISTED, DARK_EMISSARY, DARK_EMISSARY_TERMINATOR, HORUS_ASCENDED,
   // Word Bearers
   LORGAR, KOR_PHAERON, EREBUS, ARGEL_TAL,
-  ANAKATIS_KUL,
+  ANAKATIS_KUL, ZARDU_LAYAK,
+  DIABOLIST, DIABOLIST_TERMINATOR, DIABOLIST_MOUNTED,
+  PHRAETUS_DISCIPLE,
   // Alpha Legion
-  ALPHARIUS, ARMILLUS_DYNAT,
+  ALPHARIUS, ARMILLUS_DYNAT, AUTILON_SKORR,
 ];

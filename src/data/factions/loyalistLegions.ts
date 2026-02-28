@@ -22,7 +22,7 @@ import {
   BLADE_OF_JUDGEMENT,
   ARGEAN_POWER_SWORD,
 } from '../weapons/legionChampions.js';
-import { FORCE_STAFF, PARAGON_BLADE, POWER_SWORD } from '../weapons/legionAstartes.js';
+import { FORCE_STAFF, PARAGON_BLADE, POWER_SWORD, CROZIUS_ARCANUM } from '../weapons/legionAstartes.js';
 import {
   LION_SWORD,
   WOLF_BLADE,
@@ -176,6 +176,81 @@ const HIBOU_KHAN: Character = {
   traits: ['Loyalist', 'White Scars']
 };
 
+// ── White Scars Stormseer ─────────────────────────────────────────────────────
+// Rune-warrior of the V Legion.  WP10; Force Staff; access to divination,
+// biomancy, telekinesis, and pyromancy disciplines.
+const STORMSEER: Character = {
+  id: 'stormseer',
+  name: 'Stormseer',
+  faction: 'white-scars',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_STAFF],
+  factionGambitIds: ['the-path-of-the-warrior'],
+  specialRules: [{ name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Loyalist', 'White Scars'],
+};
+
+const STORMSEER_TERMINATOR: Character = {
+  id: 'stormseer-terminator',
+  name: 'Stormseer (Terminator Armour)',
+  faction: 'white-scars',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [FORCE_STAFF],
+  factionGambitIds: ['the-path-of-the-warrior'],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Loyalist', 'White Scars'],
+};
+
+const STORMSEER_JUMP_PACK: Character = {
+  id: 'stormseer-jump-pack',
+  name: 'Stormseer (Jump Pack)',
+  faction: 'white-scars',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_STAFF],
+  factionGambitIds: ['the-path-of-the-warrior'],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Loyalist', 'White Scars'],
+};
+
+const STORMSEER_MOUNTED: Character = {
+  id: 'stormseer-mounted',
+  name: 'Stormseer (Mounted)',
+  faction: 'white-scars',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_STAFF],
+  factionGambitIds: ['the-path-of-the-warrior'],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+  traits: ['Loyalist', 'White Scars'],
+};
+
 // ════════════════════════════════════════════════════════════════
 // SPACE WOLVES  (VI Legion)
 // ════════════════════════════════════════════════════════════════
@@ -250,6 +325,60 @@ const CASTER_OF_RUNES: Character = {
   specialRules: [{ name: 'Psykers' }],
   availablePsychicDisciplines: ['biomancy', 'telekinesis', 'divination', 'runecasting'],
   traits: ['Loyalist', 'Psyker'],
+};
+
+// ── Speaker of the Dead ───────────────────────────────────────────────────────
+// Space Wolves Chaplain-Shaman bearing a Crozius Arcanum.  Grants access to
+// the psychic runecasting and divination lore traditions.
+const SPEAKER_OF_THE_DEAD: Character = {
+  id: 'speaker-of-the-dead',
+  name: 'Speaker of the Dead',
+  faction: 'space-wolves',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [CROZIUS_ARCANUM],
+  factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
+  specialRules: [],
+  traits: ['Loyalist', 'Space Wolves'],
+};
+
+const SPEAKER_OF_THE_DEAD_TERMINATOR: Character = {
+  id: 'speaker-of-the-dead-terminator',
+  name: 'Speaker of the Dead (Terminator Armour)',
+  faction: 'space-wolves',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [CROZIUS_ARCANUM],
+  factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+  traits: ['Loyalist', 'Space Wolves'],
+};
+
+const SPEAKER_OF_THE_DEAD_MOUNTED: Character = {
+  id: 'speaker-of-the-dead-mounted',
+  name: 'Speaker of the Dead (Mounted)',
+  faction: 'space-wolves',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [CROZIUS_ARCANUM],
+  factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+  traits: ['Loyalist', 'Space Wolves'],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -802,9 +931,11 @@ export const LOYALIST_LEGION_CHARACTERS: Character[] = [
   FIREWING_ENIGMATII, EXCINDIO,
   // White Scars
   JAGHATAI_KHAN, QIN_XA, HIBOU_KHAN,
+  STORMSEER, STORMSEER_TERMINATOR, STORMSEER_JUMP_PACK, STORMSEER_MOUNTED,
   // Space Wolves
   LEMAN_RUSS, HVARL_RED_BLADE, GEIGOR_FELL_HAND, CASTER_OF_RUNES,
   THEGN,
+  SPEAKER_OF_THE_DEAD, SPEAKER_OF_THE_DEAD_TERMINATOR, SPEAKER_OF_THE_DEAD_MOUNTED,
   // Imperial Fists
   ROGAL_DORN, SIGISMUND, FAFNIR_RANN, EVANDER_GARRIUS, CAMBA_DIAZ, ALEXIS_POLUX,
   TEMPLAR_CHAMPION,

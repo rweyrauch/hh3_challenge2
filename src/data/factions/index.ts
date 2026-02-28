@@ -17,6 +17,12 @@ import { DAEMON_CHARACTERS } from './daemons.js';
 import { MILITIA_CHARACTERS } from './militia.js';
 import { ASSASSIN_CHARACTERS } from './assassins.js';
 import { MECHANICUM_CHARACTERS } from './mechanicum.js';
+import { ANATHEMA_PSYKANA_CHARACTERS } from './anathemaPsykana.js';
+import { BLACKSHIELDS_CHARACTERS } from './blackshields.js';
+import { CULTS_ABOMINATIO_CHARACTERS } from './cultsAbominatio.js';
+import { SKITARII_CHARACTERS } from './skitarii.js';
+import { LEGIO_TITANICUS_CHARACTERS } from './legioTitanicus.js';
+import { SOLAR_AUXILIA_CHARACTERS } from './solarAuxilia.js';
 import { CORE_GAMBITS } from '../gambits/coreGambits.js';
 import { CUSTODES_GAMBITS } from '../gambits/custodes.js';
 import { ORK_GAMBITS } from '../gambits/orks.js';
@@ -34,6 +40,12 @@ export const ALL_CHARACTERS: Character[] = [
   ...ASSASSIN_CHARACTERS,
   ...MECHANICUM_CHARACTERS,
   ...ORK_CHARACTERS,
+  ...ANATHEMA_PSYKANA_CHARACTERS,
+  ...BLACKSHIELDS_CHARACTERS,
+  ...CULTS_ABOMINATIO_CHARACTERS,
+  ...SKITARII_CHARACTERS,
+  ...LEGIO_TITANICUS_CHARACTERS,
+  ...SOLAR_AUXILIA_CHARACTERS,
 ];
 
 const CHAR_MAP = new Map<string, Character>(
@@ -145,6 +157,13 @@ export function getFactionLabel(faction: string): string {
     'divisio-assassinorum': 'Divisio Assassinorum',
     // Mechanicum
     'mechanicum': 'Mechanicum',
+    // New factions
+    'anathema-psykana': 'Anathema Psykana',
+    'blackshields': 'Blackshields',
+    'cults-abominatio': 'Cults Abominatio',
+    'skitarii': 'Skitarii Conclaves',
+    'legio-titanicus': 'Legio Titanicus',
+    'solar-auxilia': 'Solar Auxilia',
   };
   return labels[faction] ?? faction;
 }

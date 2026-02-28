@@ -462,6 +462,542 @@ const LEGION_CHAMPION_JUMP_PACK: Character = {
   ],
 };
 
+// ── Delegatus ────────────────────────────────────────────────────────────────
+// The Delegatus is a mid-ranking officer empowered to speak with the authority
+// of a Praetor.  Equivalent stats to a Centurion; can take standard power weapons.
+const DELEGATUS: Character = {
+  id: 'delegatus',
+  name: 'Delegatus',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+const DELEGATUS_TERMINATOR: Character = {
+  id: 'delegatus-terminator',
+  name: 'Delegatus (Terminator Armour)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+const DELEGATUS_MOUNTED: Character = {
+  id: 'delegatus-mounted',
+  name: 'Delegatus (Mounted)',
+  faction: 'legion-astartes',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Forge Lord ───────────────────────────────────────────────────────────────
+// Senior Techmarine officer.  Carries a Machinator array (wargear; no challenge
+// effect) in addition to a power weapon of choice.
+const FORGE_LORD: Character = {
+  id: 'forge-lord',
+  name: 'Forge Lord',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+const FORGE_LORD_TERMINATOR: Character = {
+  id: 'forge-lord-terminator',
+  name: 'Forge Lord (Terminator Armour)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+const FORGE_LORD_MOUNTED: Character = {
+  id: 'forge-lord-mounted',
+  name: 'Forge Lord (Mounted)',
+  faction: 'legion-astartes',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Herald ───────────────────────────────────────────────────────────────────
+// Bearer of an Icon of Allegiance.  Infantry/Terminator/Jump Pack/Mounted variants.
+// Fear(1) per the army list entry.
+const HERALD: Character = {
+  id: 'herald',
+  name: 'Herald',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Fear', value: 1 }],
+};
+
+const HERALD_TERMINATOR: Character = {
+  id: 'herald-terminator',
+  name: 'Herald (Terminator Armour)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Fear', value: 1 }],
+};
+
+const HERALD_JUMP_PACK: Character = {
+  id: 'herald-jump-pack',
+  name: 'Herald (Jump Pack)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Fear', value: 1 }],
+};
+
+const HERALD_MOUNTED: Character = {
+  id: 'herald-mounted',
+  name: 'Herald (Mounted)',
+  faction: 'legion-astartes',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Fear', value: 1 }, { name: 'Bulky', value: 2 }],
+};
+
+// ── Esoterist ────────────────────────────────────────────────────────────────
+// Legion Chaplain-Psyker hybrid.  WP10; access to psychic disciplines.
+const ESOTERIST: Character = {
+  id: 'esoterist',
+  name: 'Esoterist',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF, CROZIUS_ARCANUM, POWER_SWORD],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+};
+
+const ESOTERIST_TERMINATOR: Character = {
+  id: 'esoterist-terminator',
+  name: 'Esoterist (Terminator Armour)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF, CROZIUS_ARCANUM, POWER_SWORD],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+};
+
+const ESOTERIST_JUMP_PACK: Character = {
+  id: 'esoterist-jump-pack',
+  name: 'Esoterist (Jump Pack)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF, CROZIUS_ARCANUM, POWER_SWORD],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+};
+
+const ESOTERIST_MOUNTED: Character = {
+  id: 'esoterist-mounted',
+  name: 'Esoterist (Mounted)',
+  faction: 'legion-astartes',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF, CROZIUS_ARCANUM, POWER_SWORD],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
+};
+
+// ── Master of Signals ────────────────────────────────────────────────────────
+// Vox-communications specialist officer.  WP7; infantry/jump pack/mounted.
+const MASTER_OF_SIGNALS: Character = {
+  id: 'master-of-signals',
+  name: 'Master of Signals',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 7, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+const MASTER_OF_SIGNALS_JUMP_PACK: Character = {
+  id: 'master-of-signals-jump-pack',
+  name: 'Master of Signals (Jump Pack)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 7, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+const MASTER_OF_SIGNALS_MOUNTED: Character = {
+  id: 'master-of-signals-mounted',
+  name: 'Master of Signals (Mounted)',
+  faction: 'legion-astartes',
+  type: 'cavalry',
+  subTypes: ['Command'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 7, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Siege Breaker ────────────────────────────────────────────────────────────
+// Engineering officer specialising in breaching and fortification warfare.
+const SIEGE_BREAKER: Character = {
+  id: 'siege-breaker',
+  name: 'Siege Breaker',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+const SIEGE_BREAKER_TERMINATOR: Character = {
+  id: 'siege-breaker-terminator',
+  name: 'Siege Breaker (Terminator Armour)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+const SIEGE_BREAKER_JUMP_PACK: Character = {
+  id: 'siege-breaker-jump-pack',
+  name: 'Siege Breaker (Jump Pack)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+const SIEGE_BREAKER_MOUNTED: Character = {
+  id: 'siege-breaker-mounted',
+  name: 'Siege Breaker (Mounted)',
+  faction: 'legion-astartes',
+  type: 'cavalry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 14, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Armistos ─────────────────────────────────────────────────────────────────
+// An artificer-armour clad officer attached to heavy weapon squads.
+// WS4, lower profile than a standard Centurion.
+const ARMISTOS: Character = {
+  id: 'armistos',
+  name: 'Armistos',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 4, BS: 4, S: 4, T: 4, W: 3,
+    I: 5, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Vigilator ────────────────────────────────────────────────────────────────
+// Recon and assassination specialist officer.  WS4.
+const VIGILATOR: Character = {
+  id: 'vigilator',
+  name: 'Vigilator',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 4, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Pathfinder ───────────────────────────────────────────────────────────────
+// Scout specialist officer.  Light and Skirmish sub-types; Sv4+/Inv5+.
+const PATHFINDER: Character = {
+  id: 'pathfinder',
+  name: 'Pathfinder',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Light'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 4, Inv: 5,
+  },
+  weapons: [POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST, CHAINSWORD, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Praevian ─────────────────────────────────────────────────────────────────
+// Automata controller officer.  Feel No Pain(5+) from Cortex controller bond.
+const PRAEVIAN: Character = {
+  id: 'praevian',
+  name: 'Praevian',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [{ name: 'FeelNoPain', threshold: 5 }],
+};
+
+// ── Overseer ─────────────────────────────────────────────────────────────────
+// Provosts officer maintaining discipline.  Fear(1); carries a Vexilla.
+const OVERSEER: Character = {
+  id: 'overseer',
+  name: 'Overseer',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Fear', value: 1 }],
+};
+
+// ── Master of Descent ────────────────────────────────────────────────────────
+// Drop Pod / jump assault specialist.  Jump Pack type (Antigrav).  A3.
+const MASTER_OF_DESCENT: Character = {
+  id: 'master-of-descent',
+  name: 'Master of Descent',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 12, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Warmonger ────────────────────────────────────────────────────────────────
+// Shock assault specialist officer.  Infantry and Terminator variants.
+const WARMONGER: Character = {
+  id: 'warmonger',
+  name: 'Warmonger',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHAINBLADE, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+const WARMONGER_TERMINATOR: Character = {
+  id: 'warmonger-terminator',
+  name: 'Warmonger (Terminator Armour)',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command', 'Heavy'],
+  stats: {
+    M: 6, WS: 5, BS: 5, S: 4, T: 5, W: 4,
+    I: 5, A: 4, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [POWER_FIST, POWER_SWORD, LIGHTNING_CLAW, CHAINFIST, THUNDER_HAMMER, POWER_AXE, POWER_LANCE, POWER_MAUL],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
+// ── Optae ────────────────────────────────────────────────────────────────────
+// A junior officer from a Tactical Support squad.  Sv3+; W2; lower profile.
+const OPTAE: Character = {
+  id: 'optae',
+  name: 'Optae',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 2,
+    I: 5, A: 3, LD: 9, CL: 8, WP: 8, IN: 8,
+    Sv: 3, Inv: null,
+  },
+  weapons: [POWER_SWORD, POWER_AXE, POWER_LANCE, POWER_MAUL, POWER_FIST, CHAINSWORD, CHAINAXE],
+  factionGambitIds: [],
+  specialRules: [],
+};
+
+// ── Saturnine Chosen Champion ─────────────────────────────────────────────────
+// Champion of the Saturnine Terminator Command Squad.
+// Saturnine plate: T6, Inv4+, Bulky(2), Heavy; Slower I3.
+// Uses the same restricted weapon pool as the Saturnine Praetor.
+const SATURNINE_CHOSEN_CHAMPION: Character = {
+  id: 'saturnine-chosen-champion',
+  name: 'Saturnine Chosen Champion',
+  faction: 'legion-astartes',
+  type: 'infantry',
+  subTypes: ['Champion', 'Heavy'],
+  stats: {
+    M: 5, WS: 5, BS: 4, S: 4, T: 6, W: 3,
+    I: 3, A: 3, LD: 8, CL: 7, WP: 7, IN: 7,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [SATURNINE_WAR_AXE, SATURNINE_DISRUPTION_FIST, SATURNINE_CONCUSSION_HAMMER],
+  factionGambitIds: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
+};
+
 export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   PRAETOR,
   CATAPHRACTII_PRAETOR,
@@ -485,4 +1021,36 @@ export const LEGION_ASTARTES_CHARACTERS: Character[] = [
   CATAPHRACTII_CHOSEN_CHAMPION,
   SCIMITAR_CHOSEN_CHAMPION,
   OUTRIDER_CHOSEN_CHAMPION,
+  // Generic officer types
+  DELEGATUS,
+  DELEGATUS_TERMINATOR,
+  DELEGATUS_MOUNTED,
+  FORGE_LORD,
+  FORGE_LORD_TERMINATOR,
+  FORGE_LORD_MOUNTED,
+  HERALD,
+  HERALD_TERMINATOR,
+  HERALD_JUMP_PACK,
+  HERALD_MOUNTED,
+  ESOTERIST,
+  ESOTERIST_TERMINATOR,
+  ESOTERIST_JUMP_PACK,
+  ESOTERIST_MOUNTED,
+  MASTER_OF_SIGNALS,
+  MASTER_OF_SIGNALS_JUMP_PACK,
+  MASTER_OF_SIGNALS_MOUNTED,
+  SIEGE_BREAKER,
+  SIEGE_BREAKER_TERMINATOR,
+  SIEGE_BREAKER_JUMP_PACK,
+  SIEGE_BREAKER_MOUNTED,
+  ARMISTOS,
+  VIGILATOR,
+  PATHFINDER,
+  PRAEVIAN,
+  OVERSEER,
+  MASTER_OF_DESCENT,
+  WARMONGER,
+  WARMONGER_TERMINATOR,
+  OPTAE,
+  SATURNINE_CHOSEN_CHAMPION,
 ];
