@@ -46,7 +46,9 @@ import {
   THE_PALE_SPEAR,
   THE_PRINCE,
   THE_PROPHET,
-  GLORY_AETERNA
+  GLORY_AETERNA,
+  THE_AXE_SERPENTIS,
+  THE_CULLING_BLADE
 } from '../weapons/namedCharacters.js';
 
 // ════════════════════════════════════════════════════════════════
@@ -360,6 +362,40 @@ const HORUS_AXIMAND: Character = {
   traits: ['Traitor', 'Sons of Horus']
 };
 
+const TYBALT_MARR: Character = {
+  id: 'tybalt-marr',
+  name: 'Tybalt Marr',
+  faction: 'sons-of-horus',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 6, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [THE_CULLING_BLADE],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [{name: 'Hatred', target: 'Shattered Legions'}],
+  traits: ['Traitor', 'Sons of Horus']
+};
+
+const VHEREN_ASHURHADDON: Character = {
+  id: 'vheren-ashurhaddon',
+  name: 'Vheren Ashurhaddon',
+  faction: 'sons-of-horus',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 7, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [THE_AXE_SERPENTIS],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [],
+  traits: ['Traitor', 'Sons of Horus']
+};
+
 // ════════════════════════════════════════════════════════════════
 // WORD BEARERS  (XVII Legion)
 // ════════════════════════════════════════════════════════════════
@@ -380,6 +416,7 @@ const LORGAR: Character = {
   specialRules: [
     { name: 'EternalWarrior', value: 2 },
     { name: 'Bulky', value: 4 },
+    { name: 'Hatred', target: 'Loyalist'}
   ],
   traits: ['Traitor', 'Word Bearers']
 };
@@ -397,7 +434,7 @@ const KOR_PHAERON: Character = {
   },
   weapons: [PATRIARCHS_CLAWS],
   factionGambitIds: ['beseech-the-gods'],
-  specialRules: [],
+  specialRules: [{ name: 'Bulky', value: 2 }],
   traits: ['Traitor', 'Word Bearers']
 };
 
@@ -611,7 +648,7 @@ export const TRAITOR_LEGION_CHARACTERS: Character[] = [
   // Thousand Sons
   MAGNUS_THE_RED, AHZEK_AHRIMAN,
   // Sons of Horus
-  HORUS_LUPERCAL, EZEKYLE_ABADDON, HORUS_AXIMAND,
+  HORUS_LUPERCAL, EZEKYLE_ABADDON, HORUS_AXIMAND, TYBALT_MARR, VHEREN_ASHURHADDON,
   // Word Bearers
   LORGAR, KOR_PHAERON, EREBUS, ARGEL_TAL,
   ANAKATIS_KUL,

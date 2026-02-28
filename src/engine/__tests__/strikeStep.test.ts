@@ -1139,7 +1139,7 @@ describe('Psychic Discipline mechanics (Conflagration, Every Strike Foreseen, Ha
     });
     const dummy = makeDummy({
       stats: { ...makeDummy().stats, WS: 5, T: 4, W: 5, Sv: 7, Inv: null },
-      specialRules: [{ name: 'Psyker' }],
+      specialRules: [{ name: 'Psykers' }],
     });
     const powerSwordProfile = {
       profileName: 'Power Sword',

@@ -22,7 +22,7 @@ import {
   BLADE_OF_JUDGEMENT,
   ARGEAN_POWER_SWORD,
 } from '../weapons/legionChampions.js';
-import { POWER_SWORD } from '../weapons/legionAstartes.js';
+import { PARAGON_BLADE, POWER_SWORD } from '../weapons/legionAstartes.js';
 import {
   LION_SWORD,
   WOLF_BLADE,
@@ -586,8 +586,30 @@ const SAUL_TARVITZ: Character = {
   },
   weapons: [CHARNABAL_BROADSWORD],
   factionGambitIds: ['paragon-of-excellence', 'bite-of-the-betrayed'],
-  specialRules: [],
+  specialRules: [{name: 'Hatred', target: 'Traitor'}],
   traits: ['Loyalist', 'Emperor\'s Children']
+};
+
+
+// ════════════════════════════════════════════════════════════════
+// SONS OF HORUS - loyalist characters
+// ════════════════════════════════════════════════════════════════
+
+const GARVIEL_LOKEN: Character = {
+  id: 'garviel-loken',
+  name: 'Garviel Loken',
+  faction: 'sons-of-horus',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 6, BS: 5, S: 4, T: 4, W: 4,
+    I: 5, A: 5, LD: 10, CL: 9, WP: 9, IN: 9,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [PARAGON_BLADE],
+  factionGambitIds: ['merciless-strike'],
+  specialRules: [{name: 'Hatred', target: 'Traitor'}],
+  traits: ['Loyalist', 'Sons of Horus']
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -781,4 +803,6 @@ export const LOYALIST_LEGION_CHARACTERS: Character[] = [
   CORVUS_CORAX,
   // Emperor's Children (loyalist)
   SAUL_TARVITZ,
+  // Sons of Horus (loyalist)
+  GARVIEL_LOKEN,
 ];
