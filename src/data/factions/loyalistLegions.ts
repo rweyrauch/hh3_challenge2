@@ -422,8 +422,7 @@ const SIGISMUND: Character = {
     { name: 'EternalWarrior', value: 1 },
     { name: 'Precision', threshold: 4 },
   ],
-  traits: ['Loyalist', 'Imperial Fists'],
-  availableWargear: ['vigil-pattern-storm-shield'],
+  traits: ['Loyalist', 'Imperial Fists']
 };
 
 const FAFNIR_RANN: Character = {
@@ -441,7 +440,7 @@ const FAFNIR_RANN: Character = {
   factionGambitIds: ['a-wall-unyielding', 'executioners-tax'],
   specialRules: [],
   traits: ['Loyalist', 'Imperial Fists', 'Shield'],
-  availableWargear: ['boarding-shield', 'vigil-pattern-storm-shield'],
+  availableWargear: ['boarding-shield']
 };
 
 const EVANDER_GARRIUS: Character = {
@@ -458,8 +457,7 @@ const EVANDER_GARRIUS: Character = {
   weapons: [SUBJUGATOR],
   factionGambitIds: ['a-wall-unyielding'],
   specialRules: [],
-  traits: ['Loyalist', 'Imperial Fists'],
-  availableWargear: ['vigil-pattern-storm-shield'],
+  traits: ['Loyalist', 'Imperial Fists']
 };
 
 const CAMBA_DIAZ: Character = {
@@ -476,8 +474,7 @@ const CAMBA_DIAZ: Character = {
   weapons: [DURENDA],
   factionGambitIds: ['a-wall-unyielding', 'the-line-unbroken'],
   specialRules: [],
-  traits: ['Loyalist', 'Imperial Fists'],
-  availableWargear: ['vigil-pattern-storm-shield'],
+  traits: ['Loyalist', 'Imperial Fists']
 };
 
 const ALEXIS_POLUX: Character = {
@@ -855,7 +852,7 @@ const TEMPLAR_CHAMPION: Character = {
   weapons: [POWER_SWORD],
   factionGambitIds: ['a-wall-unyielding'],
   specialRules: [],
-  availableWargear: ['vigil-pattern-storm-shield'],
+  availableWargear: ['combat-shield', 'vigil-pattern-storm-shield'],
 };
 
 // ── Ofanim (Blood Angels) ────────────────────────────────────────────────────
