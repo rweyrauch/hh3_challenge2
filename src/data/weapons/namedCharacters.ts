@@ -790,6 +790,31 @@ export const MOURN_IT_ALL: Weapon = {
   })],
 };
 
+export const THE_CULLING_BLADE: Weapon = {
+  name: 'The Culling Blade',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'The Culling Blade',
+    ap: 3, damage: 1,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 },
+      {name: 'Poisoned', threshold: 2}, {name: 'Breaching', threshold: 5}],
+    traits: [],
+  })],
+};
+
+/** Vheren Ashurhaddon */
+export const THE_AXE_SERPENTIS: Weapon = {
+  name: 'The Axe Serpentis',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'The Axe Serpentis',
+    initiativeModifier: { kind: 'add', value: 1 },
+    ap: 2, damage: 1,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power'],
+  })],
+};
+
 // ════════════════════════════════════════════════════════════════
 // WORD BEARERS
 // ════════════════════════════════════════════════════════════════
