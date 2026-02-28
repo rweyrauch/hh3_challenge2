@@ -910,3 +910,144 @@ export const THE_PROPHET: Weapon = {
     traits: ['Power'],
   })],
 };
+
+// ════════════════════════════════════════════════════════════════
+// ALPHA LEGION (additional)
+// ════════════════════════════════════════════════════════════════
+
+/** Rime-shard (Autilon Skorr): I, A, +2S, AP2, D1 */
+export const RIME_SHARD: Weapon = {
+  name: 'Rime-shard',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Rime-shard',
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 2, damage: 1,
+    traits: ['Power'],
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// ANATHEMA PSYKANA
+// ════════════════════════════════════════════════════════════════
+
+/** The Sword of Oblivion (Jenetia Krole): I, A, +2S, AP2, D2, Critical Hit(6+), Duellist's Edge(2) */
+export const SWORD_OF_OBLIVION: Weapon = {
+  name: 'The Sword of Oblivion',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'The Sword of Oblivion',
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 2, damage: 2,
+    specialRules: [
+      { name: 'CriticalHit', threshold: 6 },
+      { name: 'DuellistsEdge', value: 2 },
+    ],
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// BLACKSHIELDS
+// ════════════════════════════════════════════════════════════════
+
+/**
+ * Terrawatt-pattern Power Gauntlet (Endryd Haar): 2I(fixed), -1A, +4S, AP2, D3
+ * IM "2" = fixed initiative of 2 (strikes at I2 regardless of base).
+ * AM "-1" = -1 Attacks.
+ */
+export const TERRAWATT_POWER_GAUNTLET: Weapon = {
+  name: 'Terrawatt-pattern Power Gauntlet',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Terrawatt-pattern Power Gauntlet',
+    initiativeModifier: { kind: 'fixed', value: 2 },
+    attacksModifier: { kind: 'add', value: -1 },
+    strengthModifier: { kind: 'add', value: 4 },
+    ap: 2, damage: 3,
+    traits: ['Power'],
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// IRON WARRIORS (additional)
+// ════════════════════════════════════════════════════════════════
+
+/** Graviton Gauntlet (Nârik Dreygur): −3I, A, +3S, AP2, D2 */
+export const GRAVITON_GAUNTLET: Weapon = {
+  name: 'Graviton Gauntlet',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Graviton Gauntlet',
+    initiativeModifier: { kind: 'add', value: -3 },
+    strengthModifier: { kind: 'add', value: 3 },
+    ap: 2, damage: 2,
+    traits: ['Graviton', 'Power'],
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// SONS OF HORUS (additional)
+// ════════════════════════════════════════════════════════════════
+
+/** Staff of Dark Authority (Dark Emissary): I, A, +1S, AP3, D1, Critical Hit(6+) */
+export const STAFF_OF_DARK_AUTHORITY: Weapon = {
+  name: 'Staff of Dark Authority',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Staff of Dark Authority',
+    strengthModifier: { kind: 'add', value: 1 },
+    ap: 3, damage: 1,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+    traits: ['Power'],
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// THOUSAND SONS (additional)
+// ════════════════════════════════════════════════════════════════
+
+/** The Reliquary of Dust (Magistus Amon): I, A, S, AP2, D1, Poisoned(2+) */
+export const RELIQUARY_OF_DUST: Weapon = {
+  name: 'The Reliquary of Dust',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'The Reliquary of Dust',
+    ap: 2, damage: 1,
+    specialRules: [{ name: 'Poisoned', threshold: 2 }],
+    traits: ['Psychic'],
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// WORD BEARERS (additional)
+// ════════════════════════════════════════════════════════════════
+
+/** The Azurda Char'is (Zardu Layak): +1I, A, +2S, AP4, D2, Force(D) */
+export const AZURDA_CHARIS: Weapon = {
+  name: "The Azurda Char'is",
+  type: 'melee',
+  profiles: [profile({
+    profileName: "The Azurda Char'is",
+    initiativeModifier: { kind: 'add', value: 1 },
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 4, damage: 2,
+    specialRules: [{ name: 'Force', characteristic: 'D' }],
+    traits: ['Psychic'],
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// CULTS ABOMINATIO
+// ════════════════════════════════════════════════════════════════
+
+/** Transmutative Claw (Infernus Abomination): I, A, +2S, AP4, D2, Breaching(5+) */
+export const TRANSMUTATIVE_CLAW: Weapon = {
+  name: 'Transmutative Claw',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Transmutative Claw',
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 4, damage: 2,
+    specialRules: [{ name: 'Breaching', threshold: 5 }],
+  })],
+};
