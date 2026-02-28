@@ -14,8 +14,7 @@ import { type Weapon, profile } from '../../models/weapon.js';
 export const SOVEREIGN_BLADE: Weapon = {
   name: 'Sovereign Blade',
   type: 'melee',
-  // Phage(S) not simulated; Reaping Blow no-op in Challenge
-  profiles: [profile({ 
+  profiles: [profile({
     profileName: 'Sovereign Blade', 
     ap: 2, damage: 2, 
     specialRules: [{ name: 'Phage', characteristic: 'S' }], 
@@ -26,7 +25,6 @@ export const SOVEREIGN_BLADE: Weapon = {
 export const SOVEREIGN_GREATBLADE: Weapon = {
   name: 'Sovereign Greatblade',
   type: 'melee',
-  // Phage(S) not simulated; Reaping Blow no-op in Challenge
   profiles: [profile({
     profileName: 'Sovereign Greatblade',
     initiativeModifier: { kind: 'add', value: -2 },

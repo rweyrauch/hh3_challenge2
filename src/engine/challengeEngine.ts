@@ -74,6 +74,8 @@ export function buildInitialState(playerChar: Character, aiChar: Character): Com
     feintAndRiposteBan: null,
     hitsReceivedLastStrikeStep: 0,
     biteOfTheBetrayedActive: false,
+    phageSApplied: false,
+    phageTApplied: false,
   });
 
   return {

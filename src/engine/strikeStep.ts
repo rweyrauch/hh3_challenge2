@@ -33,6 +33,10 @@ export interface AttackResult {
   defenderIsCasualty: boolean;
   /** Number of unmodified hit rolls of 1 (used for Biological Overload self-wound). */
   hitRollOnes: number;
+  /** True if Phage(S) triggered: ≥1 unsaved wounds with a Phage(S) weapon, cap not yet reached. */
+  phageSTriggered: boolean;
+  /** True if Phage(T) triggered: ≥1 unsaved wounds with a Phage(T) weapon or gambit, cap not yet reached. */
+  phageTTriggered: boolean;
   log: string[];
 }
 
@@ -118,7 +122,10 @@ function resolveAttackSequence(
 
   // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n, 'mult' = S*n)
   const sm = profile.strengthModifier;
-  let atkS = forceBoost === 'S' ? attackerChar.stats.S * 2 : attackerChar.stats.S;
+  // Phage(S): attacker's Strength characteristic is permanently reduced by 1 if previously applied
+  let baseCharS = attacker.phageSApplied ? Math.max(1, attackerChar.stats.S - 1) : attackerChar.stats.S;
+  if (attacker.phageSApplied) log.push(`Phage(S): ${attackerChar.name} Strength reduced by 1 (S${attackerChar.stats.S} → S${baseCharS}).`);
+  let atkS = forceBoost === 'S' ? baseCharS * 2 : baseCharS;
   if (biteAtkBonus > 0) atkS += 1; // bite bonus to base S before weapon modifier
   if (sm.kind === 'add') atkS += sm.value;
   if (sm.kind === 'fixed') atkS = sm.value;
@@ -172,8 +179,9 @@ function resolveAttackSequence(
   const defT = defenderChar.stats.T;
   // Bite of the Betrayed: +1 T to the defender's base Toughness
   const defTWithBite = defT + biteDefBonus;
-  // Steadfast Resilience / Tempered by War may override defender's effective Toughness
-  const effectiveDefT = defenderMods.overrideDefenderToughness ?? defTWithBite;
+  // Steadfast Resilience / Tempered by War may override defender's effective Toughness;
+  // Phage(T) permanently reduces T by 1 (applied after an attack sequence, persists for the battle)
+  const effectiveDefT = Math.max(1, (defenderMods.overrideDefenderToughness ?? defTWithBite) - (defender.phageTApplied ? 1 : 0));
 
   // Effective Strength and Damage for wound/damage calc
   const effectiveS = Math.max(1, atkS + mods.strengthDelta);
@@ -272,7 +280,8 @@ function resolveAttackSequence(
       woundRolls: [], wounds: 0,
       saveRolls: [], unsavedWounds: 0,
       totalDamage: 0, defenderWoundsRemaining: defWounds,
-      defenderIsCasualty: false, hitRollOnes, log,
+      defenderIsCasualty: false, hitRollOnes,
+      phageSTriggered: false, phageTTriggered: false, log,
     };
   }
 
@@ -306,27 +315,21 @@ function resolveAttackSequence(
   critShredTriggers = Math.min(critShredTriggers, critHits);
   const critWounds = critHits;
 
+  // Detect Phage special rules on the weapon profile
+  const phageS = profile.specialRules.some(sr => sr.name === 'Phage' && sr.characteristic === 'S');
+  const phageT = profile.specialRules.some(sr => sr.name === 'Phage' && sr.characteristic === 'T');
+
   // Normal hits go through the wound test as usual
   const woundRolls = dice.rollNd6(normalHits);
   let normalWounds = 0;
   let normalBreachingWounds = 0;  // wounds treated as AP2 (Breaching rule)
   let normalShredTriggers = 0;  // wounds that deal +1 Damage (Shred rule)
-  // Phage(T): Merciless Strike reduces defender T by 1 per wound
-  let currentDefT = effectiveDefT;
-  // Phage(S): weapon rule reduces attacker S by 1 per wound
-  let currentEffectiveS = effectiveS;
-  const phageS = profile.specialRules.some(sr => sr.name === 'Phage' && sr.characteristic === 'S');
 
   for (const roll of woundRolls) {
-    // With Phage(T) or Phage(S), recompute the wound TN each time as stats change
-    const tableWoundTN = (mods.phageToughness || phageS)
-      ? getWoundTargetNumber(currentEffectiveS, currentDefT)
-      : baseWoundTN;
-
     // Poisoned: use whichever TN is easier (lower number = easier to wound)
     let woundTN = poisonedTN !== null
-      ? Math.min(tableWoundTN, poisonedTN)
-      : tableWoundTN;
+      ? Math.min(baseWoundTN, poisonedTN)
+      : baseWoundTN;
 
     // Hatred(Psykers): +1 to wound tests (lower TN by 1, minimum 2)
     if (woundTestBonus > 0) woundTN = Math.max(2, woundTN - woundTestBonus);
@@ -343,8 +346,6 @@ function resolveAttackSequence(
     }
     if (isWound) {
       normalWounds++;
-      if (mods.phageToughness) currentDefT = Math.max(1, currentDefT - 1);
-      if (phageS) currentEffectiveS = Math.max(1, currentEffectiveS - 1);
       for (const sr of profile.specialRules) {
         // Breaching: wound roll ≥ threshold → this wound ignores normal armour (AP2)
         if (sr.name === 'Breaching' && roll >= sr.threshold) normalBreachingWounds++;
@@ -357,7 +358,6 @@ function resolveAttackSequence(
   const wounds = critWounds + normalWounds;
   const totalBreachingWounds = critBreachingWounds + normalBreachingWounds;
 
-  const phageNote = (mods.phageToughness ? ' (Phage: T reduces per wound)' : '') + (phageS ? ' (Phage: S reduces per wound)' : '');
   const poisonNote = poisonedTN !== null ? ` (Poisoned ${poisonedTN}+, table ${baseWoundTN})` : '';
   const hatredNote = woundTestBonus > 0 ? ` (Hatred +1 wound bonus)` : '';
   const effectiveWoundTN = poisonedTN !== null
@@ -367,7 +367,7 @@ function resolveAttackSequence(
     log.push(`${critHits} Critical Hit(s) → ${critWounds} automatic wound(s) (counts as roll of 6)`);
   }
   if (normalHits > 0) {
-    log.push(`Wound rolls [${woundRolls.join(',')}] needing ${effectiveWoundTN}+${poisonNote}${hatredNote}${phageNote} → ${normalWounds} wound(s)`);
+    log.push(`Wound rolls [${woundRolls.join(',')}] needing ${effectiveWoundTN}+${poisonNote}${hatredNote} → ${normalWounds} wound(s)`);
   }
 
   if (wounds === 0) {
@@ -377,7 +377,8 @@ function resolveAttackSequence(
       woundRolls, wounds: 0,
       saveRolls: [], unsavedWounds: 0,
       totalDamage: 0, defenderWoundsRemaining: defender.currentWounds,
-      defenderIsCasualty: false, hitRollOnes, log,
+      defenderIsCasualty: false, hitRollOnes,
+      phageSTriggered: false, phageTTriggered: false, log,
     };
   }
 
@@ -509,6 +510,15 @@ function resolveAttackSequence(
     unsavedCritWounds = Math.min(unsavedCritWounds, unsavedWounds);
   }
 
+  // Phage: triggers if ≥1 unsaved wounds were inflicted (after saves and FNP).
+  // The target's Characteristic is reduced by 1 for the remainder of the Battle.
+  // Cap: a Characteristic may not be reduced by more than 1 by Phage(X) regardless
+  // of how many unsaved wounds were inflicted (enforced via phageSApplied / phageTApplied).
+  const phageSTriggered = phageS && unsavedWounds > 0 && !defender.phageSApplied;
+  const phageTTriggered = (phageT || mods.phageToughness) && unsavedWounds > 0 && !defender.phageTApplied;
+  if (phageSTriggered) log.push(`Phage(S): ${defenderChar.name}'s Strength permanently reduced by 1.`);
+  if (phageTTriggered) log.push(`Phage(T): ${defenderChar.name}'s Toughness permanently reduced by 1.`);
+
   // Check if Deflagrate can still trigger (uses pre-FNP count)
   const deflagrateRule = profile.specialRules.find(sr => sr.name === 'Deflagrate');
   if (unsavedWounds === 0 && !(deflagrateRule && deflagrateUnsavedCount > 0)) {
@@ -518,7 +528,8 @@ function resolveAttackSequence(
       woundRolls, wounds,
       saveRolls, unsavedWounds: 0,
       totalDamage: 0, defenderWoundsRemaining: defender.currentWounds,
-      defenderIsCasualty: false, hitRollOnes, log,
+      defenderIsCasualty: false, hitRollOnes,
+      phageSTriggered, phageTTriggered, log,
     };
   }
 
@@ -610,7 +621,8 @@ function resolveAttackSequence(
     woundRolls, wounds,
     saveRolls, unsavedWounds,
     totalDamage, defenderWoundsRemaining,
-    defenderIsCasualty, hitRollOnes, log,
+    defenderIsCasualty, hitRollOnes,
+    phageSTriggered, phageTTriggered, log,
   };
 }
 
@@ -877,6 +889,12 @@ export function resolveDirtyFighterPreStrike(
             updatedState.player.woundsInflictedThisChallenge + result.totalDamage,
         },
       };
+      if (result.phageSTriggered) {
+        updatedState = { ...updatedState, ai: { ...updatedState.ai, phageSApplied: true } };
+      }
+      if (result.phageTTriggered) {
+        updatedState = { ...updatedState, ai: { ...updatedState.ai, phageTApplied: true } };
+      }
     }
   }
 
@@ -921,6 +939,12 @@ export function resolveDirtyFighterPreStrike(
             updatedState.ai.woundsInflictedThisChallenge + result.totalDamage,
         },
       };
+      if (result.phageSTriggered) {
+        updatedState = { ...updatedState, player: { ...updatedState.player, phageSApplied: true } };
+      }
+      if (result.phageTTriggered) {
+        updatedState = { ...updatedState, player: { ...updatedState.player, phageTApplied: true } };
+      }
     }
   }
 
@@ -1059,6 +1083,14 @@ export function resolveStrikeStep(
       },
     };
 
+    // Phage: permanently reduce defender's Strength/Toughness if triggered
+    if (playerResult.phageSTriggered) {
+      updatedState = { ...updatedState, ai: { ...updatedState.ai, phageSApplied: true } };
+    }
+    if (playerResult.phageTTriggered) {
+      updatedState = { ...updatedState, ai: { ...updatedState.ai, phageTApplied: true } };
+    }
+
     // Spiteful Demise: AI inflicts auto-hit on player when reduced to 0 wounds
     if (playerResult.defenderIsCasualty && updatedState.ai.selectedGambit === 'spiteful-demise') {
       const sd = resolveSpitefulDemise(dice, aiChar.name, updatedState.player, playerChar, log);
@@ -1087,7 +1119,9 @@ export function resolveStrikeStep(
         woundRolls: [], wounds: 0,
         saveRolls: [], unsavedWounds: 0,
         totalDamage: 0, defenderWoundsRemaining: updatedState.player.currentWounds,
-        defenderIsCasualty: false, hitRollOnes: 0, log: ['AI did not attack — already a casualty.'],
+        defenderIsCasualty: false, hitRollOnes: 0,
+        phageSTriggered: false, phageTTriggered: false,
+        log: ['AI did not attack — already a casualty.'],
       };
       log.push('AI did not attack — AI was removed as a casualty.');
     }
@@ -1118,6 +1152,14 @@ export function resolveStrikeStep(
       },
     };
 
+    // Phage: permanently reduce defender's Strength/Toughness if triggered
+    if (aiResult.phageSTriggered) {
+      updatedState = { ...updatedState, player: { ...updatedState.player, phageSApplied: true } };
+    }
+    if (aiResult.phageTTriggered) {
+      updatedState = { ...updatedState, player: { ...updatedState.player, phageTApplied: true } };
+    }
+
     // Spiteful Demise: player inflicts auto-hit on AI when reduced to 0 wounds
     if (aiResult.defenderIsCasualty && updatedState.player.selectedGambit === 'spiteful-demise') {
       const sd = resolveSpitefulDemise(dice, playerChar.name, updatedState.ai, aiChar, log);
@@ -1145,13 +1187,15 @@ export function resolveStrikeStep(
         woundRolls: [], wounds: 0,
         saveRolls: [], unsavedWounds: 0,
         totalDamage: 0, defenderWoundsRemaining: updatedState.ai.currentWounds,
-        defenderIsCasualty: false, hitRollOnes: 0, log: ['Player did not attack — already a casualty.'],
+        defenderIsCasualty: false, hitRollOnes: 0,
+        phageSTriggered: false, phageTTriggered: false,
+        log: ['Player did not attack — already a casualty.'],
       };
       log.push('Player did not attack — Player was removed as a casualty.');
     }
   }
 
-  // Update wounds inflicted (second attacker)
+  // Update wounds inflicted (second attacker) and apply any Phage effects
   if (advantage === 'player') {
     updatedState = {
       ...updatedState,
@@ -1166,6 +1210,12 @@ export function resolveStrikeStep(
           updatedState.ai.woundsInflictedThisChallenge + aiResult!.totalDamage,
       },
     };
+    if (aiResult!.phageSTriggered) {
+      updatedState = { ...updatedState, player: { ...updatedState.player, phageSApplied: true } };
+    }
+    if (aiResult!.phageTTriggered) {
+      updatedState = { ...updatedState, player: { ...updatedState.player, phageTApplied: true } };
+    }
   } else {
     updatedState = {
       ...updatedState,
@@ -1180,6 +1230,12 @@ export function resolveStrikeStep(
           updatedState.player.woundsInflictedThisChallenge + playerResult!.totalDamage,
       },
     };
+    if (playerResult!.phageSTriggered) {
+      updatedState = { ...updatedState, ai: { ...updatedState.ai, phageSApplied: true } };
+    }
+    if (playerResult!.phageTTriggered) {
+      updatedState = { ...updatedState, ai: { ...updatedState.ai, phageTApplied: true } };
+    }
   }
 
   // ── Biological Overload self-wounds (Eversor Assassin) ───────────────────
