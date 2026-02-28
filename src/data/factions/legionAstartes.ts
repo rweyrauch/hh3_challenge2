@@ -163,7 +163,7 @@ const CATAPHRACTII_LIBRARIAN: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
   factionGambitIds: [],
-  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psyker' }],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
   availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 
@@ -183,7 +183,7 @@ const TARTAROS_LIBRARIAN: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
   factionGambitIds: [],
-  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psyker' }],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
   availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 
@@ -203,7 +203,7 @@ const LIBRARIAN_JUMP_PACK: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_MAUL, FORCE_STAFF],
   factionGambitIds: [],
-  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psyker' }],
+  specialRules: [{ name: 'Bulky', value: 2 }, { name: 'Psykers' }],
   availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 
@@ -276,7 +276,7 @@ const LIBRARIAN: Character = {
   },
   weapons: [FORCE_SWORD, FORCE_AXE, FORCE_STAFF, FORCE_MAUL],
   factionGambitIds: [],
-  specialRules: [{ name: 'Psyker' }],
+  specialRules: [{ name: 'Psykers' }],
   availablePsychicDisciplines: ['biomancy', 'pyromancy', 'telekinesis', 'divination', 'thaumaturgy'],
 };
 

@@ -286,12 +286,17 @@ function resolveAttackSequence(
   }
 
   // ── Wound Tests ──────────────────────────────────────────────────────────
-  // Hatred(Psykers): +1 to wound tests when the defender has the Psyker rule
-  const attackerHatredPsykers = attackerChar.specialRules.some(
-    sr => sr.name === 'Hatred' && sr.target === 'Psykers',
+  // Hatred(X): +1 to wound tests when the defender matches the Hatred target.
+  // A match occurs when the defender has a special rule named X, or a trait named X.
+  const attackerHatredTargets = attackerChar.specialRules
+    .filter((sr): sr is { name: 'Hatred'; target: string } => sr.name === 'Hatred')
+    .map(sr => sr.target);
+  const defenderMatchesHatred = attackerHatredTargets.some(
+    target =>
+      defenderChar.specialRules.some(sr => sr.name === target) ||
+      (defenderChar.traits ?? []).includes(target),
   );
-  const defenderIsPsyker = defenderChar.specialRules.some(sr => sr.name === 'Psyker');
-  const woundTestBonus = (attackerHatredPsykers && defenderIsPsyker) ? 1 : 0;
+  const woundTestBonus = defenderMatchesHatred ? 1 : 0;
 
   // Base wound TN uses effectiveDefT (may be overridden by Steadfast Resilience / Tempered by War)
   const baseWoundTN = getWoundTargetNumber(effectiveS, effectiveDefT);
@@ -331,7 +336,7 @@ function resolveAttackSequence(
       ? Math.min(baseWoundTN, poisonedTN)
       : baseWoundTN;
 
-    // Hatred(Psykers): +1 to wound tests (lower TN by 1, minimum 2)
+    // Hatred(X): +1 to wound tests (lower TN by 1, minimum 2)
     if (woundTestBonus > 0) woundTN = Math.max(2, woundTN - woundTestBonus);
 
     let isWound = woundTN <= 6 && roll >= woundTN;
