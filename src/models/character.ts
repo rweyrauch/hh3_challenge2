@@ -87,4 +87,4 @@ export interface Character {
 }
 
 /** Wargear items that can be optionally equipped during character selection. */
-export type WargearId = 'boarding-shield' | 'combat-shield';
+export type WargearId = 'boarding-shield' | 'combat-shield' | 'vigil-pattern-storm-shield';

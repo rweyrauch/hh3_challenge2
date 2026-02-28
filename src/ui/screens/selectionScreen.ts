@@ -16,7 +16,7 @@ import {
   LEGION_SUBFACTION_IDS,
 } from '../../data/factions/index.js';
 import { DISCIPLINE_CONFIGS } from '../../data/psychicDisciplines.js';
-import { WARGEAR_CONFIGS } from '../../data/wargear.js';
+import { WARGEAR_CONFIGS, SUBFACTION_WARGEAR } from '../../data/wargear.js';
 import { CALIBANITE_WARBLADE, TERRANIC_GREATSWORD, POWER_GLAIVE, FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE, BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION, LEGATINE_AXE, RAVENS_TALON, PAIR_OF_RAVENS_TALONS, PHOENIX_POWER_SPEAR, PHOENIX_RAPIER, GRAVITON_MACE, CHAINGLAIVE, HEADSMANS_AXE, POWER_SCYTHE, ACHEA_PATTERN_FORCE_SWORD, CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR, POWER_DAGGER } from '../../data/weapons/legionChampions.js';
 import { SOLARITE_POWER_GAUNTLET, ARTIFICER_POWER_AXE } from '../../data/weapons/namedCharacters.js';
 import { renderStatBlock } from '../components/statBlock.js';
@@ -302,9 +302,10 @@ function attachListeners(
         }
         disciplineSection.hidden = false;
       }
-      // Show wargear section if the character supports it
-      if (savedPlayerChar.availableWargear) {
-        populateWargearSelect(savedPlayerChar.availableWargear, wargearSelect);
+      // Show wargear section if the character supports it (including subfaction extras)
+      const savedWargearOpts = getWargearOptions(savedPlayerChar, initialState.playerSubFaction ?? '');
+      if (savedWargearOpts.length > 0) {
+        populateWargearSelect(savedWargearOpts, wargearSelect);
         if (initialState.playerWargear) {
           wargearSelect.value = initialState.playerWargear;
         }
@@ -366,9 +367,10 @@ function attachListeners(
         disciplineSection.hidden = true;
         disciplineSelect.value = '';
       }
-      // Show/hide wargear section and populate with character-specific options
-      if (char.availableWargear) {
-        populateWargearSelect(char.availableWargear, wargearSelect);
+      // Show/hide wargear section; subfaction resets on char change so pass ''
+      const wargearOpts = getWargearOptions(char, '');
+      if (wargearOpts.length > 0) {
+        populateWargearSelect(wargearOpts, wargearSelect);
         wargearSelect.value = ''; // reset wargear on character change
         wargearSection.hidden = false;
       } else {
@@ -390,12 +392,21 @@ function attachListeners(
     updateBeginBtn();
   });
 
-  // Sub-faction dropdown: repopulate weapon list (Dark Angels adds extra weapons)
+  // Sub-faction dropdown: repopulate weapon list and wargear options
   playerSubfactionSelect.addEventListener('change', () => {
     const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
     if (char) {
       const extras = getPlayerExtraWeapons(char, playerSubfactionSelect.value, disciplineSelect.value);
       populateWeaponSelect(char, weaponSelect, weaponSection, extras);
+      // Refresh wargear: some options (e.g. Vigil Pattern Storm Shield) are subfaction-gated
+      const wargearOpts = getWargearOptions(char, playerSubfactionSelect.value);
+      if (wargearOpts.length > 0) {
+        populateWargearSelect(wargearOpts, wargearSelect);
+        wargearSection.hidden = false;
+      } else {
+        wargearSection.hidden = true;
+        wargearSelect.value = '';
+      }
     }
   });
 
@@ -477,6 +488,28 @@ function populateDisciplineSelect(
   if (disciplines.includes(current as PsychicDiscipline)) {
     selectEl.value = current;
   }
+}
+
+/**
+ * Compute the full set of wargear options available to a character, merging
+ * the character's own availableWargear list with any subfaction-granted wargear.
+ *
+ * Imperial Fists Command/Champion sub-type models gain access to the Vigil
+ * Pattern Storm Shield when the imperial-fists subfaction is selected, even
+ * if it is not listed in their availableWargear (e.g. generic Chosen Champion).
+ */
+function getWargearOptions(char: Character, subfaction: string): WargearId[] {
+  const base: WargearId[] = [...(char.availableWargear ?? [])];
+  const sfWargear = SUBFACTION_WARGEAR[subfaction] ?? [];
+  for (const id of sfWargear) {
+    if (
+      !base.includes(id) &&
+      (char.subTypes.includes('Command') || char.subTypes.includes('Champion'))
+    ) {
+      base.push(id);
+    }
+  }
+  return base;
 }
 
 /**
