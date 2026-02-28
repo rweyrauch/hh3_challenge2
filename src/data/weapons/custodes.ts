@@ -55,7 +55,7 @@ export const PARAGON_SPEAR: Weapon = {
   })],
 };
 
-/** Misericordia (I, 1A fixed, S, AP3, D1) — simplified to AP3 D1 for Challenge use */
+/** Misericordia (I, 1A fixed, S, AP3, D1, Precision(2+), Breaching(5+)) — simplified to AP3 D1 for Challenge use */
 export const MISERICORDIA: Weapon = {
   name: 'Misericordia',
   type: 'melee',
@@ -63,6 +63,10 @@ export const MISERICORDIA: Weapon = {
     profileName: 'Misericordia',
     attacksModifier: { kind: 'fixed', value: 1 },
     ap: 3, damage: 1,
+    specialRules: [
+      { name: 'Precision', threshold: 2 },
+      { name: 'Breaching', threshold: 5 },
+    ],
     traits: ['Power'],
   })],
 };

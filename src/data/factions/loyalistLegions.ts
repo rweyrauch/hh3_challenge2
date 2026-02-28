@@ -213,7 +213,7 @@ const HVARL_RED_BLADE: Character = {
   },
   weapons: [HEARTH_SPLITTER],
   factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
-  specialRules: [],
+  specialRules: [{ name: 'Fear', value: 1 }],
   traits: ['Loyalist', 'Space Wolves']
 };
 
@@ -337,7 +337,7 @@ const ALEXIS_POLUX: Character = {
   subTypes: ['Command', 'Heavy'],
   stats: {
     M: 7, WS: 6, BS: 4, S: 4, T: 4, W: 3,
-    I: 1, A: 3, LD: 9, CL: 9, WP: 8, IN: 8,
+    I: 5, A: 3, LD: 9, CL: 9, WP: 8, IN: 8,
     Sv: 2, Inv: 4,
   },
   weapons: [SOLARITE_POWER_GAUNTLET, HAMMERBLOW],
@@ -452,7 +452,7 @@ const SHADRAK_MEDUSON: Character = {
   type: 'infantry',
   subTypes: ['Command'],
   stats: {
-    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 4,
+    M: 7, WS: 5, BS: 5, S: 5, T: 4, W: 4,
     I: 5, A: 4, LD: 10, CL: 9, WP: 9, IN: 9,
     Sv: 2, Inv: 4,
   },

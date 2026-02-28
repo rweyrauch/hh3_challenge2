@@ -55,13 +55,13 @@ export const CORSWAIN_THE_BLADE: Weapon = {
   })],
 };
 
-/** The Death of Worlds (Marduk Sedras): +2I, 4A(fixed), +5S, AP2, D3 */
+/** The Death of Worlds (Marduk Sedras): −2I, 4A(fixed), +5S, AP2, D3 */
 export const DEATH_OF_WORLDS: Weapon = {
   name: 'The Death of Worlds',
   type: 'melee',
   profiles: [profile({
     profileName: 'The Death of Worlds',
-    initiativeModifier: { kind: 'add', value: 2 },
+    initiativeModifier: { kind: 'add', value: -2 },
     attacksModifier: { kind: 'fixed', value: 4 },
     strengthModifier: { kind: 'add', value: 5 },
     ap: 2, damage: 3,
@@ -242,13 +242,13 @@ export const DURENDA: Weapon = {
   })],
 };
 
-/** Solarite Power Gauntlet (Alexis Polux): −2I, A, +4S, AP2, D2, Critical Hit(6+) */
+/** Solarite Power Gauntlet (Alexis Polux): −3I, A, +4S, AP2, D2, Critical Hit(6+) */
 export const SOLARITE_POWER_GAUNTLET: Weapon = {
   name: 'Solarite Power Gauntlet',
   type: 'melee',
   profiles: [profile({
     profileName: 'Solarite Power Gauntlet',
-    initiativeModifier: { kind: 'add', value: -2 },
+    initiativeModifier: { kind: 'add', value: -3 },
     strengthModifier: { kind: 'add', value: 4 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
@@ -256,13 +256,13 @@ export const SOLARITE_POWER_GAUNTLET: Weapon = {
   })],
 };
 
-/** Hammerblow (Alexis Polux gambit): I, fixed 2A (M=1+AM=1), +0S, AP2, D3, Critical Hit(6+), Power */
+/** Hammerblow (Alexis Polux gambit): I, fixed 1A, +0S, AP2, D3, Critical Hit(6+), Power */
 export const HAMMERBLOW: Weapon = {
   name: 'Hammerblow',
   type: 'melee',
   profiles: [profile({
     profileName: 'Hammerblow',
-    attacksModifier: { kind: 'fixed', value: 2 },
+    attacksModifier: { kind: 'fixed', value: 1 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
     traits: ['Power'],
@@ -416,7 +416,7 @@ export const GLADIUS_INCANDOR: Weapon = {
   })],
 };
 
-/** Hand of Dominion (Roboute Guilliman): −3I, A, +4S, AP3, D3 */
+/** Hand of Dominion (Roboute Guilliman): −3I, A, +4S, AP2, D3 */
 export const HAND_OF_DOMINION: Weapon = {
   name: 'Hand of Dominion',
   type: 'melee',
@@ -424,7 +424,7 @@ export const HAND_OF_DOMINION: Weapon = {
     profileName: 'Hand of Dominion',
     initiativeModifier: { kind: 'add', value: -3 },
     strengthModifier: { kind: 'add', value: 4 },
-    ap: 3, damage: 3,
+    ap: 2, damage: 3,
     traits: ['Power'],
   })],
 };
@@ -569,7 +569,7 @@ export const LOGOS_ARRAY: Weapon = {
 };
 
 /**
- * Forgebreaker — Desecrated (Perturabo): −2I, A, +4S, AP2, D2, Critical Hit(5+)
+ * Forgebreaker — Desecrated (Perturabo): −2I, A, +3S, AP2, D2, Critical Hit(5+)
  * Perturabo's corrupted version of the hammer taken from Ferrus Manus.
  */
 export const FORGEBREAKER_DESECRATED: Weapon = {
@@ -578,7 +578,7 @@ export const FORGEBREAKER_DESECRATED: Weapon = {
   profiles: [profile({
     profileName: 'Forgebreaker (Desecrated)',
     initiativeModifier: { kind: 'add', value: -2 },
-    strengthModifier: { kind: 'add', value: 4 },
+    strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
     traits: ['Power'],
@@ -689,7 +689,7 @@ export const SILENCE: Weapon = {
   })],
 };
 
-/** Lakrimae (Calas Typhon): −1I, A, +1S, AP−, D2 (AP 'S' = strength-based, modelled as null) */
+/** Lakrimae (Calas Typhon): −1I, A, +1S, AP2, D2 */
 export const LAKRIMAE: Weapon = {
   name: 'Lakrimae',
   type: 'melee',
@@ -697,7 +697,7 @@ export const LAKRIMAE: Weapon = {
     profileName: 'Lakrimae',
     initiativeModifier: { kind: 'add', value: -1 },
     strengthModifier: { kind: 'add', value: 1 },
-    ap: null, damage: 2,
+    ap: 2, damage: 2,
     specialRules: [{ name: 'Poisoned', threshold: 3}], // Poisoned(3+)
     traits: ['Power'],
   })],
