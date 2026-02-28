@@ -525,6 +525,38 @@ export const SUNDERING_BLOWS: Weapon = {
   })],
 };
 
+// ════════════════════════════════════════════════════════════════
+// WORLD EATERS — TRANSFIGURED
+// ════════════════════════════════════════════════════════════════
+
+/** Blades of the Red Angel — Crushing Blows (Angron Transfigured): -2I, 4A(fixed), +4S, AP2, D4, Critical Hit(6+) [Armourbane — not simulated] */
+export const BLADES_CRUSHING_BLOWS: Weapon = {
+  name: 'Blades of the Red Angel',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Crushing Blows',
+    initiativeModifier: { kind: 'add', value: -2 },
+    attacksModifier: { kind: 'fixed', value: 4 },
+    strengthModifier: { kind: 'add', value: 4 },
+    ap: 2, damage: 4,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+  })],
+};
+
+/** Blades of the Red Angel — Eviscerating Slashes (Angron Transfigured): I, A, S, AP2, D2 [Reaping Blow(2) — no effect in Challenge] */
+export const BLADES_EVISCERATING_SLASHES: Weapon = {
+  name: 'Blades of the Red Angel',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Eviscerating Slashes',
+    ap: 2, damage: 2,
+  })],
+};
+
+// ════════════════════════════════════════════════════════════════
+// EMPEROR'S CHILDREN
+// ════════════════════════════════════════════════════════════════
+
 /** Laeran Blade (Fulgrim): I, A, S, AP2, D2, Duellist's Edge(1) */
 export const LAERAN_BLADE: Weapon = {
   name: 'Laeran Blade',

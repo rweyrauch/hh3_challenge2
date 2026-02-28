@@ -22,6 +22,8 @@ import {
   ANAKATIS_BLADE,
 } from '../weapons/legionChampions.js';
 import {
+  BLADES_CRUSHING_BLOWS,
+  BLADES_EVISCERATING_SLASHES,
   DECAPITATING_SLASHES,
   SUNDERING_BLOWS,
   LAERAN_BLADE,
@@ -311,6 +313,27 @@ const ANGRON: Character = {
     { name: 'Bulky', value: 4 },
   ],
   traits: ['Traitor', 'World Eaters']
+};
+
+const ANGRON_TRANSFIGURED: Character = {
+  id: 'angron-transfigured',
+  name: 'Angron Transfigured',
+  faction: 'world-eaters',
+  type: 'paragon',
+  subTypes: ['Command', 'Paragon'],
+  stats: {
+    M: 14, WS: 8, BS: 6, S: 7, T: 7, W: 7,
+    I: 7, A: 8, LD: 12, CL: 10, WP: 12, IN: 8,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [BLADES_CRUSHING_BLOWS, BLADES_EVISCERATING_SLASHES],
+  factionGambitIds: ['violent-overkill', 'brutal-dismemberment'],
+  specialRules: [
+    { name: 'EternalWarrior', value: 3 },
+    { name: 'Bulky', value: 6 },
+    { name: 'Fear', value: 1 },
+  ],
+  traits: ['Traitor', 'World Eaters'],
 };
 
 const KHARN_THE_BLOODY: Character = {
@@ -1008,7 +1031,7 @@ export const TRAITOR_LEGION_CHARACTERS: Character[] = [
   // Night Lords
   KONRAD_CURZE, SEVATAR,
   // World Eaters
-  ANGRON, KHARN_THE_BLOODY,
+  ANGRON, ANGRON_TRANSFIGURED, KHARN_THE_BLOODY,
   RAMPAGER_CHAMPION,
   // Death Guard
   MORTARION, CALAS_TYPHON,
