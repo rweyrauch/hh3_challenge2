@@ -440,7 +440,7 @@ const FAFNIR_RANN: Character = {
   factionGambitIds: ['a-wall-unyielding', 'executioners-tax'],
   specialRules: [],
   traits: ['Loyalist', 'Imperial Fists', 'Shield'],
-  wargear: ['Boarding shield']
+  availableWargear: ['boarding-shield']
 };
 
 const EVANDER_GARRIUS: Character = {

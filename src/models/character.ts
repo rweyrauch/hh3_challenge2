@@ -78,5 +78,13 @@ export interface Character {
    */
   availablePsychicDisciplines?: PsychicDiscipline[];
   traits?: string[];
-  wargear?: string[];
+  /**
+   * If set, the character may optionally equip one of the listed wargear items
+   * on the selection screen. Currently limited to Boarding Shield and Combat Shield
+   * for Legiones Astartes Praetor and Centurion models.
+   */
+  availableWargear?: WargearId[];
 }
+
+/** Wargear items that can be optionally equipped during character selection. */
+export type WargearId = 'boarding-shield' | 'combat-shield';

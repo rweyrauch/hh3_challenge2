@@ -49,6 +49,7 @@ const PRAETOR: Character = {
   weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHARNABAL_SABRE, CHAINBLADE, CHAINAXE],
   factionGambitIds: [],
   specialRules: [],
+  availableWargear: ['boarding-shield', 'combat-shield'],
 };
 
 // ── Cataphractii Praetor ─────────────────────────────────────────────────────
@@ -224,6 +225,7 @@ const CENTURION: Character = {
   weapons: [PARAGON_BLADE, POWER_SWORD, LIGHTNING_CLAWS_PAIR, LIGHTNING_CLAW, THUNDER_HAMMER, POWER_FIST, POWER_AXE, POWER_LANCE, POWER_MAUL, CHAINFIST, CHARNABAL_SABRE, CHAINBLADE, CHAINAXE],
   factionGambitIds: [],
   specialRules: [],
+  availableWargear: ['boarding-shield', 'combat-shield'],
 };
 
 // ── Cataphractii Centurion ────────────────────────────────────────────────────
