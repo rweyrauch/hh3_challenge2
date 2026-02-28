@@ -6,7 +6,7 @@
  * Note on Reaping Blow(X): per the rules, this special rule has no effect
  * during the Challenge Sub-Phase. Omitted from profiles.
  */
-import type { Weapon } from '../../models/weapon.js';
+import { type Weapon, profile } from '../../models/weapon.js';
 
 // ── Generic daemon melee weapons ─────────────────────────────────────────────
 
@@ -14,81 +14,71 @@ import type { Weapon } from '../../models/weapon.js';
 export const SOVEREIGN_BLADE: Weapon = {
   name: 'Sovereign Blade',
   type: 'melee',
-  profiles: [{
-    profileName: 'Sovereign Blade',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
-    ap: 2, damage: 2,
-    specialRules: [{ name: 'Phage', characteristic: 'S' }],
-    traits: ['Immaterial'],
-  }],
+  // Phage(S) not simulated; Reaping Blow no-op in Challenge
+  profiles: [profile({ 
+    profileName: 'Sovereign Blade', 
+    ap: 2, damage: 2, 
+    specialRules: [{ name: 'Phage', characteristic: 'S' }], 
+    traits: ['Immaterial'] })],
 };
 
 /** Sovereign greatblade: -2I, A, +3S, AP2, D3, Phage(S) [Reaping Blow(2) — no effect in Challenge] */
 export const SOVEREIGN_GREATBLADE: Weapon = {
   name: 'Sovereign Greatblade',
   type: 'melee',
-  profiles: [{
+  // Phage(S) not simulated; Reaping Blow no-op in Challenge
+  profiles: [profile({
     profileName: 'Sovereign Greatblade',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 3 },
     ap: 2, damage: 3,
     specialRules: [{ name: 'Phage', characteristic: 'S' }],
     traits: ['Immaterial'],
-  }],
+  })],
 };
 
 /** Hierarch blade: I, A, S, AP2, D2, Duellist's Edge(1), Critical Hit(6+) */
 export const HIERARCH_BLADE: Weapon = {
   name: 'Hierarch Blade',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Hierarch Blade',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [
       { name: 'DuellistsEdge', value: 1 },
       { name: 'CriticalHit', threshold: 6 },
     ],
     traits: ['Immaterial'],
-  }],
+  })],
 };
 
 /** Hierarch greatblade: -2I, A, +2S, AP2, D2, Critical Hit(5+) */
 export const HIERARCH_GREATBLADE: Weapon = {
   name: 'Hierarch Greatblade',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Hierarch Greatblade',
     initiativeModifier: { kind: 'add', value: -2 },
-    attacksModifier: { kind: 'none' },
     strengthModifier: { kind: 'add', value: 2 },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
     traits: ['Immaterial'],
-  }],
+  })],
 };
 
 /** Harbinger blade: I, A, S, AP3, D1, Breaching(5+), Shred(6+) */
 export const HARBINGER_BLADE: Weapon = {
   name: 'Harbinger Blade',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Harbinger Blade',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 1,
     specialRules: [
       { name: 'Breaching', threshold: 5 },
       { name: 'Shred', threshold: 6 },
     ],
     traits: ['Immaterial'],
-  }],
+  })],
 };
 
 // ── Named character weapons ───────────────────────────────────────────────────
@@ -97,43 +87,34 @@ export const HARBINGER_BLADE: Weapon = {
 export const BANEAXE: Weapon = {
   name: 'Baneaxe',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Baneaxe',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 5 }],
     traits: ['Immaterial'],
-  }],
+  })],
 };
 
 /** Reaping Claws (Cor'bax Utterblight): I, A, S, AP3, D2, Breaching(6+) [Reaping Blow(2) — no effect in Challenge] */
 export const REAPING_CLAWS: Weapon = {
   name: "Reaping Claws",
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Reaping Claws',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 3, damage: 2,
     specialRules: [{ name: 'Breaching', threshold: 6 }],
     traits: ['Immaterial'],
-  }],
+  })],
 };
 
 /** Blade of Samus: I, A, S, AP2, D2, Critical Hit(6+) */
 export const BLADE_OF_SAMUS: Weapon = {
   name: 'Blade of Samus',
   type: 'melee',
-  profiles: [{
+  profiles: [profile({
     profileName: 'Blade of Samus',
-    initiativeModifier: { kind: 'none' },
-    attacksModifier: { kind: 'none' },
-    strengthModifier: { kind: 'none' },
     ap: 2, damage: 2,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
     traits: ['Immaterial'],
-  }],
+  })],
 };
