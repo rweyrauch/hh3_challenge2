@@ -22,7 +22,7 @@ import {
   BLADE_OF_JUDGEMENT,
   ARGEAN_POWER_SWORD,
 } from '../weapons/legionChampions.js';
-import { PARAGON_BLADE, POWER_SWORD } from '../weapons/legionAstartes.js';
+import { FORCE_STAFF, PARAGON_BLADE, POWER_SWORD } from '../weapons/legionAstartes.js';
 import {
   LION_SWORD,
   WOLF_BLADE,
@@ -232,6 +232,24 @@ const GEIGOR_FELL_HAND: Character = {
   factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
   specialRules: [],
   traits: ['Loyalist', 'Space Wolves']
+};
+
+const CASTER_OF_RUNES: Character = {
+  id: 'caster-of-runes',
+  name: 'Caster of Runes',
+  faction: 'space-wolves',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 7, WS: 5, BS: 5, S: 4, T: 4, W: 3,
+    I: 5, A: 4, LD: 8, CL: 7, WP: 10, IN: 8,
+    Sv: 2, Inv: 5,
+  },
+  weapons: [FORCE_STAFF, FROST_AXE],
+  factionGambitIds: ['no-prey-escapes', 'a-saga-woven-of-glory'],
+  specialRules: [{ name: 'Psykers' }],
+  availablePsychicDisciplines: ['biomancy', 'telekinesis', 'divination', 'runecasting'],
+  traits: ['Loyalist', 'Psyker'],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -785,7 +803,7 @@ export const LOYALIST_LEGION_CHARACTERS: Character[] = [
   // White Scars
   JAGHATAI_KHAN, QIN_XA, HIBOU_KHAN,
   // Space Wolves
-  LEMAN_RUSS, HVARL_RED_BLADE, GEIGOR_FELL_HAND,
+  LEMAN_RUSS, HVARL_RED_BLADE, GEIGOR_FELL_HAND, CASTER_OF_RUNES,
   THEGN,
   // Imperial Fists
   ROGAL_DORN, SIGISMUND, FAFNIR_RANN, EVANDER_GARRIUS, CAMBA_DIAZ, ALEXIS_POLUX,

@@ -11,7 +11,8 @@ export type PsychicDiscipline =
   | 'pyromancy'
   | 'telekinesis'
   | 'divination'
-  | 'thaumaturgy';
+  | 'thaumaturgy'
+  | 'runecasting';
 
 /** Sub-types that a model may have in addition to its primary Type. */
 export type ModelSubType =
