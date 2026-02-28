@@ -28,6 +28,11 @@ export const WARGEAR_CONFIGS: Record<WargearId, WargearConfig> = {
     name: 'Vigil Pattern Storm Shield',
     label: 'Vigil Pattern Storm Shield (Inv 4+, Heavy, Shield)',
   },
+  'argyrum-pattern-boarding-shield': {
+    name: 'Argyrum Pattern Boarding Shield',
+    // All attacks in the Challenge Sub-Phase are melee, so the 4+ Inv always applies.
+    label: 'Argyrum Pattern Boarding Shield (Inv 4+ vs Melee, Heavy, Shield)',
+  },
 };
 
 /**
@@ -38,6 +43,7 @@ export const WARGEAR_CONFIGS: Record<WargearId, WargearConfig> = {
  */
 export const SUBFACTION_WARGEAR: Partial<Record<string, WargearId[]>> = {
   'imperial-fists': ['vigil-pattern-storm-shield'],
+  'ultramarines':   ['argyrum-pattern-boarding-shield'],
 };
 
 /**
@@ -63,7 +69,10 @@ export function applyWargear(char: Character, wargearId: WargearId): Character {
     return { ...char, stats: { ...char.stats, Inv: newInv }, specialRules };
   }
 
-  // vigil-pattern-storm-shield
+  // vigil-pattern-storm-shield and argyrum-pattern-boarding-shield:
+  // Both give Inv 4+ (in the Challenge Sub-Phase all attacks are melee, so the
+  // Argyrum's conditional 4+ vs melee is always the active value), Heavy sub-type,
+  // and the Shield trait.
   const newInv = Math.min(char.stats.Inv ?? 6, 4);
   const subTypes = char.subTypes.includes('Heavy')
     ? char.subTypes
