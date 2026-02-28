@@ -74,6 +74,17 @@ export interface CombatantState {
    * rounds (even when a different gambit is selected later).
    */
   biteOfTheBetrayedActive: boolean;
+  /**
+   * True if this model's Strength has been permanently reduced by 1 due to
+   * Phage(S) from an opponent's weapon.  Reduces atkS when this model attacks.
+   */
+  phageSApplied: boolean;
+  /**
+   * True if this model's Toughness has been permanently reduced by 1 due to
+   * Phage(T) from an opponent's weapon or gambit.  Reduces effectiveDefT
+   * when opponents attack this model.
+   */
+  phageTApplied: boolean;
 }
 
 /** Immutable-snapshot of the full Challenge state after each engine step. */

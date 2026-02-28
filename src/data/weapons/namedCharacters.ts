@@ -689,16 +689,16 @@ export const SILENCE: Weapon = {
   })],
 };
 
-/** Lacrimae (Calas Typhon): −1I, A, +1S, AP−, D2 (AP 'S' = strength-based, modelled as null) */
-export const LACRIMAE: Weapon = {
-  name: 'Lacrimae',
+/** Lakrimae (Calas Typhon): −1I, A, +1S, AP−, D2 (AP 'S' = strength-based, modelled as null) */
+export const LAKRIMAE: Weapon = {
+  name: 'Lakrimae',
   type: 'melee',
   profiles: [profile({
-    profileName: 'Lacrimae',
+    profileName: 'Lakrimae',
     initiativeModifier: { kind: 'add', value: -1 },
     strengthModifier: { kind: 'add', value: 1 },
     ap: null, damage: 2,
-    // Poisoned(3+) not simulated
+    specialRules: [{ name: 'Poisoned', threshold: 3}], // Poisoned(3+)
     traits: ['Power'],
   })],
 };

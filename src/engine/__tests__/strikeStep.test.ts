@@ -1208,4 +1208,87 @@ describe('Psychic Discipline mechanics (Conflagration, Every Strike Foreseen, Ha
     const result = resolveStrikeStep(dice, state, lib, dummy, 'player');
     expect(result.playerResult.wounds).toBe(0);   // no Hatred bonus → all fail
   });
+
+  it('Phage(S): reduces the TARGET\'s Strength by 1 after ≥1 unsaved wounds, affecting their own attack', () => {
+    // Rule: ≥1 unsaved wounds from a Phage(S) weapon permanently reduce the
+    // TARGET's Strength by 1 (max 1 reduction total). Affects the target's
+    // own wound rolls when they attack.
+    //
+    // Player: WS7, S5, A2+advantage=3 attacks, T4, Sv7 (no armour), Inv4+, W6
+    // AI:     WS5, S5, T4, Sv7 (no armour), Inv4+, W6, A3 (no advantage)
+    // Player weapon: AP null, D1, Phage(S)
+    // AI weapon:     AP null, D1 (plain)
+    //
+    // Player attack:
+    //   Hit TN: WS7 vs WS5 → TN 3+. Rolls 5,5,5 → all hit.
+    //   Wound TN: S5 vs T4 → TN 3+. Rolls 5,5,5 → all wound.
+    //   Save: AP null, Sv7>6 (no armour), Inv4+ → effectiveSave 4+.
+    //         Pool 2 always consumed. Rolls 1,1,1 → all fail → 3 unsaved wounds.
+    //   Phage(S) triggers → AI phageSApplied = true (AI S: 5 → 4).
+    //   Damage: 3 × D1 = 3. AI W6 → 3. Not casualty.
+    //
+    // AI attack (S is now 4):
+    //   Hit TN: WS5 vs WS7 → TN 5+. Rolls 5,5,5 → all hit.
+    //   Wound TN: S4 vs T4 → TN 4+. Rolls 3,3,3 → all fail (3 < 4).
+    //   Without Phage: S5 vs T4 = TN 3+; rolls of 3 would all wound.
+    const attacker: Character = {
+      ...WARBOSS,
+      id: 'phage-s-attacker',
+      stats: { ...WARBOSS.stats, WS: 7, S: 5, A: 2, T: 4, Sv: 7, Inv: 4, W: 6 },
+      specialRules: [],
+    };
+    const defender: Character = {
+      ...WARBOSS,
+      id: 'phage-s-defender',
+      stats: { ...WARBOSS.stats, WS: 5, S: 5, T: 4, Sv: 7, Inv: 4, W: 6, A: 3 },
+      specialRules: [],
+    };
+    const phageWeapon = {
+      profileName: 'Phage(S) Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: null, damage: 1,
+      specialRules: [{ name: 'Phage' as const, characteristic: 'S' as const }],
+    };
+    const plainWeapon = {
+      profileName: 'Plain Weapon',
+      initiativeModifier: { kind: 'none' as const },
+      attacksModifier:    { kind: 'none' as const },
+      strengthModifier:   { kind: 'none' as const },
+      ap: null, damage: 1,
+      specialRules: [],
+    };
+    const state: CombatState = {
+      ...makeState(attacker, defender),
+      challengeAdvantage: 'player',
+      player: {
+        ...makeState(attacker, defender).player,
+        selectedWeaponProfile: phageWeapon,
+      },
+      ai: {
+        ...makeState(attacker, defender).ai,
+        selectedWeaponProfile: plainWeapon,
+      },
+    };
+    const dice = new FakeDiceRoller([
+      // Player attack (A2 + 1 advantage = 3 attacks)
+      5, 5, 5,  // 3 hit rolls (WS7 vs WS5 = TN 3+; all hit)
+      5, 5, 5,  // 3 wound rolls (S5 vs T4 = TN 3+; all wound)
+      1, 1, 1,  // 3 save rolls (pool 2 always consumed; Inv4+; all fail → 3 unsaved)
+      // Phage(S) triggers here: AI phageSApplied = true → AI S5 → S4
+      // AI attack (A3, no advantage; effective S is now 4)
+      5, 5, 5,  // 3 hit rolls (WS5 vs WS7 = TN 5+; all hit)
+      3, 3, 3,  // 3 wound rolls (S4 vs T4 = TN 4+; 3 < 4 → all fail)
+                // Without Phage: S5 vs T4 = TN 3+; rolls of 3 would all wound.
+    ]);
+    const result = resolveStrikeStep(dice, state, attacker, defender, 'player');
+    expect(result.playerResult.unsavedWounds).toBe(3);
+    expect(result.playerResult.phageSTriggered).toBe(true);
+    expect(result.updatedState.ai.phageSApplied).toBe(true);
+    // AI wound rolls of 3 fail at raised TN 4+ (reduced S4 vs T4)
+    expect(result.aiResult.wounds).toBe(0);
+    expect(result.updatedState.ai.currentWounds).toBe(3);   // W6 − 3 = 3
+    expect(result.updatedState.player.currentWounds).toBe(6); // player untouched
+  });
 });
