@@ -17,6 +17,8 @@ import { CONFLAGRATION }  from './weapons/psychic.js';
 
 export interface DisciplineConfig {
   name: string;
+  /** Human-readable label shown in the discipline dropdown. */
+  label: string;
   meleeWeapon?: Weapon;
   specialRules: SpecialRule[];
   gambitIds: GambitId[];
@@ -25,29 +27,40 @@ export interface DisciplineConfig {
 export const DISCIPLINE_CONFIGS: Record<PsychicDiscipline, DisciplineConfig> = {
   biomancy: {
     name: 'Biomancy',
+    label: 'Biomancy (Biomantic Slam)',
     meleeWeapon: BIOMANTIC_SLAM,
     specialRules: [],
     gambitIds: [],
   },
   pyromancy: {
     name: 'Pyromancy',
+    label: 'Pyromancy (Conflagration)',
     meleeWeapon: CONFLAGRATION,
     specialRules: [],
     gambitIds: [],
   },
   telekinesis: {
     name: 'Telekinesis',
+    label: 'Telekinesis (no melee weapon)',
     // All powers are Ranged/Reaction — no melee weapon, no challenge effects
     specialRules: [],
     gambitIds: [],
   },
   divination: {
     name: 'Divination',
+    label: 'Divination (DuellistsEdge +2, Every Strike Foreseen)',
     specialRules: [{ name: 'DuellistsEdge', value: 2 }],
     gambitIds: ['divination-every-strike-foreseen'],
   },
   thaumaturgy: {
     name: 'Thaumaturgy',
+    label: 'Thaumaturgy (Hatred: Psykers)',
+    specialRules: [{ name: 'Hatred', target: 'Psykers' }],
+    gambitIds: [],
+  },
+  runecasting: {
+    name: 'Runecasting',
+    label: 'Runecasting (Hatred: Psykers)',
     specialRules: [{ name: 'Hatred', target: 'Psykers' }],
     gambitIds: [],
   },

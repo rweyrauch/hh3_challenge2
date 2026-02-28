@@ -135,11 +135,6 @@ function buildHTML(): string {
                 <label class="form-label small text-muted">Psychic Discipline:</label>
                 <select id="player-discipline-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                   <option value="">— No Discipline —</option>
-                  <option value="biomancy">Biomancy (Biomantic Slam)</option>
-                  <option value="pyromancy">Pyromancy (Conflagration)</option>
-                  <option value="telekinesis">Telekinesis (no melee weapon)</option>
-                  <option value="divination">Divination (DuellistsEdge +2, Every Strike Foreseen)</option>
-                  <option value="thaumaturgy">Thaumaturgy (Hatred: Psykers)</option>
                 </select>
               </div>
               <div id="player-weapon-section" hidden>
@@ -288,10 +283,11 @@ function attachListeners(
       }
       // Show discipline section if the character supports it
       if (savedPlayerChar.availablePsychicDisciplines) {
-        disciplineSection.hidden = false;
+        populateDisciplineSelect(savedPlayerChar.availablePsychicDisciplines, disciplineSelect);
         if (initialState.playerDiscipline) {
           disciplineSelect.value = initialState.playerDiscipline;
         }
+        disciplineSection.hidden = false;
       }
       // Populate weapons — include subfaction and discipline extras if selected
       const savedExtras = getPlayerExtraWeapons(
@@ -340,10 +336,11 @@ function attachListeners(
         playerSubfactionSection.hidden = true;
         playerSubfactionSelect.value   = '';
       }
-      // Show/hide discipline section
+      // Show/hide discipline section and populate with character-specific options
       if (char.availablePsychicDisciplines) {
-        disciplineSection.hidden = false;
+        populateDisciplineSelect(char.availablePsychicDisciplines, disciplineSelect);
         disciplineSelect.value = ''; // reset discipline on character change
+        disciplineSection.hidden = false;
       } else {
         disciplineSection.hidden = true;
         disciplineSelect.value = '';
@@ -425,6 +422,29 @@ function attachListeners(
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
+
+/**
+ * Populate the discipline <select> with only the options supported by the
+ * given character. Preserves the current selection if it remains valid;
+ * otherwise resets to the blank "— No Discipline —" option.
+ */
+function populateDisciplineSelect(
+  disciplines: PsychicDiscipline[],
+  selectEl: HTMLSelectElement,
+): void {
+  const current = selectEl.value;
+  selectEl.innerHTML = '<option value="">— No Discipline —</option>';
+  for (const disc of disciplines) {
+    const opt = document.createElement('option');
+    opt.value = disc;
+    opt.textContent = DISCIPLINE_CONFIGS[disc].label;
+    selectEl.appendChild(opt);
+  }
+  // Restore previous selection only if it is still available
+  if (disciplines.includes(current as PsychicDiscipline)) {
+    selectEl.value = current;
+  }
+}
 
 /**
  * Collect extra weapons to append after a character's base weapons in the
