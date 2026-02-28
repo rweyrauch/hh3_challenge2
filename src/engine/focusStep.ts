@@ -98,7 +98,8 @@ function rollFocus(
   }
 
   const ci = calculateCombatInitiative(char.stats, profile);
-  const isHeavy = char.subTypes.includes('Heavy');
+  const isHeavy = char.subTypes.includes('Heavy')
+    && !char.specialRules.some(r => r.name === 'ShieldMaster');
   const isLight = char.subTypes.includes('Light');
   const rawWoundPenalty = Math.max(0, baseWounds - currentWounds);
   // Some gambits suppress the wound penalty (e.g., The Lion's Choler, Thrall of the Red Thirst)

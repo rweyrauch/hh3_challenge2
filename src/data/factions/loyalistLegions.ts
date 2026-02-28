@@ -438,7 +438,7 @@ const FAFNIR_RANN: Character = {
   },
   weapons: [HEADSMAN_AND_HUNTER],
   factionGambitIds: ['a-wall-unyielding', 'executioners-tax'],
-  specialRules: [],
+  specialRules: [{ name: 'ShieldMaster' }],
   traits: ['Loyalist', 'Imperial Fists', 'Shield'],
   availableWargear: ['boarding-shield']
 };
