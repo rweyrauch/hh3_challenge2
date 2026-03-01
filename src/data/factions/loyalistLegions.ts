@@ -878,6 +878,7 @@ const OFANIM: Character = {
     { name: 'FeelNoPain', threshold: 5 }, // Shadows of Judgement
     { name: 'DuellistsEdge', value: 1 },     // Shadows of Judgement
   ],
+  availableWargear: ['combat-shield'],
 };
 
 // ── Ofanim (Jump Pack) ───────────────────────────────────────────────────────
@@ -900,6 +901,7 @@ const OFANIM_JUMP_PACK: Character = {
     { name: 'DuellistsEdge', value: 1 },     // Shadows of Judgement
     { name: 'Bulky', value: 2 },
   ],
+  availableWargear: ['combat-shield'],
 };
 
 // ── Locutarus Strike Leader (Ultramarines) ───────────────────────────────────
