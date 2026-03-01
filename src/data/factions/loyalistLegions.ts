@@ -923,6 +923,7 @@ const LOCUTARUS_STRIKE_LEADER: Character = {
   specialRules: [
     { name: 'Bulky', value: 2 },
   ],
+  availableWargear: ['combat-shield'],
 };
 
 // ════════════════════════════════════════════════════════════════
