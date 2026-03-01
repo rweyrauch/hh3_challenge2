@@ -299,6 +299,7 @@ const CHOSEN_CHAMPION: Character = {
   weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, CHAINAXE, CHAINSWORD, CHARNABAL_SABRE, POWER_FIST, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
+  availableWargear: ['combat-shield'],
 };
 
 // ── Chosen Champion (Jump Pack) ──────────────────────────────────────────────
@@ -338,6 +339,7 @@ const VETERAN_CHAMPION: Character = {
   weapons: [POWER_SWORD, LIGHTNING_CLAWS_PAIR, POWER_AXE, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, CHAINAXE, CHAINSWORD, CHARNABAL_SABRE, POWER_FIST, LIGHTNING_CLAWS_PAIR],
   factionGambitIds: [],
   specialRules: [],
+  availableWargear: ['combat-shield'],
 };
 
 // ── Tartaros Chosen Champion ─────────────────────────────────────────────────
