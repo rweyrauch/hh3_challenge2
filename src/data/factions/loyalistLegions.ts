@@ -438,9 +438,9 @@ const FAFNIR_RANN: Character = {
   },
   weapons: [HEADSMAN_AND_HUNTER],
   factionGambitIds: ['a-wall-unyielding', 'executioners-tax'],
-  specialRules: [],
+  specialRules: [{ name: 'ShieldMaster' }],
   traits: ['Loyalist', 'Imperial Fists', 'Shield'],
-  wargear: ['Boarding shield']
+  availableWargear: ['boarding-shield']
 };
 
 const EVANDER_GARRIUS: Character = {
@@ -491,7 +491,8 @@ const ALEXIS_POLUX: Character = {
   weapons: [SOLARITE_POWER_GAUNTLET, HAMMERBLOW],
   factionGambitIds: ['a-wall-unyielding', 'hammerblow'],
   specialRules: [],
-  traits: ['Loyalist', 'Imperial Fists']
+  traits: ['Loyalist', 'Imperial Fists'],
+  availableWargear: ['vigil-pattern-storm-shield'],
 };
 
 // ════════════════════════════════════════════════════════════════
@@ -851,6 +852,7 @@ const TEMPLAR_CHAMPION: Character = {
   weapons: [POWER_SWORD],
   factionGambitIds: ['a-wall-unyielding'],
   specialRules: [],
+  availableWargear: ['combat-shield', 'vigil-pattern-storm-shield'],
 };
 
 // ── Ofanim (Blood Angels) ────────────────────────────────────────────────────
@@ -876,6 +878,7 @@ const OFANIM: Character = {
     { name: 'FeelNoPain', threshold: 5 }, // Shadows of Judgement
     { name: 'DuellistsEdge', value: 1 },     // Shadows of Judgement
   ],
+  availableWargear: ['combat-shield'],
 };
 
 // ── Ofanim (Jump Pack) ───────────────────────────────────────────────────────
@@ -898,6 +901,7 @@ const OFANIM_JUMP_PACK: Character = {
     { name: 'DuellistsEdge', value: 1 },     // Shadows of Judgement
     { name: 'Bulky', value: 2 },
   ],
+  availableWargear: ['combat-shield'],
 };
 
 // ── Locutarus Strike Leader (Ultramarines) ───────────────────────────────────
@@ -919,6 +923,7 @@ const LOCUTARUS_STRIKE_LEADER: Character = {
   specialRules: [
     { name: 'Bulky', value: 2 },
   ],
+  availableWargear: ['combat-shield'],
 };
 
 // ════════════════════════════════════════════════════════════════

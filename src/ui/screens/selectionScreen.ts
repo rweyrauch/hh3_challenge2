@@ -6,7 +6,7 @@
  * Character filter bar (above the row) lets the user narrow both dropdowns to:
  *   All | Primarchs only | Legion Astartes only
  */
-import type { Character, PsychicDiscipline } from '../../models/character.js';
+import type { Character, PsychicDiscipline, WargearId } from '../../models/character.js';
 import type { CharModifier } from '../../models/weapon.js';
 import type { Weapon } from '../../models/weapon.js';
 import {
@@ -16,6 +16,7 @@ import {
   LEGION_SUBFACTION_IDS,
 } from '../../data/factions/index.js';
 import { DISCIPLINE_CONFIGS } from '../../data/psychicDisciplines.js';
+import { WARGEAR_CONFIGS, SUBFACTION_WARGEAR } from '../../data/wargear.js';
 import { CALIBANITE_WARBLADE, TERRANIC_GREATSWORD, POWER_GLAIVE, FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE, BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION, LEGATINE_AXE, RAVENS_TALON, PAIR_OF_RAVENS_TALONS, PHOENIX_POWER_SPEAR, PHOENIX_RAPIER, GRAVITON_MACE, CHAINGLAIVE, HEADSMANS_AXE, POWER_SCYTHE, ACHEA_PATTERN_FORCE_SWORD, CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR, POWER_DAGGER } from '../../data/weapons/legionChampions.js';
 import { SOLARITE_POWER_GAUNTLET, ARTIFICER_POWER_AXE } from '../../data/weapons/namedCharacters.js';
 import { renderStatBlock } from '../components/statBlock.js';
@@ -29,6 +30,8 @@ export interface SelectionResult {
   filter: CharacterFilter;
   /** Selected Psychic Discipline (only for Librarian characters). */
   playerDiscipline?: string;
+  /** Selected wargear item (only for characters with availableWargear). */
+  playerWargear?: WargearId;
   /** Selected sub-faction (only for generic 'legion-astartes' characters). */
   playerSubFaction?: string;
   /** Selected sub-faction for the AI (only for generic 'legion-astartes' characters). */
@@ -137,6 +140,12 @@ function buildHTML(): string {
                   <option value="">— No Discipline —</option>
                 </select>
               </div>
+              <div id="player-wargear-section" hidden>
+                <label class="form-label small text-muted">Optional Wargear:</label>
+                <select id="player-wargear-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
+                  <option value="">— No Shield —</option>
+                </select>
+              </div>
               <div id="player-weapon-section" hidden>
                 <label class="form-label small text-muted">Starting weapon:</label>
                 <select id="player-weapon-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
@@ -206,6 +215,8 @@ function attachListeners(
   const playerSubfactionSelect  = container.querySelector<HTMLSelectElement>('#player-subfaction-select')!;
   const disciplineSection     = container.querySelector<HTMLElement>('#player-discipline-section')!;
   const disciplineSelect      = container.querySelector<HTMLSelectElement>('#player-discipline-select')!;
+  const wargearSection        = container.querySelector<HTMLElement>('#player-wargear-section')!;
+  const wargearSelect         = container.querySelector<HTMLSelectElement>('#player-wargear-select')!;
   const weaponSection         = container.querySelector<HTMLElement>('#player-weapon-section')!;
   const weaponSelect          = container.querySelector<HTMLSelectElement>('#player-weapon-select')!;
   const aiSelect              = container.querySelector<HTMLSelectElement>('#ai-char-select')!;
@@ -242,6 +253,8 @@ function attachListeners(
         // Character filtered out — clear derived UI
         playerSubfactionSection.hidden = true;
         playerSubfactionSelect.value   = '';
+        wargearSection.hidden = true;
+        wargearSelect.value   = '';
         weaponSection.hidden = true;
         playerStat.innerHTML = '';
       }
@@ -288,6 +301,15 @@ function attachListeners(
           disciplineSelect.value = initialState.playerDiscipline;
         }
         disciplineSection.hidden = false;
+      }
+      // Show wargear section if the character supports it (including subfaction extras)
+      const savedWargearOpts = getWargearOptions(savedPlayerChar, initialState.playerSubFaction ?? '');
+      if (savedWargearOpts.length > 0) {
+        populateWargearSelect(savedWargearOpts, wargearSelect);
+        if (initialState.playerWargear) {
+          wargearSelect.value = initialState.playerWargear;
+        }
+        wargearSection.hidden = false;
       }
       // Populate weapons — include subfaction and discipline extras if selected
       const savedExtras = getPlayerExtraWeapons(
@@ -345,6 +367,16 @@ function attachListeners(
         disciplineSection.hidden = true;
         disciplineSelect.value = '';
       }
+      // Show/hide wargear section; subfaction resets on char change so pass ''
+      const wargearOpts = getWargearOptions(char, '');
+      if (wargearOpts.length > 0) {
+        populateWargearSelect(wargearOpts, wargearSelect);
+        wargearSelect.value = ''; // reset wargear on character change
+        wargearSection.hidden = false;
+      } else {
+        wargearSection.hidden = true;
+        wargearSelect.value = '';
+      }
       // Populate base weapons only (no discipline selected yet after a character change)
       populateWeaponSelect(char, weaponSelect, weaponSection);
       playerStat.innerHTML = renderStatBlock(char);
@@ -352,18 +384,29 @@ function attachListeners(
       playerSubfactionSection.hidden = true;
       playerSubfactionSelect.value   = '';
       disciplineSection.hidden = true;
+      wargearSection.hidden = true;
+      wargearSelect.value = '';
       weaponSection.hidden = true;
       playerStat.innerHTML = '';
     }
     updateBeginBtn();
   });
 
-  // Sub-faction dropdown: repopulate weapon list (Dark Angels adds extra weapons)
+  // Sub-faction dropdown: repopulate weapon list and wargear options
   playerSubfactionSelect.addEventListener('change', () => {
     const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
     if (char) {
       const extras = getPlayerExtraWeapons(char, playerSubfactionSelect.value, disciplineSelect.value);
       populateWeaponSelect(char, weaponSelect, weaponSection, extras);
+      // Refresh wargear: some options (e.g. Vigil Pattern Storm Shield) are subfaction-gated
+      const wargearOpts = getWargearOptions(char, playerSubfactionSelect.value);
+      if (wargearOpts.length > 0) {
+        populateWargearSelect(wargearOpts, wargearSelect);
+        wargearSection.hidden = false;
+      } else {
+        wargearSection.hidden = true;
+        wargearSelect.value = '';
+      }
     }
   });
 
@@ -405,6 +448,7 @@ function attachListeners(
       playerProfileIndex: pIdx,
       filter: (checkedFilter?.value ?? 'all') as CharacterFilter,
       playerDiscipline: disciplineSelect.value || undefined,
+      playerWargear: (wargearSelect.value || undefined) as WargearId | undefined,
       playerSubFaction: playerSubfactionSelect.value || undefined,
       aiSubFaction: aiSubfactionSelect.value || undefined,
     };
@@ -442,6 +486,51 @@ function populateDisciplineSelect(
   }
   // Restore previous selection only if it is still available
   if (disciplines.includes(current as PsychicDiscipline)) {
+    selectEl.value = current;
+  }
+}
+
+/**
+ * Compute the full set of wargear options available to a character, merging
+ * the character's own availableWargear list with any subfaction-granted wargear.
+ *
+ * Imperial Fists Command/Champion sub-type models gain access to the Vigil
+ * Pattern Storm Shield when the imperial-fists subfaction is selected, even
+ * if it is not listed in their availableWargear (e.g. generic Chosen Champion).
+ */
+function getWargearOptions(char: Character, subfaction: string): WargearId[] {
+  const base: WargearId[] = [...(char.availableWargear ?? [])];
+  const sfWargear = SUBFACTION_WARGEAR[subfaction] ?? [];
+  for (const id of sfWargear) {
+    if (
+      !base.includes(id) &&
+      (char.subTypes.includes('Command') || char.subTypes.includes('Champion'))
+    ) {
+      base.push(id);
+    }
+  }
+  return base;
+}
+
+/**
+ * Populate the wargear <select> with only the options supported by the
+ * given character. Preserves the current selection if it remains valid;
+ * otherwise resets to the blank "— No Shield —" option.
+ */
+function populateWargearSelect(
+  wargearIds: WargearId[],
+  selectEl: HTMLSelectElement,
+): void {
+  const current = selectEl.value;
+  selectEl.innerHTML = '<option value="">— No Shield —</option>';
+  for (const id of wargearIds) {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = WARGEAR_CONFIGS[id].label;
+    selectEl.appendChild(opt);
+  }
+  // Restore previous selection only if it is still available
+  if (wargearIds.includes(current as WargearId)) {
     selectEl.value = current;
   }
 }

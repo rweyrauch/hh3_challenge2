@@ -7,12 +7,12 @@
  * The router holds the canonical CombatState and delegates rendering to the
  * appropriate screen.
  */
-import type { Character } from '../models/character.js';
+import type { Character, PsychicDiscipline, WargearId } from '../models/character.js';
 import type { CombatState } from '../models/combatState.js';
 import type { GambitId } from '../models/gambit.js';
-import type { PsychicDiscipline } from '../models/character.js';
 import { getCharacterById, getFactionLabel, getLegionAlignment } from '../data/factions/index.js';
 import { applyDiscipline } from '../data/psychicDisciplines.js';
+import { applyWargear } from '../data/wargear.js';
 import { CALIBANITE_WARBLADE, TERRANIC_GREATSWORD, POWER_GLAIVE, FROST_AXE, FROST_SWORD, FROST_CLAW, GREAT_FROST_BLADE, BLADE_OF_PERDITION, AXE_OF_PERDITION, MAUL_OF_PERDITION, SPEAR_OF_PERDITION, LEGATINE_AXE, RAVENS_TALON, PAIR_OF_RAVENS_TALONS, PHOENIX_POWER_SPEAR, PHOENIX_RAPIER, GRAVITON_MACE, CHAINGLAIVE, HEADSMANS_AXE, POWER_SCYTHE, ACHEA_PATTERN_FORCE_SWORD, CARSORAN_POWER_AXE, CARSORAN_POWER_TABAR, POWER_DAGGER } from '../data/weapons/legionChampions.js';
 import { SOLARITE_POWER_GAUNTLET, ARTIFICER_POWER_AXE } from '../data/weapons/namedCharacters.js';
 import { ChallengeEngine, buildInitialState } from '../engine/challengeEngine.js';
@@ -71,6 +71,9 @@ export function startApp(container: HTMLElement): void {
         if (result.playerDiscipline && playerChar) {
           playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
         }
+        if (result.playerWargear && playerChar) {
+          playerChar = applyWargear(playerChar, result.playerWargear as WargearId);
+        }
         app.playerChar          = playerChar;
         let aiChar = getCharacterById(result.aiCharId) ?? null;
         if (result.aiSubFaction && aiChar) {
@@ -89,6 +92,9 @@ export function startApp(container: HTMLElement): void {
         }
         if (result.playerDiscipline && playerChar) {
           playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
+        }
+        if (result.playerWargear && playerChar) {
+          playerChar = applyWargear(playerChar, result.playerWargear as WargearId);
         }
         app.playerChar          = playerChar;
         let aiChar = getCharacterById(result.aiCharId) ?? null;
