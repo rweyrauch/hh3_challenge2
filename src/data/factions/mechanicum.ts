@@ -59,12 +59,32 @@ const ARCHMAGOS_DRAYKAVAC: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [PARAGON_BLADE],
-  factionGambitIds: [],
+  factionGambitIds: ['liquifractor-onslaught'],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
-    { name: 'Bulky', value: 2 },
   ],
 };
+
+/** Archmagos Draykavac — unique Archmagos with Paragon blade */
+const ARCHMAGOS_DRAYKAVAC_ON_ABEYANT: Character = {
+  id: 'archmagos-draykavac-abeyant',
+  name: 'Archmagos Draykavac on Abeyant',
+  faction: 'mechanicum',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 6, WS: 5, BS: 6, S: 6, T: 7, W: 6,
+    I: 3, A: 4, LD: 10, CL: 10, WP: 9, IN: 12,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [PARAGON_BLADE],
+  factionGambitIds: ['liquifractor-onslaught'],
+  specialRules: [
+    { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Bulky', value: 7 },
+  ],
+};
+
 
 // ── Archmagos ─────────────────────────────────────────────────────────────────
 
@@ -224,6 +244,7 @@ const MYRMIDON_SECUTOR_LORD: Character = {
 export const MECHANICUM_CHARACTERS: Character[] = [
   ANACHARIS_SCORIA,
   ARCHMAGOS_DRAYKAVAC,
+  ARCHMAGOS_DRAYKAVAC_ON_ABEYANT,
   ARCHMAGOS,
   ARCHMAGOS_ON_ABEYANT,
   ARCUITOR_MAGISTERIUM,

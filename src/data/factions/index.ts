@@ -29,6 +29,7 @@ import { ORK_GAMBITS } from '../gambits/orks.js';
 import { LOYALIST_LEGION_GAMBITS } from '../gambits/loyalistLegions.js';
 import { TRAITOR_LEGION_GAMBITS } from '../gambits/traitorLegions.js';
 import { ASSASSIN_GAMBITS } from '../gambits/assassins.js';
+import { MECHANICUM_GAMBITS } from '../gambits/mechanicum.js';
 
 export const ALL_CHARACTERS: Character[] = [
   ...LEGION_ASTARTES_CHARACTERS,
@@ -64,6 +65,7 @@ const ALL_GAMBITS: Gambit[] = [
   ...LOYALIST_LEGION_GAMBITS,
   ...TRAITOR_LEGION_GAMBITS,
   ...ASSASSIN_GAMBITS,
+  ...MECHANICUM_GAMBITS,
 ];
 const GAMBIT_MAP = new Map<GambitId, Gambit>(
   ALL_GAMBITS.map(g => [g.id, g]),

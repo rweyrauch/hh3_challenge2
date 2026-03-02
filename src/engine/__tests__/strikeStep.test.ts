@@ -7,6 +7,7 @@ import { ORK_CHARACTERS } from '../../data/factions/orks.js';
 import { ASSASSIN_CHARACTERS } from '../../data/factions/assassins.js';
 import { LOYALIST_LEGION_CHARACTERS } from '../../data/factions/loyalistLegions.js';
 import { TRAITOR_LEGION_CHARACTERS } from '../../data/factions/traitorLegions.js';
+import { MECHANICUM_CHARACTERS } from '../../data/factions/mechanicum.js';
 import type { CombatState } from '../../models/combatState.js';
 import type { Character } from '../../models/character.js';
 
@@ -1290,5 +1291,133 @@ describe('Psychic Discipline mechanics (Conflagration, Every Strike Foreseen, Ha
     expect(result.aiResult.wounds).toBe(0);
     expect(result.updatedState.ai.currentWounds).toBe(3);   // W6 − 3 = 3
     expect(result.updatedState.player.currentWounds).toBe(6); // player untouched
+  });
+});
+
+// ── Liquifractor Onslaught (Archmagos Draykavac) ──────────────────────────────
+
+describe('Liquifractor Onslaught', () => {
+  const DRAYKAVAC = MECHANICUM_CHARACTERS.find(c => c.id === 'archmagos-draykavac')!;
+
+  // Defender: T4, W6, Sv7 (no armour), no Inv → save rolls consumed but always unsaved.
+  const makeDefender = (extra: Partial<Character> = {}): Character => ({
+    id: 'liqui-target',
+    name: 'Target',
+    faction: 'mechanicum',
+    type: 'infantry',
+    subTypes: ['Command'],
+    stats: { M: 6, WS: 4, BS: 4, S: 4, T: 4, W: 6, I: 4, A: 4, LD: 8, CL: 8, WP: 8, IN: 8, Sv: 7, Inv: null },
+    weapons: [DRAYKAVAC.weapons[0]],
+    factionGambitIds: [],
+    specialRules: [],
+    ...extra,
+  });
+
+  function makeLiquiState(defender: Character, advantage: 'player' | 'ai' = 'player'): CombatState {
+    const s = buildInitialState(DRAYKAVAC, defender);
+    return {
+      ...s,
+      challengeAdvantage: advantage,
+      player: {
+        ...s.player,
+        selectedGambit: 'liquifractor-onslaught',
+        selectedWeaponProfile: DRAYKAVAC.weapons[0].profiles[0],
+      },
+      ai: {
+        ...s.ai,
+        selectedGambit: null,
+        selectedWeaponProfile: defender.weapons[0].profiles[0],
+      },
+    };
+  }
+
+  it('all 3 shots miss — no pre-attack damage', () => {
+    // Liquifractor: hits [1,1,1] → 0 hits (need 2+).
+    // Normal player (A5, WS5 vs WS4=TN3+): all miss. AI (A4, WS4 vs WS5=TN5+): all miss.
+    const defender = makeDefender();
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      1, 1, 1,         // Liquifractor: 3 hit rolls (all miss at 2+)
+      1, 1, 1, 1, 1,  // Normal player: 5 hit rolls (all miss at TN3+)
+      1, 1, 1, 1,      // AI counter: 4 hit rolls (all miss at TN5+)
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.currentWounds).toBe(6);   // no Liquifractor damage
+    expect(result.log.some(l => l.includes('Liquifractor'))).toBe(true);
+    expect(result.log.some(l => l.includes('0 hit'))).toBe(true);
+  });
+
+  it('AP6 and Breaching(4+) save pools both consumed, wounds tallied correctly', () => {
+    // Defender: Sv7 (null save), Inv=null.
+    // Liquifractor: hits [2,4,5] → all 3 hit; wounds [2,3,5]:
+    //   roll 2 → wound, 2<4 → AP6 (normalWounds=1)
+    //   roll 3 → wound, 3<4 → AP6 (normalWounds=2)
+    //   roll 5 → wound, 5≥4 → Breaching/AP2 (breachingWounds=1)
+    // AP6 save pool: 2 dice consumed (Sv7→null save); AP2 save pool: 1 die consumed.
+    // 3 unsaved wounds × D1 = 3. Phage(T&S) triggers.
+    // Normal player (A5): all miss. AI (A4): all miss.
+    const defender = makeDefender();
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      2, 4, 5,         // Liquifractor hits (all ≥2)
+      2, 3, 5,         // Wound rolls (2,3→AP6; 5→Breaching/AP2)
+      1, 1,            // AP6 save rolls (Sv7→null; consumed)
+      1,               // AP2 save roll  (Sv7→null; consumed)
+      1, 1, 1, 1, 1,  // Normal player A5 hits (all miss)
+      1, 1, 1, 1,      // AI A4 hits (all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.currentWounds).toBe(3);
+    expect(result.updatedState.ai.phageSApplied).toBe(true);
+    expect(result.updatedState.ai.phageTApplied).toBe(true);
+    expect(result.updatedState.player.woundsInflictedThisChallenge).toBe(3);
+  });
+
+  it('Liquifractor kills opponent — AI does not counter-attack', () => {
+    // Defender W3: Liquifractor 3 hits, wounds [4,5,6] → all Breaching/AP2.
+    // AP2 save: Sv7→null; 3 dice consumed. 3 unsaved × D1 = 3 → W3→0 → CASUALTY.
+    // Normal player melee still executes (attacking a 0-wound target), but all miss.
+    // AI counter-attack is skipped because defenderIsCasualty=true.
+    const defender = makeDefender({ stats: { ...makeDefender().stats, W: 3 } });
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      5, 5, 5,         // Liquifractor hits
+      4, 5, 6,         // All Breaching/AP2 wounds (all ≥4)
+      1, 1, 1,         // AP2 save rolls (Sv7→null; consumed)
+      // Normal player melee (A5, WS5 vs WS4=TN3+): all miss → no wound/save dice
+      1, 1, 1, 1, 1,   // 5 hit rolls (all miss)
+      // AI is casualty → no counter-attack
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.updatedState.ai.currentWounds).toBe(0);
+    // AI counter-attack skipped (aiResult has 0 attacks)
+    expect(result.aiResult.attacks).toBe(0);
+    expect(result.updatedState.player.woundsInflictedThisChallenge).toBe(3);  // Liquifractor only
+  });
+
+  it('Liquifractor damage stacks with normal melee damage', () => {
+    // Defender W6, Sv7 (null save), Inv=null, T4.
+    // Liquifractor: 3 hits [5,5,5]; wounds [4,5,6] → all Breaching/AP2; AP2 saves [1,1,1] → null.
+    // 3 unsaved × D1 = 3. Defender W6→W3.
+    // Normal player attack (A5, WS5 vs WS4=TN3+, Paragon Blade AP2):
+    //   Hits [3,3,3,3,3] → all 5 hit. Wounds (S6 vs T4=TN2+) [2,2,2,2,2] → all wound.
+    //   AP2 vs Sv7 → null save; Pool2 [1,1,1,1,1] consumed.
+    //   5 unsaved × D1 = 5. Starts from W3 (after Liquifractor) → W3−5 = W0 → CASUALTY.
+    // woundsInflictedThisChallenge = 3 (Liquifractor) + 5 (melee) = 8.
+    const defender = makeDefender({ stats: { ...makeDefender().stats, T: 4 } });
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      5, 5, 5,         // Liquifractor hits
+      4, 5, 6,         // Breaching/AP2 wounds
+      1, 1, 1,         // AP2 save rolls (null; consumed)
+      3, 3, 3, 3, 3,   // 5 normal player hits (TN3+)
+      2, 2, 2, 2, 2,   // 5 wound rolls (TN2+; all wound; AP2 Paragon Blade)
+      1, 1, 1, 1, 1,   // Pool 2 save rolls (AP2 vs Sv7 → null; consumed)
+      // AI is casualty; no counter-attack
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.updatedState.player.woundsInflictedThisChallenge).toBe(8);  // 3 + 5
   });
 });

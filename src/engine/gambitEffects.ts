@@ -214,6 +214,11 @@ export function getFocusDiceModification(
       // Opponent's CI is set to 1.
       return { ...base, setOpponentCIToOne: true };
 
+    // ── Mechanicum ───────────────────────────────────────────────────────────
+    case 'liquifractor-onslaught':
+      // Roll 2d6 discard highest; Liquifractor shooting attack handled in strikeStep.ts.
+      return { ...base, extraDice: 1, discardHighest: true };
+
     // ── Divisio Assassinorum ─────────────────────────────────────────────────
     case 'biological-overload':
       // Mandatory (Eversor): +3 to Focus Roll.
