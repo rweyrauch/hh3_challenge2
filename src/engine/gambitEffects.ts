@@ -219,6 +219,10 @@ export function getFocusDiceModification(
       // Roll 2d6 discard highest; Liquifractor shooting attack handled in strikeStep.ts.
       return { ...base, extraDice: 1, discardHighest: true };
 
+    case 'the-myrmidons-path':
+      // Roll 2d6 discard highest; ranged weapon shooting handled in strikeStep.ts.
+      return { ...base, extraDice: 1, discardHighest: true };
+
     // ── Divisio Assassinorum ─────────────────────────────────────────────────
     case 'biological-overload':
       // Mandatory (Eversor): +3 to Focus Roll.

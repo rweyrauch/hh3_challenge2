@@ -159,6 +159,20 @@ export function scoreGambit(
       score += 4;
       break;
 
+    // ── Mechanicum Malagra faction gambits ────────────────────────────────
+
+    case 'power-of-the-machine-spirit':
+      // +2 WS / +1 A on IN check success (high IN = high chance); 1-wound Feedback cost
+      score += 3;
+      break;
+
+    // ── Mechanicum Myrmidax faction gambits ───────────────────────────────
+
+    case 'the-myrmidons-path':
+      // Free shooting attack before melee; value depends on having an eligible ranged weapon
+      score += 2;
+      break;
+
     default:
       score = 0;
   }

@@ -262,6 +262,9 @@ const SUBFACTION_GAMBIT_IDS: Partial<Record<string, GambitId[]>> = {
   'sons-of-horus':     ['merciless-strike'],
   'word-bearers':      ['beseech-the-gods'],
   'alpha-legion':      ['i-am-alpharius'],
+  // Mechanicum Subfactions
+  'malagra':           ['power-of-the-machine-spirit'],
+  'myrmidax':          ['the-myrmidons-path'],
 };
 
 /**

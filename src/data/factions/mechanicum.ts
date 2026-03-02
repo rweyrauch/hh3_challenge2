@@ -43,6 +43,7 @@ const ANACHARIS_SCORIA: Character = {
     { name: 'Fear', value: 1 },
     { name: 'EternalWarrior', value: 1 },
     { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Battlesmith', value: 3 },
   ],
 };
 
@@ -62,6 +63,7 @@ const ARCHMAGOS_DRAYKAVAC: Character = {
   factionGambitIds: ['liquifractor-onslaught'],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Battlesmith', value: 4 },
   ],
 };
 
@@ -82,6 +84,7 @@ const ARCHMAGOS_DRAYKAVAC_ON_ABEYANT: Character = {
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
     { name: 'Bulky', value: 7 },
+    { name: 'Battlesmith', value: 4 },
   ],
 };
 
@@ -105,6 +108,7 @@ const ARCHMAGOS: Character = {
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
     { name: 'Bulky', value: 2 },
+    { name: 'Battlesmith', value: 4 },
   ],
 };
 
@@ -127,6 +131,7 @@ const ARCHMAGOS_ON_ABEYANT: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Battlesmith', value: 4 },
   ],
 };
 
@@ -148,6 +153,7 @@ const ARCUITOR_MAGISTERIUM: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Battlesmith', value: 2 },
   ],
 };
 
@@ -170,6 +176,7 @@ const MAGOS: Character = {
   specialRules: [
     { name: 'FeelNoPain', threshold: 6 },
     { name: 'Bulky', value: 2 },
+    { name: 'Battlesmith', value: 3 },
   ],
 };
 
@@ -192,6 +199,7 @@ const MAGOS_ON_ABEYANT: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 6 },
+    { name: 'Battlesmith', value: 3 },
   ],
 };
 

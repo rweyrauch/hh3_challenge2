@@ -134,3 +134,19 @@ export function getEffectiveSave(
   if (saves.length === 0) return null;
   return Math.min(...saves);
 }
+
+/**
+ * Return the minimum d6 result needed to score a hit with a ranged weapon
+ * based on the shooter's Ballistic Skill.
+ *
+ * HH3 core: BS 4+ → 2+; BS 3 → 3+; BS 2 → 4+; BS 1 → 5+.
+ *
+ * @param bs - shooter's Ballistic Skill
+ * @returns Target Number (2–5)
+ */
+export function getBSHitTargetNumber(bs: number): number {
+  if (bs >= 4) return 2;
+  if (bs === 3) return 3;
+  if (bs === 2) return 4;
+  return 5; // BS 1
+}

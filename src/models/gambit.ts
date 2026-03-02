@@ -87,7 +87,9 @@ export type GambitId =
   // ── Legion Astartes Psychic Discipline gambits ───────────────────────────
   | 'divination-every-strike-foreseen' // Divination: WP check → hit on 2+ this Strike Step
   // ── Mechanicum ───────────────────────────────────────────────────────────
-  | 'liquifractor-onslaught';  // Draykavac: extra die/discard highest in Focus; fire Liquifractor before normal attacks
+  | 'liquifractor-onslaught'        // Draykavac: extra die/discard highest in Focus; fire Liquifractor before normal attacks
+  | 'power-of-the-machine-spirit'   // Malagra: IN check → +2WS/+1A for Strike Step; always suffer 1 Cybertheurgic Feedback wound after attacks
+  | 'the-myrmidons-path';           // Myrmidax: extra die/discard highest in Focus; shoot a Ranged Weapon before normal attacks
 
 /**
  * When within the Challenge procedure a gambit has its primary effect.
