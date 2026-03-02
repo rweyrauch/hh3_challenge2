@@ -44,3 +44,25 @@ export const ARC_SCOURGES: Weapon = {
     // Shock (Suppressed) not simulated
   })],
 };
+
+export const CORPOSANT_STAVE: Weapon = {
+  name: 'Corposant Stave',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Corposant Stave',
+    strengthModifier: { kind: 'add', value: 1 },
+    ap: 3, damage: 1,
+    // Shock (Pinning, Stunned, Suppressed) not simulated
+  })],
+};
+
+export const SHOCK_CHARGERS: Weapon = {
+  name: 'Shock chargers',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Shock chargers',
+    initiativeModifier: { kind: 'add', value: -1 },
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 4, damage: 2,
+  })]
+};
