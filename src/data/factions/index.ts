@@ -113,6 +113,10 @@ export const LEGION_SUBFACTION_IDS: string[] = [
   'death-guard', 'thousand-sons', 'sons-of-horus', 'word-bearers', 'alpha-legion',
 ];
 
+export const MECHANICUM_SUBFACTION_IDS: string[] = [
+  'archimandrite', 'cybernetica', 'lacrymaerta', 'myrmidax', 'reductor', 'malagra', 'macrotek',
+];
+
 const LOYALIST_LEGION_IDS = new Set([
   'dark-angels', 'white-scars', 'space-wolves', 'imperial-fists',
   'blood-angels', 'iron-hands', 'ultramarines', 'salamanders', 'raven-guard',
@@ -159,6 +163,14 @@ export function getFactionLabel(faction: string): string {
     'divisio-assassinorum': 'Divisio Assassinorum',
     // Mechanicum
     'mechanicum': 'Mechanicum',
+    // Mechanicum Sub-factions
+    'archimandrite': 'Archimandrite',
+    'cybernetica':   'Cybernetica',
+    'lacrymaerta':   'Lacrymaerta',
+    'myrmidax':      'Myrmidax',
+    'reductor':      'Reductor',
+    'malagra':       'Malagra',
+    'macrotek':      'Macrotek',
     // New factions
     'anathema-psykana': 'Anathema Psykana',
     'blackshields': 'Blackshields',

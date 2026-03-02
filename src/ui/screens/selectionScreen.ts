@@ -14,6 +14,7 @@ import {
   getFactionLabel,
   getCharactersByFaction,
   LEGION_SUBFACTION_IDS,
+  MECHANICUM_SUBFACTION_IDS,
 } from '../../data/factions/index.js';
 import { DISCIPLINE_CONFIGS } from '../../data/psychicDisciplines.js';
 import { WARGEAR_CONFIGS, SUBFACTION_WARGEAR } from '../../data/wargear.js';
@@ -70,11 +71,21 @@ function buildCharacterOptions(filter: CharacterFilter): string {
   }).join('');
 }
 
-/** Build the <option> HTML for the sub-faction picker (all 18 legions). */
-function buildSubfactionOptions(): string {
-  return LEGION_SUBFACTION_IDS.map(
-    id => `<option value="${id}">${getFactionLabel(id)}</option>`,
-  ).join('');
+/**
+ * Populate a subfaction <select> with the options for the given faction.
+ * Preserves the current selection if it remains valid; otherwise resets.
+ */
+function populateSubfactionSelect(faction: string, selectEl: HTMLSelectElement): void {
+  const ids = faction === 'mechanicum' ? MECHANICUM_SUBFACTION_IDS : LEGION_SUBFACTION_IDS;
+  const current = selectEl.value;
+  selectEl.innerHTML = '<option value="">— No Sub-faction —</option>';
+  for (const id of ids) {
+    const opt = document.createElement('option');
+    opt.value = id;
+    opt.textContent = getFactionLabel(id);
+    selectEl.appendChild(opt);
+  }
+  if (ids.includes(current)) selectEl.value = current;
 }
 
 // ── Mount ─────────────────────────────────────────────────────────────────────
@@ -92,7 +103,6 @@ export function mountSelectionScreen(
 }
 
 function buildHTML(): string {
-  const subfactionOpts = buildSubfactionOptions();
   return `
     <div class="container py-4">
       <div class="text-center mb-4">
@@ -128,10 +138,9 @@ function buildHTML(): string {
                 <option value="">— Select a character —</option>
               </select>
               <div id="player-subfaction-section" hidden>
-                <label class="form-label small text-muted">Legion Sub-faction:</label>
+                <label class="form-label small text-muted">Sub-faction:</label>
                 <select id="player-subfaction-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                   <option value="">— No Sub-faction —</option>
-                  ${subfactionOpts}
                 </select>
               </div>
               <div id="player-discipline-section" hidden>
@@ -173,10 +182,9 @@ function buildHTML(): string {
                 <option value="">— Select a character —</option>
               </select>
               <div id="ai-subfaction-section" hidden>
-                <label class="form-label small text-muted">Legion Sub-faction:</label>
+                <label class="form-label small text-muted">Sub-faction:</label>
                 <select id="ai-subfaction-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                   <option value="">— No Sub-faction —</option>
-                  ${subfactionOpts}
                 </select>
               </div>
               <div id="ai-stat-block"></div>
@@ -288,7 +296,8 @@ function attachListeners(
     const savedPlayerChar = ALL_CHARACTERS.find(c => c.id === initialState.playerCharId);
     if (savedPlayerChar) {
       // Show sub-faction section if applicable
-      if (savedPlayerChar.faction === 'legion-astartes') {
+      if (savedPlayerChar.faction === 'legion-astartes' || savedPlayerChar.faction === 'mechanicum') {
+        populateSubfactionSelect(savedPlayerChar.faction, playerSubfactionSelect);
         playerSubfactionSection.hidden = false;
         if (initialState.playerSubFaction) {
           playerSubfactionSelect.value = initialState.playerSubFaction;
@@ -326,7 +335,8 @@ function attachListeners(
     aiSelect.value = initialState.aiCharId;
     const savedAiChar = ALL_CHARACTERS.find(c => c.id === initialState.aiCharId);
     if (savedAiChar) {
-      if (savedAiChar.faction === 'legion-astartes') {
+      if (savedAiChar.faction === 'legion-astartes' || savedAiChar.faction === 'mechanicum') {
+        populateSubfactionSelect(savedAiChar.faction, aiSubfactionSelect);
         aiSubfactionSection.hidden = false;
         if (initialState.aiSubFaction) {
           aiSubfactionSelect.value = initialState.aiSubFaction;
@@ -351,7 +361,8 @@ function attachListeners(
     const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value);
     if (char) {
       // Show/hide sub-faction section
-      if (char.faction === 'legion-astartes') {
+      if (char.faction === 'legion-astartes' || char.faction === 'mechanicum') {
+        populateSubfactionSelect(char.faction, playerSubfactionSelect);
         playerSubfactionSection.hidden = false;
         playerSubfactionSelect.value   = ''; // reset on character change
       } else {
@@ -422,7 +433,8 @@ function attachListeners(
   aiSelect.addEventListener('change', () => {
     const char = ALL_CHARACTERS.find(c => c.id === aiSelect.value);
     if (char) {
-      if (char.faction === 'legion-astartes') {
+      if (char.faction === 'legion-astartes' || char.faction === 'mechanicum') {
+        populateSubfactionSelect(char.faction, aiSubfactionSelect);
         aiSubfactionSection.hidden = false;
         aiSubfactionSelect.value   = ''; // reset on character change
       } else {
