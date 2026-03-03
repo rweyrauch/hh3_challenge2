@@ -1,6 +1,6 @@
 # Horus Heresy 3rd-Edition Challenge Phase Simulator
 
-A browser-based simulator for the **Challenge Sub-Phase** from *Horus Heresy 3rd Edition*. Play as one of 50+ characters across 9 factions in 1v1 duels, while a heuristic AI controls your opponent.
+A browser-based simulator for the **Challenge Sub-Phase** from *Horus Heresy 3rd Edition*. Play as one of 190+ characters across 15 factions in 1v1 duels, while a heuristic AI controls your opponent.
 
 **[Play Online](https://rweyrauch.github.io/hh3_challenge2/)**
 
@@ -9,13 +9,13 @@ A browser-based simulator for the **Challenge Sub-Phase** from *Horus Heresy 3rd
 ## Features
 
 - **Full rules implementation** — Hit/Wound tables, Armor/Invulnerable saves, AP, all core Gambits, and special rules (Eternal Warrior, Rending, Feel No Pain, Poisoned, etc.)
-- **50+ playable characters** across Legio Custodes, Legion Astartes, Loyalist & Traitor Legions, Orks, Daemons, Mechanicum, and Divisio Assassinorum
-- **Faction-specific Gambits** — 30+ gambits beyond the 9 core ones, with unique mechanics per faction
+- **190+ playable characters** across 15 factions: Legio Custodes, Legion Astartes, Loyalist & Traitor Legions, Orks, Daemons, Mechanicum, Divisio Assassinorum, Militia, Solar Auxilia, Anathema Psykana, Blackshields, Cults Abominatio, Skitarii, and Legio Titanicus
+- **60 Gambits** — 9 core gambits plus 51 faction-specific gambits with unique mechanics (Force weapons, psychic checks, pre-strike shooting, subfaction traits, and more)
 - **Heuristic AI opponent** — scores and selects Gambits based on combat state; beatable but not trivial
 - **Simulate mode** — automatically tests every opening Gambit over hundreds of simulated challenges and ranks them; the top Gambit can be carried straight into a real match with a visual highlight
 - **Real-time combat log** — color-coded rolls and results for every phase
 - **Immutable state engine** — pure functional core with a dice abstraction layer for full testability
-- **88 passing unit tests**
+- **126 passing unit tests**
 
 ---
 
@@ -59,14 +59,21 @@ The **Simulate** button on the character selection screen runs a fully automated
 
 | Faction | Example Characters |
 |---------|--------------------|
-| Legion Astartes | Praetor (5 variants), Centurion, Champion, Chaplain |
+| Legion Astartes | Praetor (many variants), Centurion, Champion, Chaplain |
 | Loyalist Legions | Dark Angels, White Scars, Space Wolves, Salamanders, and more |
 | Traitor Legions | Emperor's Children, Iron Warriors, Night Lords, Word Bearers, and more |
 | Legio Custodes | Constantin Valdor, Tribune, Shield Captain, Custodian Guard |
 | Daemons | Ruinstorm Sovereigns, Hierarchs, Kabandha |
-| Mechanicum | Tech-Priests, Cybernetica |
+| Mechanicum | Archmagos, Tech-Priest Auxilia, Cybernetica Dominus; subfactions: Archimandrite, Cybernetica, Malagra, Myrmidax |
 | Divisio Assassinorum | Eversor, Callidus, Culexus, Adamus, Venenum |
 | Orks (unofficial) | Warboss & Mega Warboss (clan variants: Goffs, Blood Axes, etc.) |
+| Militia & Levies | Force Commander, Discipline Master, Lieutenant, Lancemaster |
+| Solar Auxilia | Legate-Marshall, Auxilia Captain, First Prime |
+| Anathema Psykana | Jenetia Krole, Knight-Centura |
+| Blackshields | Endryd Haar |
+| Cults Abominatio | Infernus Abomination |
+| Skitarii | Battle-Pilgrym Marshal |
+| Legio Titanicus | Secutarii Axiarch |
 
 ---
 
@@ -103,7 +110,7 @@ Then open [http://localhost:5173](http://localhost:5173).
 
 ```bash
 npm run build       # Type-check + production build (outputs to /dist)
-npm run test        # Run all 88 unit tests
+npm run test        # Run all 126 unit tests
 npm run test:watch  # Watch mode for TDD
 npm run preview     # Preview the production build locally
 ```
@@ -160,13 +167,13 @@ npm run test
 src/engine/__tests__/
 ├── tables.test.ts            21 tests — Hit/Wound table look-ups
 ├── combatInitiative.test.ts  14 tests — CI calculations with all modifiers
-├── gambitEffects.test.ts     22 tests — All Gambit modifiers per phase
-├── strikeStep.test.ts        11 tests — Attack sequence, special rules, casualties
+├── gambitEffects.test.ts     24 tests — All Gambit modifiers per phase
+├── strikeStep.test.ts        44 tests — Attack sequence, special rules, casualties
 ├── gloryStep.test.ts          9 tests — CRP, withdrawal, Taunt & Bait
-├── focusStep.test.ts          7 tests — Focus rolls, advantage resolution
-└── challengeEngine.test.ts    4 tests — State machine transitions
-                              ──────────
-                              88 tests total (100% passing)
+├── focusStep.test.ts          9 tests — Focus rolls, advantage resolution
+└── challengeEngine.test.ts    5 tests — State machine transitions
+                              ───────────
+                              126 tests total (100% passing)
 ```
 
 ---
