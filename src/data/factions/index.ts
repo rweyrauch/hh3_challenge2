@@ -29,6 +29,7 @@ import { ORK_GAMBITS } from '../gambits/orks.js';
 import { LOYALIST_LEGION_GAMBITS } from '../gambits/loyalistLegions.js';
 import { TRAITOR_LEGION_GAMBITS } from '../gambits/traitorLegions.js';
 import { ASSASSIN_GAMBITS } from '../gambits/assassins.js';
+import { MECHANICUM_GAMBITS } from '../gambits/mechanicum.js';
 
 export const ALL_CHARACTERS: Character[] = [
   ...LEGION_ASTARTES_CHARACTERS,
@@ -64,6 +65,7 @@ const ALL_GAMBITS: Gambit[] = [
   ...LOYALIST_LEGION_GAMBITS,
   ...TRAITOR_LEGION_GAMBITS,
   ...ASSASSIN_GAMBITS,
+  ...MECHANICUM_GAMBITS,
 ];
 const GAMBIT_MAP = new Map<GambitId, Gambit>(
   ALL_GAMBITS.map(g => [g.id, g]),
@@ -109,6 +111,10 @@ export const LEGION_SUBFACTION_IDS: string[] = [
   // Traitor Legions
   'emperors-children', 'iron-warriors', 'night-lords', 'world-eaters',
   'death-guard', 'thousand-sons', 'sons-of-horus', 'word-bearers', 'alpha-legion',
+];
+
+export const MECHANICUM_SUBFACTION_IDS: string[] = [
+  'archimandrite', 'cybernetica', 'lacrymaerta', 'myrmidax', 'reductor', 'malagra', 'macrotek',
 ];
 
 const LOYALIST_LEGION_IDS = new Set([
@@ -157,6 +163,14 @@ export function getFactionLabel(faction: string): string {
     'divisio-assassinorum': 'Divisio Assassinorum',
     // Mechanicum
     'mechanicum': 'Mechanicum',
+    // Mechanicum Sub-factions
+    'archimandrite': 'Archimandrite',
+    'cybernetica':   'Cybernetica',
+    'lacrymaerta':   'Lacrymaerta',
+    'myrmidax':      'Myrmidax',
+    'reductor':      'Reductor',
+    'malagra':       'Malagra',
+    'macrotek':      'Macrotek',
     // New factions
     'anathema-psykana': 'Anathema Psykana',
     'blackshields': 'Blackshields',

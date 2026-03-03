@@ -85,6 +85,18 @@ export interface CombatantState {
    * when opponents attack this model.
    */
   phageTApplied: boolean;
+  /**
+   * WS bonus granted by a successful Power of the Machine Spirit IN check.
+   * Applied to this model's attacks in the Strike Step.
+   * Reset to 0 at the start of each new round (Glory Step reset).
+   */
+  machineSpiritBoostWS: number;
+  /**
+   * Attack bonus granted by a successful Power of the Machine Spirit IN check.
+   * Applied to this model's attacks in the Strike Step.
+   * Reset to 0 at the start of each new round (Glory Step reset).
+   */
+  machineSpiritBoostA: number;
 }
 
 /** Immutable-snapshot of the full Challenge state after each engine step. */

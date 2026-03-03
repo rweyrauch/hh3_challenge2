@@ -76,6 +76,8 @@ export function buildInitialState(playerChar: Character, aiChar: Character): Com
     biteOfTheBetrayedActive: false,
     phageSApplied: false,
     phageTApplied: false,
+    machineSpiritBoostWS: 0,
+    machineSpiritBoostA: 0,
   });
 
   return {
@@ -249,6 +251,40 @@ export class ChallengeEngine {
         next = dfResult.updatedState;
       }
 
+      // ── Power of the Machine Spirit: IN check before Focus Roll ─────────
+      // Roll 2d6; if sum ≤ IN → +2 WS and +1 A for the Strike Step.
+      // Always triggers Cybertheurgic Feedback (1 wound) after attacks.
+      if (next.player.selectedGambit === 'power-of-the-machine-spirit') {
+        const [p1, p2] = this.dice.rollNd6(2);
+        const pTotal = p1 + p2;
+        const pIN = this.playerChar.stats.IN;
+        const pSuccess = pTotal <= pIN;
+        next = addLog(
+          next,
+          `Power of the Machine Spirit (Player): IN check — ${p1}+${p2}=${pTotal} vs IN${pIN} — ` +
+          (pSuccess ? 'SUCCESS (+2 WS, +1 A for Strike Step).' : 'FAILED (no boost).'),
+          pSuccess ? 'success' : 'warning',
+        );
+        if (pSuccess) {
+          next = { ...next, player: { ...next.player, machineSpiritBoostWS: 2, machineSpiritBoostA: 1 } };
+        }
+      }
+      if (next.ai.selectedGambit === 'power-of-the-machine-spirit') {
+        const [a1, a2] = this.dice.rollNd6(2);
+        const aTotal = a1 + a2;
+        const aIN = this.aiChar.stats.IN;
+        const aSuccess = aTotal <= aIN;
+        next = addLog(
+          next,
+          `Power of the Machine Spirit (AI): IN check — ${a1}+${a2}=${aTotal} vs IN${aIN} — ` +
+          (aSuccess ? 'SUCCESS (+2 WS, +1 A for Strike Step).' : 'FAILED (no boost).'),
+          aSuccess ? 'success' : 'warning',
+        );
+        if (aSuccess) {
+          next = { ...next, ai: { ...next.ai, machineSpiritBoostWS: 2, machineSpiritBoostA: 1 } };
+        }
+      }
+
       // Resolve Focus Roll
       const focusResult = resolveFocusStep(
         this.dice, next,
@@ -413,6 +449,8 @@ export class ChallengeEngine {
         // selectedWeaponProfile is intentionally kept — chosen once at startup
         feintAndRiposteBan: null,
         woundsInflictedThisChallenge: 0, // reset for next round comparison
+        machineSpiritBoostWS: 0,
+        machineSpiritBoostA: 0,
       },
       ai: {
         ...next.ai,
@@ -420,6 +458,8 @@ export class ChallengeEngine {
         selectedWeaponProfile: null, // reset so AI re-runs weapon selection + focus roll
         feintAndRiposteBan: null,
         woundsInflictedThisChallenge: 0,
+        machineSpiritBoostWS: 0,
+        machineSpiritBoostA: 0,
       },
     };
 

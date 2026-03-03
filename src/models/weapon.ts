@@ -45,7 +45,8 @@ export type SpecialRule =
   | { name: 'Deflagrate'; value: number }  // unsaved wounds generate extra S(X)/AP-/D1 hits
   | { name: 'Psykers' }             // marks model as a Psyker for Hatred(Psykers) targeting
   | { name: 'Phage'; characteristic: 'S' | 'T' }  // each wound reduces attacker S (if 'S') or defender T (if 'T') by 1
-  | { name: 'ShieldMaster' };            // model does not suffer −1 Focus penalty for having the Heavy sub-type
+  | { name: 'ShieldMaster' }             // model does not suffer −1 Focus penalty for having the Heavy sub-type
+  | { name: 'Battlesmith'; value: number }; // Mechanicum repair/maintenance rule (flavour; level = value)
 // Rules intentionally not simulated:
 //   Bypass(X+) — Phase sword's bypass of all saves; omitted (no Bypass special rule added)
 //   Reaping Blow(X) — established pattern; no effect in Challenge

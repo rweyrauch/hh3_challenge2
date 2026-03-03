@@ -7,6 +7,7 @@ import { ORK_CHARACTERS } from '../../data/factions/orks.js';
 import { ASSASSIN_CHARACTERS } from '../../data/factions/assassins.js';
 import { LOYALIST_LEGION_CHARACTERS } from '../../data/factions/loyalistLegions.js';
 import { TRAITOR_LEGION_CHARACTERS } from '../../data/factions/traitorLegions.js';
+import { MECHANICUM_CHARACTERS } from '../../data/factions/mechanicum.js';
 import type { CombatState } from '../../models/combatState.js';
 import type { Character } from '../../models/character.js';
 
@@ -19,6 +20,7 @@ const ADAMUS  = ASSASSIN_CHARACTERS.find(c => c.id === 'adamus-assassin')!;
 const DORN      = LOYALIST_LEGION_CHARACTERS.find(c => c.id === 'rogal-dorn')!;
 const MORTARION = TRAITOR_LEGION_CHARACTERS.find(c => c.id === 'mortarion')!;
 const FULGRIM   = TRAITOR_LEGION_CHARACTERS.find(c => c.id === 'fulgrim')!;
+const ARCHMAGOS = MECHANICUM_CHARACTERS.find(c => c.id === 'archmagos')!;
 
 function makeState(
   playerChar = VALDOR,
@@ -1290,5 +1292,406 @@ describe('Psychic Discipline mechanics (Conflagration, Every Strike Foreseen, Ha
     expect(result.aiResult.wounds).toBe(0);
     expect(result.updatedState.ai.currentWounds).toBe(3);   // W6 − 3 = 3
     expect(result.updatedState.player.currentWounds).toBe(6); // player untouched
+  });
+});
+
+// ── Liquifractor Onslaught (Archmagos Draykavac) ──────────────────────────────
+
+describe('Liquifractor Onslaught', () => {
+  const DRAYKAVAC = MECHANICUM_CHARACTERS.find(c => c.id === 'archmagos-draykavac')!;
+
+  // Defender: T4, W6, Sv7 (no armour), no Inv → save rolls consumed but always unsaved.
+  const makeDefender = (extra: Partial<Character> = {}): Character => ({
+    id: 'liqui-target',
+    name: 'Target',
+    faction: 'mechanicum',
+    type: 'infantry',
+    subTypes: ['Command'],
+    stats: { M: 6, WS: 4, BS: 4, S: 4, T: 4, W: 6, I: 4, A: 4, LD: 8, CL: 8, WP: 8, IN: 8, Sv: 7, Inv: null },
+    weapons: [DRAYKAVAC.weapons[0]],
+    factionGambitIds: [],
+    specialRules: [],
+    ...extra,
+  });
+
+  function makeLiquiState(defender: Character, advantage: 'player' | 'ai' = 'player'): CombatState {
+    const s = buildInitialState(DRAYKAVAC, defender);
+    return {
+      ...s,
+      challengeAdvantage: advantage,
+      player: {
+        ...s.player,
+        selectedGambit: 'liquifractor-onslaught',
+        selectedWeaponProfile: DRAYKAVAC.weapons[0].profiles[0],
+      },
+      ai: {
+        ...s.ai,
+        selectedGambit: null,
+        selectedWeaponProfile: defender.weapons[0].profiles[0],
+      },
+    };
+  }
+
+  it('all 3 shots miss — no pre-attack damage', () => {
+    // Liquifractor: hits [1,1,1] → 0 hits (need 2+).
+    // Normal player (A5, WS5 vs WS4=TN3+): all miss. AI (A4, WS4 vs WS5=TN5+): all miss.
+    const defender = makeDefender();
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      1, 1, 1,         // Liquifractor: 3 hit rolls (all miss at 2+)
+      1, 1, 1, 1, 1,  // Normal player: 5 hit rolls (all miss at TN3+)
+      1, 1, 1, 1,      // AI counter: 4 hit rolls (all miss at TN5+)
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.currentWounds).toBe(6);   // no Liquifractor damage
+    expect(result.log.some(l => l.includes('Liquifractor'))).toBe(true);
+    expect(result.log.some(l => l.includes('0 hit'))).toBe(true);
+  });
+
+  it('AP6 and Breaching(4+) save pools both consumed, wounds tallied correctly', () => {
+    // Defender: Sv7 (null save), Inv=null.
+    // Liquifractor: hits [2,4,5] → all 3 hit; wounds [2,3,5]:
+    //   roll 2 → wound, 2<4 → AP6 (normalWounds=1)
+    //   roll 3 → wound, 3<4 → AP6 (normalWounds=2)
+    //   roll 5 → wound, 5≥4 → Breaching/AP2 (breachingWounds=1)
+    // AP6 save pool: 2 dice consumed (Sv7→null save); AP2 save pool: 1 die consumed.
+    // 3 unsaved wounds × D1 = 3. Phage(T&S) triggers.
+    // Normal player (A5): all miss. AI (A4): all miss.
+    const defender = makeDefender();
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      2, 4, 5,         // Liquifractor hits (all ≥2)
+      2, 3, 5,         // Wound rolls (2,3→AP6; 5→Breaching/AP2)
+      1, 1,            // AP6 save rolls (Sv7→null; consumed)
+      1,               // AP2 save roll  (Sv7→null; consumed)
+      1, 1, 1, 1, 1,  // Normal player A5 hits (all miss)
+      1, 1, 1, 1,      // AI A4 hits (all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.currentWounds).toBe(3);
+    expect(result.updatedState.ai.phageSApplied).toBe(true);
+    expect(result.updatedState.ai.phageTApplied).toBe(true);
+    expect(result.updatedState.player.woundsInflictedThisChallenge).toBe(3);
+  });
+
+  it('Liquifractor kills opponent — AI does not counter-attack', () => {
+    // Defender W3: Liquifractor 3 hits, wounds [4,5,6] → all Breaching/AP2.
+    // AP2 save: Sv7→null; 3 dice consumed. 3 unsaved × D1 = 3 → W3→0 → CASUALTY.
+    // Normal player melee still executes (attacking a 0-wound target), but all miss.
+    // AI counter-attack is skipped because defenderIsCasualty=true.
+    const defender = makeDefender({ stats: { ...makeDefender().stats, W: 3 } });
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      5, 5, 5,         // Liquifractor hits
+      4, 5, 6,         // All Breaching/AP2 wounds (all ≥4)
+      1, 1, 1,         // AP2 save rolls (Sv7→null; consumed)
+      // Normal player melee (A5, WS5 vs WS4=TN3+): all miss → no wound/save dice
+      1, 1, 1, 1, 1,   // 5 hit rolls (all miss)
+      // AI is casualty → no counter-attack
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.updatedState.ai.currentWounds).toBe(0);
+    // AI counter-attack skipped (aiResult has 0 attacks)
+    expect(result.aiResult.attacks).toBe(0);
+    expect(result.updatedState.player.woundsInflictedThisChallenge).toBe(3);  // Liquifractor only
+  });
+
+  it('Liquifractor damage stacks with normal melee damage', () => {
+    // Defender W6, Sv7 (null save), Inv=null, T4.
+    // Liquifractor: 3 hits [5,5,5]; wounds [4,5,6] → all Breaching/AP2; AP2 saves [1,1,1] → null.
+    // 3 unsaved × D1 = 3. Defender W6→W3.
+    // Normal player attack (A5, WS5 vs WS4=TN3+, Paragon Blade AP2):
+    //   Hits [3,3,3,3,3] → all 5 hit. Wounds (S6 vs T4=TN2+) [2,2,2,2,2] → all wound.
+    //   AP2 vs Sv7 → null save; Pool2 [1,1,1,1,1] consumed.
+    //   5 unsaved × D1 = 5. Starts from W3 (after Liquifractor) → W3−5 = W0 → CASUALTY.
+    // woundsInflictedThisChallenge = 3 (Liquifractor) + 5 (melee) = 8.
+    const defender = makeDefender({ stats: { ...makeDefender().stats, T: 4 } });
+    const state = makeLiquiState(defender);
+    const dice = new FakeDiceRoller([
+      5, 5, 5,         // Liquifractor hits
+      4, 5, 6,         // Breaching/AP2 wounds
+      1, 1, 1,         // AP2 save rolls (null; consumed)
+      3, 3, 3, 3, 3,   // 5 normal player hits (TN3+)
+      2, 2, 2, 2, 2,   // 5 wound rolls (TN2+; all wound; AP2 Paragon Blade)
+      1, 1, 1, 1, 1,   // Pool 2 save rolls (AP2 vs Sv7 → null; consumed)
+      // AI is casualty; no counter-attack
+    ]);
+    const result = resolveStrikeStep(dice, state, DRAYKAVAC, defender, 'player');
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.updatedState.player.woundsInflictedThisChallenge).toBe(8);  // 3 + 5
+  });
+});
+
+// ── Power of the Machine Spirit (Malagra subfaction) ──────────────────────────
+
+describe('Power of the Machine Spirit', () => {
+  // ARCHMAGOS: WS5, A4, S6, T6, W6, Sv2, Inv4, IN10
+  // ARCHMAGOS.weapons: [POWER_AXE, PARAGON_BLADE, POWER_FIST]
+  // Paragon Blade (weapons[1]): AP2, D1, +1S (→ S7), CriticalHit(6+)
+  //
+  // WARBOSS: WS6, A6, S5, T5, W4, Sv4, Inv4
+  // WARBOSS.weapons[0] = CHOPPA: AP null, D1
+
+  function makeMSState(
+    playerBoostWS = 0,
+    playerBoostA  = 0,
+    aiBoostWS     = 0,
+    aiBoostA      = 0,
+    advantage: 'player' | 'ai' = 'player',
+    playerWounds = ARCHMAGOS.stats.W,
+    aiWounds     = WARBOSS.stats.W,
+    flipRoles     = false,  // true → player=WARBOSS, ai=ARCHMAGOS
+  ): CombatState {
+    const pChar = flipRoles ? WARBOSS : ARCHMAGOS;
+    const aChar = flipRoles ? ARCHMAGOS : WARBOSS;
+    const s = buildInitialState(pChar, aChar);
+    return {
+      ...s,
+      challengeAdvantage: advantage,
+      player: {
+        ...s.player,
+        selectedGambit: 'power-of-the-machine-spirit',
+        selectedWeaponProfile: flipRoles ? WARBOSS.weapons[0].profiles[0] : ARCHMAGOS.weapons[1].profiles[0],
+        machineSpiritBoostWS: playerBoostWS,
+        machineSpiritBoostA:  playerBoostA,
+        currentWounds: playerWounds,
+      },
+      ai: {
+        ...s.ai,
+        selectedGambit: flipRoles ? 'power-of-the-machine-spirit' : null,
+        selectedWeaponProfile: flipRoles ? ARCHMAGOS.weapons[1].profiles[0] : WARBOSS.weapons[0].profiles[0],
+        machineSpiritBoostWS: aiBoostWS,
+        machineSpiritBoostA:  aiBoostA,
+        currentWounds: aiWounds,
+      },
+    };
+  }
+
+  it('IN check failed: no boosts, Cybertheurgic Feedback still applies 1 wound', () => {
+    // Player ARCHMAGOS (WS5, A4+1bonus=5) with Paragon Blade; machineSpiritBoosts = 0.
+    // No IN check dice here — that happens in challengeEngine; boosts are pre-set in state.
+    //
+    // Player hits: WS5 vs WS6 → TN5+. A4+0(ms)+1(bonus)=5 hit rolls.
+    //   All miss (roll 1).
+    // AI hits: WS6 vs WS5 → TN3+. A6 rolls.
+    //   All miss (roll 1).
+    // Feedback: Player W6 → W5.
+    const state = makeMSState(0, 0);  // no boosts
+    const dice = new FakeDiceRoller([
+      1, 1, 1, 1, 1,       // 5 player hit rolls (TN5+, all miss)
+      1, 1, 1, 1, 1, 1,    // 6 AI hit rolls    (TN3+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, ARCHMAGOS, WARBOSS, 'player');
+    expect(result.updatedState.player.currentWounds).toBe(5);  // W6 − 1 Feedback
+    expect(result.updatedState.player.isCasualty).toBe(false);
+    expect(result.updatedState.ai.currentWounds).toBe(WARBOSS.stats.W);  // untouched
+    expect(result.log.some(l => l.includes('Cybertheurgic Feedback'))).toBe(true);
+  });
+
+  it('IN check succeeded: +2 WS and +1 A applied, TN improves, Feedback wound at end', () => {
+    // Player ARCHMAGOS with machineSpiritBoostWS=2, machineSpiritBoostA=1:
+    //   atkWS = WS5+2=7, atkA = A4+1(ms)+1(bonus)=6.
+    //   WS7 vs WS6 → TN3+.  S7 vs T5 → TN2+.
+    //
+    // Player hits: [3,3,3,3,3,3] → all 6 hit (TN3+); no crits (3 < CritHit(6+)).
+    // 6 normal wounds (S7>T5 by 2 → TN2+): [2,2,2,2,2,2] → all wound.
+    // Pool 2 save (AP2, Sv4/Inv4 → effectiveSave=4): [1,1,1,1,1,1] → all fail.
+    // 6 unsaved × D1 = 6 > W4 → WARBOSS CASUALTY. AI does not attack.
+    // Feedback: Player W6 → W5.
+    const state = makeMSState(2, 1);  // boosts applied by successful IN check
+    const dice = new FakeDiceRoller([
+      3, 3, 3, 3, 3, 3,    // 6 player hit rolls  (TN3+, all hit; no crits)
+      2, 2, 2, 2, 2, 2,    // 6 wound rolls       (TN2+, all wound)
+      1, 1, 1, 1, 1, 1,    // Pool 2 save rolls   (Inv4+, all fail)
+      // AI is casualty — no counter-attack
+    ]);
+    const result = resolveStrikeStep(dice, state, ARCHMAGOS, WARBOSS, 'player');
+    expect(result.updatedState.ai.isCasualty).toBe(true);
+    expect(result.updatedState.player.currentWounds).toBe(5);  // W6 − 1 Feedback
+    expect(result.log.some(l => l.includes('Power of the Machine Spirit') && l.includes('+2 WS'))).toBe(true);
+    expect(result.log.some(l => l.includes('Cybertheurgic Feedback'))).toBe(true);
+  });
+
+  it('Feedback kills the gambit-user: isCasualty = true', () => {
+    // Player ARCHMAGOS at W1 with boosts. All attacks miss. Feedback: W1 → W0 → CASUALTY.
+    //   atkWS=7, atkA=6 (4+1ms+1bonus). WS7 vs WS6 → TN3+. All miss (roll 1).
+    //   AI: WS6 vs WS5 → TN3+. A6. All miss (roll 1).
+    const state = makeMSState(2, 1, 0, 0, 'player', 1);  // player W1
+    const dice = new FakeDiceRoller([
+      1, 1, 1, 1, 1, 1,    // 6 player hit rolls  (TN3+, all miss)
+      1, 1, 1, 1, 1, 1,    // 6 AI hit rolls      (TN3+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, ARCHMAGOS, WARBOSS, 'player');
+    expect(result.updatedState.player.isCasualty).toBe(true);
+    expect(result.updatedState.player.currentWounds).toBe(0);
+    expect(result.log.some(l => l.includes('CASUALTY'))).toBe(true);
+  });
+
+  it('AI side: boosts and Feedback apply symmetrically when AI has the gambit', () => {
+    // flipRoles=true: player=WARBOSS, ai=ARCHMAGOS with power-of-the-machine-spirit.
+    // advantage='ai' → AI (ARCHMAGOS) attacks first with WS7, A6.
+    //   WS7 vs WS6 → TN3+. S7 vs T5 → TN2+. AP2 penetrates Sv4 → Inv4+ save.
+    //
+    // AI hits: [3,3,3,3,3,3] → all 6 hit; wounds [2,2,2,2,2,2] → all wound;
+    //   saves [1,1,1,1,1,1] → all fail. 6 × D1 = 6 > W4 → WARBOSS CASUALTY.
+    // Player (WARBOSS) doesn't attack.
+    // Feedback: AI (ARCHMAGOS) W6 → W5.
+    const state = makeMSState(0, 0, 2, 1, 'ai', WARBOSS.stats.W, ARCHMAGOS.stats.W, true);
+    const dice = new FakeDiceRoller([
+      3, 3, 3, 3, 3, 3,    // 6 AI hit rolls  (TN3+, all hit)
+      2, 2, 2, 2, 2, 2,    // 6 wound rolls   (TN2+, all wound)
+      1, 1, 1, 1, 1, 1,    // Pool 2 saves    (Inv4+, all fail)
+      // Player is casualty — no counter-attack
+    ]);
+    const result = resolveStrikeStep(dice, state, WARBOSS, ARCHMAGOS, 'ai');
+    expect(result.updatedState.player.isCasualty).toBe(true);  // WARBOSS killed
+    expect(result.updatedState.ai.currentWounds).toBe(5);       // ARCHMAGOS W6 − 1 Feedback
+    expect(result.log.some(l => l.includes('Cybertheurgic Feedback'))).toBe(true);
+  });
+});
+
+// ── The Myrmidon's Path (Myrmidax subfaction) ─────────────────────────────────
+
+describe("The Myrmidon's Path", () => {
+  // Shooter: WS5, BS4, A2, S5, T5, W5, Sv2, Inv4.
+  // weapons[0] = ARCHMAGOS Power Axe (melee, selectedWeaponProfile in state).
+  // weapons[1] = WARBOSS SLUGGA (ranged, type:'ranged', AP null, D1, attacksModifier:'none').
+  //   FP = char A = 2 (attacksModifier 'none' → uses char.stats.A).
+  //   Hit TN: BS4 → 2+.
+  //   S5 vs defender T4 → wound TN 3+.
+  //   AP null vs Sv5/Inv4: armourPenetrated=false → effectiveSave=min(5,4)=4.
+  //
+  // Defender: WS4, A4, T4, W5, Sv5, Inv4.
+  // Melee hit TNs:
+  //   Shooter WS5 vs Defender WS4 → TN3+   (A2+1bonus=3 attacks)
+  //   Defender WS4 vs Shooter WS5 → TN5+   (A4 attacks, no bonus)
+
+  const SHOOTER: Character = {
+    id: 'mp-shooter', name: 'MP Shooter',
+    faction: 'mechanicum', type: 'infantry', subTypes: ['Command'],
+    stats: { M:6, WS:5, BS:4, S:5, T:5, W:5, I:4, A:2, LD:9, CL:9, WP:9, IN:10, Sv:2, Inv:4 },
+    // weapons[0] = melee (Power Axe), weapons[1] = ranged (Slugga FP2)
+    weapons: [ARCHMAGOS.weapons[0], WARBOSS.weapons[1]],
+    factionGambitIds: ['the-myrmidons-path'],
+    specialRules: [],
+  };
+
+  const DEFENDER: Character = {
+    id: 'mp-defender', name: 'MP Defender',
+    faction: 'test', type: 'infantry', subTypes: ['Command'],
+    stats: { M:6, WS:4, BS:4, S:4, T:4, W:5, I:4, A:4, LD:8, CL:8, WP:8, IN:8, Sv:5, Inv:4 },
+    weapons: [ARCHMAGOS.weapons[0]],
+    factionGambitIds: [],
+    specialRules: [],
+  };
+
+  function makeMPState(
+    playerGambit: boolean,
+    flipForAI = false,
+    advantage: 'player' | 'ai' = 'player',
+  ): CombatState {
+    const pChar = flipForAI ? DEFENDER : SHOOTER;
+    const aChar = flipForAI ? SHOOTER : DEFENDER;
+    const s = buildInitialState(pChar, aChar);
+    return {
+      ...s,
+      challengeAdvantage: advantage,
+      player: {
+        ...s.player,
+        selectedGambit: playerGambit && !flipForAI ? 'the-myrmidons-path' : null,
+        selectedWeaponProfile: pChar.weapons[0].profiles[0],
+      },
+      ai: {
+        ...s.ai,
+        selectedGambit: flipForAI ? 'the-myrmidons-path' : null,
+        selectedWeaponProfile: aChar.weapons[0].profiles[0],
+      },
+    };
+  }
+
+  it('shots all miss: no pre-attack damage, normal melee then proceeds', () => {
+    // Shooting: FP2, BS4→TN2+, rolls [1,1] → 0 hits → no wound/save dice.
+    // Player melee: WS5 vs WS4=TN3+. A2+1bonus=3 attacks. All miss (roll 1).
+    // AI melee: WS4 vs WS5=TN5+. A4 attacks. All miss (roll 1).
+    const state = makeMPState(true);
+    const dice = new FakeDiceRoller([
+      1, 1,             // 2 shooting hit rolls (TN2+, both miss)
+      1, 1, 1,          // 3 player melee hits  (TN3+, all miss)
+      1, 1, 1, 1,       // 4 AI melee hits      (TN5+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, SHOOTER, DEFENDER, 'player');
+    expect(result.updatedState.ai.currentWounds).toBe(5);   // no shooting damage
+    expect(result.updatedState.player.currentWounds).toBe(5);
+    expect(result.log.some(l => l.includes("Myrmidon's Path"))).toBe(true);
+  });
+
+  it('shots hit, wound, saves fail: pre-attack damage applied before melee', () => {
+    // Shooting: [5,5] → 2 hits (TN2+).
+    //   Wound: [3,3] → 2 wounds (S5 vs T4=TN3+).
+    //   Save: AP null, Sv5/Inv4 → effectiveSave=4; [1,1] → both fail → 2 unsaved × D1 = 2.
+    //   Defender W5 → W3.
+    // Player melee: [1,1,1] → all 3 miss. AI melee: [1,1,1,1] → all 4 miss.
+    const state = makeMPState(true);
+    const dice = new FakeDiceRoller([
+      5, 5,             // shooting hits  (TN2+, both hit)
+      3, 3,             // wound rolls    (TN3+, both wound)
+      1, 1,             // save rolls     (effectiveSave=4, both fail)
+      1, 1, 1,          // 3 player melee (TN3+, all miss)
+      1, 1, 1, 1,       // 4 AI melee     (TN5+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, SHOOTER, DEFENDER, 'player');
+    expect(result.updatedState.ai.currentWounds).toBe(3);   // W5 − 2
+    expect(result.updatedState.player.woundsInflictedThisChallenge).toBe(2);
+    expect(result.log.some(l => l.includes("Myrmidon's Path") && l.includes('2 unsaved'))).toBe(true);
+  });
+
+  it('no eligible ranged weapon: shooting skipped, melee proceeds normally', () => {
+    // ARCHMAGOS has no ranged weapons — shooting is skipped, melee runs normally.
+    // Player melee: WS5 vs WS4=TN3+. A4+1bonus=5 attacks. All miss.
+    // AI melee: WS4 vs WS5=TN5+. A4 attacks. All miss.
+    const s = buildInitialState(ARCHMAGOS, DEFENDER);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: {
+        ...s.player,
+        selectedGambit: 'the-myrmidons-path',
+        selectedWeaponProfile: ARCHMAGOS.weapons[0].profiles[0],
+      },
+      ai: {
+        ...s.ai,
+        selectedGambit: null,
+        selectedWeaponProfile: DEFENDER.weapons[0].profiles[0],
+      },
+    };
+    const dice = new FakeDiceRoller([
+      // No shooting dice — ARCHMAGOS has no ranged weapons
+      1, 1, 1, 1, 1,    // 5 player melee hits (TN3+, all miss)
+      1, 1, 1, 1,        // 4 AI melee hits     (TN5+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, ARCHMAGOS, DEFENDER, 'player');
+    expect(result.updatedState.ai.currentWounds).toBe(5);  // no shooting damage
+    expect(result.log.some(l => l.includes('no eligible ranged weapon'))).toBe(true);
+  });
+
+  it('AI side: shooting applies when AI holds the gambit', () => {
+    // flipForAI=true: player=DEFENDER, ai=SHOOTER (has ranged weapon).
+    // advantage='ai' → AI shoots player before attacks.
+    // Shooting: [5,5]→2 hits, [3,3]→2 wounds, [1,1]→saves fail → 2 damage → player W5→W3.
+    // AI melee (advantage): WS5 vs WS4=TN3+. A2+1bonus=3. All miss [1,1,1].
+    // Player melee: WS4 vs WS5=TN5+. A4. All miss [1,1,1,1].
+    const state = makeMPState(false, true, 'ai');
+    const dice = new FakeDiceRoller([
+      5, 5,             // AI shooting hits   (TN2+, both hit)
+      3, 3,             // wound rolls        (TN3+, both wound)
+      1, 1,             // save rolls         (effectiveSave=4, both fail)
+      1, 1, 1,          // 3 AI melee hits    (TN3+, all miss)
+      1, 1, 1, 1,       // 4 player melee hits(TN5+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, DEFENDER, SHOOTER, 'ai');
+    expect(result.updatedState.player.currentWounds).toBe(3);  // W5 − 2 shooting
+    expect(result.updatedState.ai.woundsInflictedThisChallenge).toBe(2);
+    expect(result.log.some(l => l.includes("Myrmidon's Path"))).toBe(true);
   });
 });

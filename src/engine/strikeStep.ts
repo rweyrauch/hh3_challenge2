@@ -13,7 +13,7 @@ import type { CombatState, CombatantState } from '../models/combatState.js';
 import type { Character } from '../models/character.js';
 import type { WeaponProfile } from '../models/weapon.js';
 import { isSwordProfile } from '../models/weapon.js';
-import { getHitTargetNumber, getWoundTargetNumber, getEffectiveSave } from './tables.js';
+import { getHitTargetNumber, getWoundTargetNumber, getEffectiveSave, getBSHitTargetNumber } from './tables.js';
 import { getStrikeModifiers } from './gambitEffects.js';
 
 /** Detailed result of one model's attack sequence. */
@@ -118,7 +118,14 @@ function resolveAttackSequence(
     log.push(`Bite of the Betrayed: ${defenderChar.name} has +1 T.`);
   }
 
-  let atkWS = (forceBoost === 'WS' ? attackerChar.stats.WS * 2 : attackerChar.stats.WS) + mods.wsDelta + biteAtkBonus;
+  // Power of the Machine Spirit: +2 WS / +1 A from a successful IN check this round
+  const msBoostWS = attacker.machineSpiritBoostWS;
+  const msBoostA  = attacker.machineSpiritBoostA;
+  if (msBoostWS > 0 || msBoostA > 0) {
+    log.push(`Power of the Machine Spirit: ${attackerChar.name} has +${msBoostWS} WS and +${msBoostA} A.`);
+  }
+
+  let atkWS = (forceBoost === 'WS' ? attackerChar.stats.WS * 2 : attackerChar.stats.WS) + mods.wsDelta + biteAtkBonus + msBoostWS;
 
   // Apply weapon profile Strength modifier (kind:'none' = base S, 'add' = S+n, 'fixed' = n, 'mult' = S*n)
   const sm = profile.strengthModifier;
@@ -141,7 +148,7 @@ function resolveAttackSequence(
 
   let atkA = mods.attacksOverride !== null
     ? mods.attacksOverride
-    : baseA + mods.attacksDelta;
+    : baseA + mods.attacksDelta + msBoostA;
 
   // Taunt and Bait: reduce own WS/A to enemy's (or enemy-1 if equal)
   if (attacker.selectedGambit === 'taunt-and-bait') {
@@ -280,7 +287,7 @@ function resolveAttackSequence(
       woundRolls: [], wounds: 0,
       saveRolls: [], unsavedWounds: 0,
       totalDamage: 0, defenderWoundsRemaining: defWounds,
-      defenderIsCasualty: false, hitRollOnes,
+      defenderIsCasualty: defWounds <= 0, hitRollOnes,
       phageSTriggered: false, phageTTriggered: false, log,
     };
   }
@@ -376,13 +383,14 @@ function resolveAttackSequence(
   }
 
   if (wounds === 0) {
+    const defWounds = defender.currentWounds;
     return {
       attackerName: attackerChar.name,
       attacks: atkA, hitRolls, hits,
       woundRolls, wounds: 0,
       saveRolls: [], unsavedWounds: 0,
-      totalDamage: 0, defenderWoundsRemaining: defender.currentWounds,
-      defenderIsCasualty: false, hitRollOnes,
+      totalDamage: 0, defenderWoundsRemaining: defWounds,
+      defenderIsCasualty: defWounds <= 0, hitRollOnes,
       phageSTriggered: false, phageTTriggered: false, log,
     };
   }
@@ -527,13 +535,14 @@ function resolveAttackSequence(
   // Check if Deflagrate can still trigger (uses pre-FNP count)
   const deflagrateRule = profile.specialRules.find(sr => sr.name === 'Deflagrate');
   if (unsavedWounds === 0 && !(deflagrateRule && deflagrateUnsavedCount > 0)) {
+    const defWounds = defender.currentWounds;
     return {
       attackerName: attackerChar.name,
       attacks: atkA, hitRolls, hits,
       woundRolls, wounds,
       saveRolls, unsavedWounds: 0,
-      totalDamage: 0, defenderWoundsRemaining: defender.currentWounds,
-      defenderIsCasualty: false, hitRollOnes,
+      totalDamage: 0, defenderWoundsRemaining: defWounds,
+      defenderIsCasualty: defWounds <= 0, hitRollOnes,
       phageSTriggered, phageTTriggered, log,
     };
   }
@@ -956,6 +965,290 @@ export function resolveDirtyFighterPreStrike(
   return { updatedState, log };
 }
 
+// Special-rule names that make a ranged weapon ineligible for The Myrmidon's Path.
+const MYRMIDONS_PATH_EXCLUDED_RULES = ['Blast', 'Template', 'Barrage'];
+
+/**
+ * Resolve The Myrmidon's Path shooting attack (Myrmidax subfaction).
+ *
+ * Fires before either model makes normal attacks in the Strike Step.
+ * The attacker uses the best eligible Ranged Weapon they carry (no Blast /
+ * Template / Barrage).  If no eligible weapon exists, the attack is skipped.
+ * Hit TN is determined by the shooter's BS; wounds use the standard S vs T
+ * table; saves, FNP, and Eternal Warrior apply normally.
+ */
+function resolveMyrmidonsPathShooting(
+  dice: DiceRoller,
+  attackerChar: Character,
+  defenderState: CombatantState,
+  defenderChar: Character,
+  log: string[],
+): {
+  newDefenderWounds: number;
+  isDefenderCasualty: boolean;
+  totalDamage: number;
+} {
+  // ── Find the best eligible ranged weapon ──────────────────────────────────
+  let bestProfile: WeaponProfile | null = null;
+  let bestFP = 0;
+  let bestScore = -Infinity;
+
+  for (const weapon of attackerChar.weapons) {
+    if (weapon.type !== 'ranged') continue;
+    for (const p of weapon.profiles) {
+      if (p.specialRules.some(sr => MYRMIDONS_PATH_EXCLUDED_RULES.includes(sr.name as string))) continue;
+      const am = p.attacksModifier;
+      const fp = am.kind === 'fixed' ? am.value
+        : am.kind === 'add' ? attackerChar.stats.A + am.value
+        : attackerChar.stats.A; // kind === 'none'
+      const score = fp * p.damage;
+      if (score > bestScore) { bestScore = score; bestProfile = p; bestFP = fp; }
+    }
+  }
+
+  if (bestProfile === null) {
+    log.push(
+      `The Myrmidon's Path: ${attackerChar.name} has no eligible ranged weapon — shooting skipped.`,
+    );
+    return { newDefenderWounds: defenderState.currentWounds, isDefenderCasualty: false, totalDamage: 0 };
+  }
+
+  const p = bestProfile;
+  const fp = bestFP;
+  const hitTN = getBSHitTargetNumber(attackerChar.stats.BS);
+
+  // Effective Strength for this weapon
+  const sm = p.strengthModifier;
+  const atkS = sm.kind === 'fixed' ? sm.value
+    : sm.kind === 'add' ? attackerChar.stats.S + sm.value
+    : sm.kind === 'mult' ? attackerChar.stats.S * sm.value
+    : attackerChar.stats.S;
+
+  const woundTN = getWoundTargetNumber(atkS, defenderChar.stats.T);
+
+  log.push(
+    `The Myrmidon's Path: ${attackerChar.name} fires ${p.profileName}` +
+    ` (${fp} shot(s), BS${attackerChar.stats.BS}→${hitTN}+, S${atkS} vs T${defenderChar.stats.T}` +
+    ` → wound on ${woundTN}+, AP${p.ap ?? '-'}, D${p.damage}) before normal attacks.`,
+  );
+
+  // ── Hit rolls ─────────────────────────────────────────────────────────────
+  const hitRolls = dice.rollNd6(fp);
+  const hits = hitRolls.filter(r => r >= hitTN).length;
+  log.push(`Myrmidon's Path hit rolls [${hitRolls.join(',')}] → ${hits} hit(s)`);
+  if (hits === 0) {
+    return { newDefenderWounds: defenderState.currentWounds, isDefenderCasualty: false, totalDamage: 0 };
+  }
+
+  // ── Wound rolls ───────────────────────────────────────────────────────────
+  const woundRolls = dice.rollNd6(hits);
+  const wounds = woundTN <= 6 ? woundRolls.filter(r => r >= woundTN).length : 0;
+  log.push(`Myrmidon's Path wound rolls [${woundRolls.join(',')}] → ${wounds} wound(s)`);
+  if (wounds === 0) {
+    return { newDefenderWounds: defenderState.currentWounds, isDefenderCasualty: false, totalDamage: 0 };
+  }
+
+  // ── Saving throws ─────────────────────────────────────────────────────────
+  const effectiveSave = getEffectiveSave(defenderChar.stats.Sv, defenderChar.stats.Inv, p.ap);
+  let unsaved = wounds;
+  if (effectiveSave !== null) {
+    const saveRolls = dice.rollNd6(wounds);
+    const saved = saveRolls.filter(r => r >= effectiveSave).length;
+    unsaved -= saved;
+    log.push(`Myrmidon's Path save rolls [${saveRolls.join(',')}] vs ${effectiveSave}+ → ${saved} saved, ${unsaved} unsaved`);
+  } else {
+    log.push(
+      `Myrmidon's Path: no save available` +
+      ` (AP${p.ap} vs Sv${defenderChar.stats.Sv}+/Inv${defenderChar.stats.Inv ?? '-'})`,
+    );
+  }
+  if (unsaved === 0) {
+    return { newDefenderWounds: defenderState.currentWounds, isDefenderCasualty: false, totalDamage: 0 };
+  }
+
+  // ── Feel No Pain ──────────────────────────────────────────────────────────
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name !== 'FeelNoPain') continue;
+    const fnpRolls = dice.rollNd6(unsaved);
+    const fnpSaved = fnpRolls.filter(r => r >= sr.threshold).length;
+    unsaved -= fnpSaved;
+    log.push(`Myrmidon's Path FNP ${sr.threshold}+: [${fnpRolls.join(',')}] → ${fnpSaved} cancelled`);
+    break;
+  }
+  if (unsaved === 0) {
+    return { newDefenderWounds: defenderState.currentWounds, isDefenderCasualty: false, totalDamage: 0 };
+  }
+
+  // ── Damage (with Eternal Warrior reduction) ───────────────────────────────
+  let ewReduction = 0;
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name === 'EternalWarrior') { ewReduction = sr.value; break; }
+  }
+  const dmgPerWound = Math.max(1, p.damage - ewReduction);
+  const totalDamage = unsaved * dmgPerWound;
+  const newDefenderWounds = Math.max(0, defenderState.currentWounds - totalDamage);
+  const isDefenderCasualty = newDefenderWounds <= 0;
+
+  log.push(
+    `Myrmidon's Path: ${unsaved} unsaved × D${dmgPerWound} = ${totalDamage} damage. ` +
+    `${defenderChar.name}: W${defenderState.currentWounds} → W${newDefenderWounds}` +
+    (isDefenderCasualty ? ' (CASUALTY)' : ''),
+  );
+
+  return { newDefenderWounds, isDefenderCasualty, totalDamage };
+}
+
+/**
+ * Resolve the Liquifractor Onslaught shooting attack (Archmagos Draykavac).
+ *
+ * Fires before either model makes normal attacks in the Strike Step.
+ * Profile: FP3, hits on 2+, AP6, D1, Poisoned(2+), Breaching(4+), Phage(T & S).
+ */
+function resolveLiquifractionOnslaught(
+  dice: DiceRoller,
+  attackerChar: Character,
+  defenderState: CombatantState,
+  defenderChar: Character,
+  log: string[],
+): {
+  newDefenderWounds: number;
+  isDefenderCasualty: boolean;
+  phageSTriggered: boolean;
+  phageTTriggered: boolean;
+  totalDamage: number;
+} {
+  log.push(
+    `Liquifractor Onslaught: ${attackerChar.name} fires the Liquifractor ` +
+    `(3 shots, 2+, AP6, D1, Poisoned(2+), Breaching(4+), Phage(T & S)) ` +
+    `before normal attacks.`,
+  );
+
+  // Hit rolls: FP3, hit on 2+
+  const hitRolls = dice.rollNd6(3);
+  const hits = hitRolls.filter(r => r >= 2).length;
+  log.push(`Liquifractor hit rolls [${hitRolls.join(',')}] needing 2+ → ${hits} hit(s)`);
+
+  if (hits === 0) {
+    return {
+      newDefenderWounds: defenderState.currentWounds,
+      isDefenderCasualty: false,
+      phageSTriggered: false,
+      phageTTriggered: false,
+      totalDamage: 0,
+    };
+  }
+
+  // Wound rolls: Poisoned(2+) always wounds on 2+; Breaching(4+) upgrades to AP2
+  const woundRolls = dice.rollNd6(hits);
+  let normalWounds = 0;    // AP6 wounds
+  let breachingWounds = 0; // AP2 wounds (Breaching 4+)
+
+  for (const roll of woundRolls) {
+    if (roll >= 2) { // Poisoned(2+)
+      if (roll >= 4) { // Breaching(4+)
+        breachingWounds++;
+      } else {
+        normalWounds++;
+      }
+    }
+  }
+
+  const totalWounds = normalWounds + breachingWounds;
+  const breachNote = breachingWounds > 0 ? ` (${breachingWounds} Breaching/AP2, ${normalWounds} AP6)` : '';
+  log.push(
+    `Liquifractor wound rolls [${woundRolls.join(',')}] needing 2+ (Poisoned) ` +
+    `→ ${totalWounds} wound(s)${breachNote}`,
+  );
+
+  if (totalWounds === 0) {
+    return {
+      newDefenderWounds: defenderState.currentWounds,
+      isDefenderCasualty: false,
+      phageSTriggered: false,
+      phageTTriggered: false,
+      totalDamage: 0,
+    };
+  }
+
+  // Saving throws
+  const defSv = defenderChar.stats.Sv;
+  const defInv = defenderChar.stats.Inv;
+  const normalSave = getEffectiveSave(defSv, defInv, 6);  // AP6
+  const breachSave = getEffectiveSave(defSv, defInv, 2);  // AP2
+
+  let saved = 0;
+
+  if (normalWounds > 0) {
+    const normalSaveRolls = dice.rollNd6(normalWounds);
+    if (normalSave !== null) {
+      const normalSaved = normalSaveRolls.filter(r => r >= normalSave).length;
+      saved += normalSaved;
+      log.push(`Liquifractor AP6 saves [${normalSaveRolls.join(',')}] vs ${normalSave}+ → ${normalSaved} saved`);
+    } else {
+      log.push(`Liquifractor AP6: no save available (AP6 vs Sv${defSv}+/Inv${defInv ?? '-'})`);
+    }
+  }
+
+  if (breachingWounds > 0) {
+    const breachSaveRolls = dice.rollNd6(breachingWounds);
+    if (breachSave !== null) {
+      const breachSaved = breachSaveRolls.filter(r => r >= breachSave).length;
+      saved += breachSaved;
+      log.push(`Liquifractor Breaching/AP2 saves [${breachSaveRolls.join(',')}] vs ${breachSave}+ → ${breachSaved} saved`);
+    } else {
+      log.push(`Liquifractor Breaching/AP2: no save available (AP2 vs Sv${defSv}+/Inv${defInv ?? '-'})`);
+    }
+  }
+
+  let unsavedWounds = totalWounds - saved;
+
+  // Feel No Pain
+  let fnpThreshold: number | null = null;
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name === 'FeelNoPain') fnpThreshold = sr.threshold;
+  }
+  if (fnpThreshold !== null && unsavedWounds > 0) {
+    const fnpRolls = dice.rollNd6(unsavedWounds);
+    const fnpSaved = fnpRolls.filter(r => r >= fnpThreshold!).length;
+    log.push(`Liquifractor FNP ${fnpThreshold}+: rolls [${fnpRolls.join(',')}] → ${fnpSaved} cancelled`);
+    unsavedWounds -= fnpSaved;
+  }
+
+  // Phage(T & S): triggers if ≥1 unsaved wounds and not already applied
+  const phageSTriggered = unsavedWounds > 0 && !defenderState.phageSApplied;
+  const phageTTriggered = unsavedWounds > 0 && !defenderState.phageTApplied;
+  if (phageSTriggered) log.push(`Phage(S): ${defenderChar.name}'s Strength permanently reduced by 1.`);
+  if (phageTTriggered) log.push(`Phage(T): ${defenderChar.name}'s Toughness permanently reduced by 1.`);
+
+  if (unsavedWounds === 0) {
+    return {
+      newDefenderWounds: defenderState.currentWounds,
+      isDefenderCasualty: false,
+      phageSTriggered,
+      phageTTriggered,
+      totalDamage: 0,
+    };
+  }
+
+  // D1 damage per unsaved wound, reduced by Eternal Warrior (minimum 1)
+  let ewReduction = 0;
+  for (const sr of defenderChar.specialRules) {
+    if (sr.name === 'EternalWarrior') ewReduction = sr.value;
+  }
+  const dmgPerWound = Math.max(1, 1 - ewReduction);
+  const totalDamage = unsavedWounds * dmgPerWound;
+  const newDefenderWounds = Math.max(0, defenderState.currentWounds - totalDamage);
+  const isDefenderCasualty = newDefenderWounds <= 0;
+
+  log.push(
+    `Liquifractor: ${unsavedWounds} unsaved wound(s) × D${dmgPerWound} = ${totalDamage} damage. ` +
+    `${defenderChar.name}: ${defenderState.currentWounds} → ${newDefenderWounds} wounds` +
+    (isDefenderCasualty ? ' (CASUALTY)' : ''),
+  );
+
+  return { newDefenderWounds, isDefenderCasualty, phageSTriggered, phageTTriggered, totalDamage };
+}
+
 /**
  * Resolve the full Strike Step.
  *
@@ -1051,14 +1344,88 @@ export function resolveStrikeStep(
     };
   }
 
+  // ── Liquifractor Onslaught: fires before either model makes normal attacks ─
+  if (updatedState.player.selectedGambit === 'liquifractor-onslaught' && !updatedState.player.isCasualty) {
+    const lr = resolveLiquifractionOnslaught(dice, playerChar, updatedState.ai, aiChar, log);
+    updatedState = {
+      ...updatedState,
+      ai: {
+        ...updatedState.ai,
+        currentWounds: lr.newDefenderWounds,
+        isCasualty: lr.isDefenderCasualty,
+        phageSApplied: updatedState.ai.phageSApplied || lr.phageSTriggered,
+        phageTApplied: updatedState.ai.phageTApplied || lr.phageTTriggered,
+      },
+      player: {
+        ...updatedState.player,
+        woundsInflictedThisChallenge:
+          updatedState.player.woundsInflictedThisChallenge + lr.totalDamage,
+      },
+    };
+  }
+
+  if (updatedState.ai.selectedGambit === 'liquifractor-onslaught' && !updatedState.ai.isCasualty) {
+    const lr = resolveLiquifractionOnslaught(dice, aiChar, updatedState.player, playerChar, log);
+    updatedState = {
+      ...updatedState,
+      player: {
+        ...updatedState.player,
+        currentWounds: lr.newDefenderWounds,
+        isCasualty: lr.isDefenderCasualty,
+        phageSApplied: updatedState.player.phageSApplied || lr.phageSTriggered,
+        phageTApplied: updatedState.player.phageTApplied || lr.phageTTriggered,
+      },
+      ai: {
+        ...updatedState.ai,
+        woundsInflictedThisChallenge:
+          updatedState.ai.woundsInflictedThisChallenge + lr.totalDamage,
+      },
+    };
+  }
+
+  // ── The Myrmidon's Path: ranged shooting before either model attacks ───────
+  if (updatedState.player.selectedGambit === 'the-myrmidons-path' && !updatedState.player.isCasualty) {
+    const mp = resolveMyrmidonsPathShooting(dice, playerChar, updatedState.ai, aiChar, log);
+    updatedState = {
+      ...updatedState,
+      ai: {
+        ...updatedState.ai,
+        currentWounds: mp.newDefenderWounds,
+        isCasualty: mp.isDefenderCasualty,
+      },
+      player: {
+        ...updatedState.player,
+        woundsInflictedThisChallenge:
+          updatedState.player.woundsInflictedThisChallenge + mp.totalDamage,
+      },
+    };
+  }
+  if (updatedState.ai.selectedGambit === 'the-myrmidons-path' && !updatedState.ai.isCasualty) {
+    const mp = resolveMyrmidonsPathShooting(dice, aiChar, updatedState.player, playerChar, log);
+    updatedState = {
+      ...updatedState,
+      player: {
+        ...updatedState.player,
+        currentWounds: mp.newDefenderWounds,
+        isCasualty: mp.isDefenderCasualty,
+      },
+      ai: {
+        ...updatedState.ai,
+        woundsInflictedThisChallenge:
+          updatedState.ai.woundsInflictedThisChallenge + mp.totalDamage,
+      },
+    };
+  }
+
   if (advantage === 'player') {
-    // Player attacks first
+    // Player attacks first; use updatedState so any pre-attack damage (Liquifractor
+    // Onslaught, Force Perils) is reflected in the defender's starting wound total.
     playerResult = resolveAttackSequence(
       dice,
-      state.player, state.ai,
+      updatedState.player, updatedState.ai,
       playerChar, aiChar,
       playerProfile, playerAttackBonus,
-      true, state,
+      true, updatedState,
       everyStrikeForeseenForPlayer,
       playerForceBoost,
     );
@@ -1078,13 +1445,13 @@ export function resolveStrikeStep(
       },
     };
 
-    // Track wounds inflicted
+    // Track wounds inflicted (use updatedState base to accumulate pre-attack damage)
     updatedState = {
       ...updatedState,
       player: {
         ...updatedState.player,
         woundsInflictedThisChallenge:
-          state.player.woundsInflictedThisChallenge + playerResult.totalDamage,
+          updatedState.player.woundsInflictedThisChallenge + playerResult.totalDamage,
       },
     };
 
@@ -1131,13 +1498,14 @@ export function resolveStrikeStep(
       log.push('AI did not attack — AI was removed as a casualty.');
     }
   } else {
-    // AI attacks first
+    // AI attacks first; use updatedState so any pre-attack damage (Liquifractor
+    // Onslaught, Force Perils) is reflected in the defender's starting wound total.
     aiResult = resolveAttackSequence(
       dice,
-      state.ai, state.player,
+      updatedState.ai, updatedState.player,
       aiChar, playerChar,
       aiProfile, aiAttackBonus,
-      false, state,
+      false, updatedState,
       everyStrikeForeseenForAI,
       aiForceBoost,
     );
@@ -1153,7 +1521,7 @@ export function resolveStrikeStep(
       ai: {
         ...updatedState.ai,
         woundsInflictedThisChallenge:
-          state.ai.woundsInflictedThisChallenge + aiResult.totalDamage,
+          updatedState.ai.woundsInflictedThisChallenge + aiResult.totalDamage,
       },
     };
 
@@ -1301,6 +1669,34 @@ export function resolveStrikeStep(
     } else {
       log.push(`Seeker of Atonement: FAILED — ${aiChar.name} is Removed as a Casualty.`);
     }
+  }
+
+  // ── Cybertheurgic Feedback (Power of the Machine Spirit) ─────────────────
+  // After all attacks, each model with this gambit suffers 1 automatic unsaved
+  // wound (no armour/invulnerable save, no FNP), regardless of IN check outcome.
+  if (state.player.selectedGambit === 'power-of-the-machine-spirit' && !updatedState.player.isCasualty) {
+    const newW = Math.max(0, updatedState.player.currentWounds - 1);
+    const isCasualty = newW <= 0;
+    log.push(
+      `Cybertheurgic Feedback: ${playerChar.name} suffers 1 automatic wound (no save, no FNP).` +
+      ` W${updatedState.player.currentWounds} → W${newW}${isCasualty ? ' — CASUALTY!' : ''}.`,
+    );
+    updatedState = {
+      ...updatedState,
+      player: { ...updatedState.player, currentWounds: newW, isCasualty },
+    };
+  }
+  if (state.ai.selectedGambit === 'power-of-the-machine-spirit' && !updatedState.ai.isCasualty) {
+    const newW = Math.max(0, updatedState.ai.currentWounds - 1);
+    const isCasualty = newW <= 0;
+    log.push(
+      `Cybertheurgic Feedback: ${aiChar.name} suffers 1 automatic wound (no save, no FNP).` +
+      ` W${updatedState.ai.currentWounds} → W${newW}${isCasualty ? ' — CASUALTY!' : ''}.`,
+    );
+    updatedState = {
+      ...updatedState,
+      ai: { ...updatedState.ai, currentWounds: newW, isCasualty },
+    };
   }
 
   return {

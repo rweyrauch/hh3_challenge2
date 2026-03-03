@@ -20,8 +20,22 @@ import {
   POWER_MAUL,
   POWER_FIST,
   PARAGON_BLADE,
+  POWER_SWORD,
+  POWER_LANCE,
+  THUNDER_HAMMER,
+  CHAINFIST,
+  CHAINSWORD,
+  CHAINAXE,
+  HEAVY_CHAINAXE, 
+  HEAVY_CHAINSWORD 
 } from '../weapons/legionAstartes.js';
-import { VODIAN_SCEPTRE, SCORIAN_TALONS, ARC_SCOURGES } from '../weapons/mechanicum.js';
+import { 
+  VODIAN_SCEPTRE, 
+  SCORIAN_TALONS, 
+  ARC_SCOURGES, 
+  CORPOSANT_STAVE,
+  SHOCK_CHARGERS
+} from '../weapons/mechanicum.js';
 
 // ── Unique Characters ─────────────────────────────────────────────────────────
 
@@ -43,6 +57,7 @@ const ANACHARIS_SCORIA: Character = {
     { name: 'Fear', value: 1 },
     { name: 'EternalWarrior', value: 1 },
     { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Battlesmith', value: 3 },
   ],
 };
 
@@ -59,12 +74,34 @@ const ARCHMAGOS_DRAYKAVAC: Character = {
     Sv: 2, Inv: 4,
   },
   weapons: [PARAGON_BLADE],
-  factionGambitIds: [],
+  factionGambitIds: ['liquifractor-onslaught'],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
-    { name: 'Bulky', value: 2 },
+    { name: 'Battlesmith', value: 4 },
   ],
 };
+
+/** Archmagos Draykavac — unique Archmagos with Paragon blade */
+const ARCHMAGOS_DRAYKAVAC_ON_ABEYANT: Character = {
+  id: 'archmagos-draykavac-abeyant',
+  name: 'Archmagos Draykavac on Abeyant',
+  faction: 'mechanicum',
+  type: 'infantry',
+  subTypes: ['Command'],
+  stats: {
+    M: 6, WS: 5, BS: 6, S: 6, T: 7, W: 6,
+    I: 3, A: 4, LD: 10, CL: 10, WP: 9, IN: 12,
+    Sv: 2, Inv: 4,
+  },
+  weapons: [PARAGON_BLADE],
+  factionGambitIds: ['liquifractor-onslaught'],
+  specialRules: [
+    { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Bulky', value: 7 },
+    { name: 'Battlesmith', value: 4 },
+  ],
+};
+
 
 // ── Archmagos ─────────────────────────────────────────────────────────────────
 
@@ -80,11 +117,11 @@ const ARCHMAGOS: Character = {
     I: 4, A: 4, LD: 9, CL: 10, WP: 9, IN: 10,
     Sv: 2, Inv: 4,
   },
-  weapons: [POWER_AXE, PARAGON_BLADE, POWER_FIST],
+  weapons: [PARAGON_BLADE, CORPOSANT_STAVE, POWER_AXE, POWER_SWORD, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, POWER_FIST, CHAINFIST, CHAINSWORD, CHAINAXE, HEAVY_CHAINSWORD, HEAVY_CHAINAXE],
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
-    { name: 'Bulky', value: 2 },
+    { name: 'Battlesmith', value: 4 },
   ],
 };
 
@@ -103,10 +140,12 @@ const ARCHMAGOS_ON_ABEYANT: Character = {
     I: 3, A: 4, LD: 10, CL: 10, WP: 9, IN: 10,
     Sv: 2, Inv: 4,
   },
-  weapons: [POWER_AXE, PARAGON_BLADE, POWER_FIST],
+  weapons: [PARAGON_BLADE, CORPOSANT_STAVE, POWER_AXE, POWER_SWORD, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, POWER_FIST, CHAINFIST, CHAINSWORD, CHAINAXE, HEAVY_CHAINSWORD, HEAVY_CHAINAXE],
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Bulky', value: 7 },
+    { name: 'Battlesmith', value: 4 },
   ],
 };
 
@@ -128,6 +167,7 @@ const ARCUITOR_MAGISTERIUM: Character = {
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Battlesmith', value: 2 },
   ],
 };
 
@@ -145,11 +185,11 @@ const MAGOS: Character = {
     I: 3, A: 3, LD: 8, CL: 9, WP: 8, IN: 9,
     Sv: 2, Inv: 5,
   },
-  weapons: [POWER_AXE, POWER_FIST],
+  weapons: [POWER_AXE, POWER_SWORD, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, POWER_FIST, CHAINFIST, CHAINSWORD, CHAINAXE, HEAVY_CHAINSWORD, HEAVY_CHAINAXE],
   factionGambitIds: [],
   specialRules: [
-    { name: 'FeelNoPain', threshold: 6 },
-    { name: 'Bulky', value: 2 },
+    { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Battlesmith', value: 3 },
   ],
 };
 
@@ -168,10 +208,12 @@ const MAGOS_ON_ABEYANT: Character = {
     I: 2, A: 3, LD: 9, CL: 9, WP: 8, IN: 9,
     Sv: 2, Inv: 5,
   },
-  weapons: [POWER_AXE, POWER_FIST],
+  weapons: [POWER_AXE, POWER_SWORD, POWER_LANCE, POWER_MAUL, THUNDER_HAMMER, POWER_FIST, CHAINFIST, CHAINSWORD, CHAINAXE, HEAVY_CHAINSWORD, HEAVY_CHAINAXE],
   factionGambitIds: [],
   specialRules: [
-    { name: 'FeelNoPain', threshold: 6 },
+    { name: 'FeelNoPain', threshold: 5 },
+    { name: 'Bulky', value: 7 },    
+    { name: 'Battlesmith', value: 3 },
   ],
 };
 
@@ -188,14 +230,15 @@ const MYRMIDON_DESTRUCTOR_LORD: Character = {
   type: 'infantry',
   subTypes: ['Champion', 'Heavy'],
   stats: {
-    M: 6, WS: 4, BS: 5, S: 5, T: 5, W: 4,
-    I: 2, A: 2, LD: 9, CL: 9, WP: 8, IN: 8,
+    M: 6, WS: 5, BS: 5, S: 5, T: 5, W: 4,
+    I: 2, A: 3, LD: 9, CL: 9, WP: 8, IN: 8,
     Sv: 3, Inv: 5,
   },
-  weapons: [POWER_FIST],
+  weapons: [SHOCK_CHARGERS],
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 6 },  // from Battle Meditation in Challenges
+    { name: 'Bulky', value: 3 },  
   ],
 };
 
@@ -210,20 +253,22 @@ const MYRMIDON_SECUTOR_LORD: Character = {
   type: 'infantry',
   subTypes: ['Champion', 'Heavy'],
   stats: {
-    M: 6, WS: 4, BS: 5, S: 5, T: 5, W: 4,
-    I: 2, A: 2, LD: 9, CL: 9, WP: 8, IN: 8,
+    M: 6, WS: 5, BS: 5, S: 5, T: 5, W: 4,
+    I: 2, A: 3, LD: 9, CL: 9, WP: 8, IN: 8,
     Sv: 3, Inv: 5,
   },
-  weapons: [ARC_SCOURGES, POWER_FIST],
+  weapons: [POWER_AXE],
   factionGambitIds: [],
   specialRules: [
     { name: 'FeelNoPain', threshold: 6 },  // from Battle Meditation in Challenges
+    { name: 'Bulky', value: 3 },    
   ],
 };
 
 export const MECHANICUM_CHARACTERS: Character[] = [
   ANACHARIS_SCORIA,
   ARCHMAGOS_DRAYKAVAC,
+  ARCHMAGOS_DRAYKAVAC_ON_ABEYANT,
   ARCHMAGOS,
   ARCHMAGOS_ON_ABEYANT,
   ARCUITOR_MAGISTERIUM,

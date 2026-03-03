@@ -262,6 +262,9 @@ const SUBFACTION_GAMBIT_IDS: Partial<Record<string, GambitId[]>> = {
   'sons-of-horus':     ['merciless-strike'],
   'word-bearers':      ['beseech-the-gods'],
   'alpha-legion':      ['i-am-alpharius'],
+  // Mechanicum Subfactions
+  'malagra':           ['power-of-the-machine-spirit'],
+  'myrmidax':          ['the-myrmidons-path'],
 };
 
 /**
@@ -299,9 +302,14 @@ function applySubFaction(char: Character, subFaction: string): Character {
 
   const extraGambitIds: GambitId[] = SUBFACTION_GAMBIT_IDS[subFaction] ?? [];
 
+  const statMods = subFaction === 'archimandrite'
+    ? { LD: char.stats.LD + 1, CL: char.stats.CL + 1 }
+    : {};
+
   return {
     ...char,
     subFaction,
+    stats:           { ...char.stats, ...statMods },
     traits:          [...(char.traits ?? []), ...addedTraits],
     weapons:         extraWeapons.length > 0 ? [...char.weapons, ...extraWeapons] : char.weapons,
     factionGambitIds: [...char.factionGambitIds, ...extraGambitIds],

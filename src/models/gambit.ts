@@ -85,7 +85,11 @@ export type GambitId =
   | 'biological-overload'    // Eversor mandatory: +3 Focus; +3A; self-wound on hit rolls of 1
   | 'mirror-form'            // Adamus mandatory: hits on 4+; fight after reaching 0W if reactive
   // ── Legion Astartes Psychic Discipline gambits ───────────────────────────
-  | 'divination-every-strike-foreseen'; // Divination: WP check → hit on 2+ this Strike Step
+  | 'divination-every-strike-foreseen' // Divination: WP check → hit on 2+ this Strike Step
+  // ── Mechanicum ───────────────────────────────────────────────────────────
+  | 'liquifractor-onslaught'        // Draykavac: extra die/discard highest in Focus; fire Liquifractor before normal attacks
+  | 'power-of-the-machine-spirit'   // Malagra: IN check → +2WS/+1A for Strike Step; always suffer 1 Cybertheurgic Feedback wound after attacks
+  | 'the-myrmidons-path';           // Myrmidax: extra die/discard highest in Focus; shoot a Ranged Weapon before normal attacks
 
 /**
  * When within the Challenge procedure a gambit has its primary effect.

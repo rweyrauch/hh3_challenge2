@@ -187,6 +187,33 @@ export const CHAINAXE: Weapon = {
   })],
 };
 
+
+export const HEAVY_CHAINAXE: Weapon = {
+  name: 'Heavy Chainaxe',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Heavy Chainaxe',
+    initiativeModifier: { kind: 'add', value: -2 },
+    strengthModifier: { kind: 'add', value: 3 },
+    ap: 4, damage: 1,
+    specialRules: [{ name: 'Shred', threshold: 6 }],
+    traits: ['Chain']
+  })]
+};
+
+export const HEAVY_CHAINSWORD: Weapon = {
+  name: 'Heavy Chainsword',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Heavy Chainsword',
+    initiativeModifier: { kind: 'add', value: -1 },
+    strengthModifier: { kind: 'add', value: 2 },
+    ap: 4, damage: 1,
+    specialRules: [{ name: 'Shred', threshold: 6 }],
+    traits: ['Chain']
+  })]
+};
+
 export const SATURNINE_WAR_AXE: Weapon = {
   name: 'Saturnine War Axe',
   type: 'melee',
