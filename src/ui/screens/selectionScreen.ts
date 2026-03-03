@@ -96,10 +96,11 @@ export function mountSelectionScreen(
   onBegin: (result: SelectionResult) => void,
   onSimulate: (result: SelectionResult) => void,
   onAbout: (snapshot: SelectionResult) => void,
+  onSimulateWeapons: (result: SelectionResult) => void,
   initialState?: SelectionResult,
 ): void {
   container.innerHTML = buildHTML();
-  attachListeners(container, onBegin, onSimulate, onAbout, initialState);
+  attachListeners(container, onBegin, onSimulate, onAbout, onSimulateWeapons, initialState);
 }
 
 function buildHTML(): string {
@@ -200,6 +201,9 @@ function buildHTML(): string {
         <button id="simulate-btn" class="btn btn-outline-info btn-lg px-5" disabled>
           📊 Simulate
         </button>
+        <button id="weapon-sim-btn" class="btn btn-outline-secondary btn-lg px-5" disabled>
+          🗡 Best Weapon
+        </button>
         <p id="begin-hint" class="text-muted small mt-2">Select both characters to begin.</p>
       </div>
 
@@ -216,6 +220,7 @@ function attachListeners(
   onBegin: (result: SelectionResult) => void,
   onSimulate: (result: SelectionResult) => void,
   onAbout: (snapshot: SelectionResult) => void,
+  onSimulateWeapons: (result: SelectionResult) => void,
   initialState?: SelectionResult,
 ): void {
   const playerSelect          = container.querySelector<HTMLSelectElement>('#player-char-select')!;
@@ -232,6 +237,7 @@ function attachListeners(
   const aiSubfactionSelect    = container.querySelector<HTMLSelectElement>('#ai-subfaction-select')!;
   const beginBtn              = container.querySelector<HTMLButtonElement>('#begin-btn')!;
   const simulateBtn           = container.querySelector<HTMLButtonElement>('#simulate-btn')!;
+  const weaponSimBtn          = container.querySelector<HTMLButtonElement>('#weapon-sim-btn')!;
   const playerStat            = container.querySelector<HTMLElement>('#player-stat-block')!;
   const aiStat                = container.querySelector<HTMLElement>('#ai-stat-block')!;
 
@@ -239,6 +245,15 @@ function attachListeners(
     const ready = Boolean(playerSelect.value && aiSelect.value);
     beginBtn.disabled    = !ready;
     simulateBtn.disabled = !ready;
+    if (ready) {
+      const char = ALL_CHARACTERS.find(c => c.id === playerSelect.value)!;
+      const extras = getPlayerExtraWeapons(char, playerSubfactionSelect.value, disciplineSelect.value);
+      const allWeapons = [...char.weapons, ...extras];
+      const totalProfiles = allWeapons.reduce((sum, w) => sum + w.profiles.length, 0);
+      weaponSimBtn.disabled = totalProfiles <= 1;
+    } else {
+      weaponSimBtn.disabled = true;
+    }
   };
 
   /**
@@ -472,6 +487,10 @@ function attachListeners(
 
   simulateBtn.addEventListener('click', () => {
     if (playerSelect.value && aiSelect.value) onSimulate(buildResult());
+  });
+
+  weaponSimBtn.addEventListener('click', () => {
+    if (playerSelect.value && aiSelect.value) onSimulateWeapons(buildResult());
   });
 
   container.querySelector('#about-btn')!.addEventListener('click', () => onAbout(buildResult()));

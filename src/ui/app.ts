@@ -21,9 +21,10 @@ import { mountSelectionScreen, type SelectionResult } from './screens/selectionS
 import { mountCombatScreen, updateCombatScreen } from './screens/combatScreen.js';
 import { mountResultScreen } from './screens/resultScreen.js';
 import { mountSimulationScreen } from './screens/simulationScreen.js';
+import { mountWeaponSimulationScreen } from './screens/weaponSimulationScreen.js';
 import { mountAboutScreen } from './screens/aboutScreen.js';
 
-type AppScreen = 'selection' | 'combat' | 'result' | 'simulation' | 'about';
+type AppScreen = 'selection' | 'combat' | 'result' | 'simulation' | 'weapon-simulation' | 'about';
 
 interface AppState {
   screen: AppScreen;
@@ -110,6 +111,26 @@ export function startApp(container: HTMLElement): void {
         app.selectionSnapshot = snapshot;
         goToAbout();
       },
+      (result) => {
+        app.selectionSnapshot   = result;
+        let playerChar = getCharacterById(result.playerCharId) ?? null;
+        if (result.playerSubFaction && playerChar) {
+          playerChar = applySubFaction(playerChar, result.playerSubFaction);
+        }
+        if (result.playerDiscipline && playerChar) {
+          playerChar = applyDiscipline(playerChar, result.playerDiscipline as PsychicDiscipline);
+        }
+        if (result.playerWargear && playerChar) {
+          playerChar = applyWargear(playerChar, result.playerWargear as WargearId);
+        }
+        app.playerChar          = playerChar;
+        let aiChar = getCharacterById(result.aiCharId) ?? null;
+        if (result.aiSubFaction && aiChar) {
+          aiChar = applySubFaction(aiChar, result.aiSubFaction);
+        }
+        app.aiChar              = aiChar;
+        if (app.playerChar && app.aiChar) goToWeaponSimulation();
+      },
       app.selectionSnapshot ?? undefined,
     );
   }
@@ -117,6 +138,22 @@ export function startApp(container: HTMLElement): void {
   function goToAbout(): void {
     app.screen = 'about';
     mountAboutScreen(container, () => goToSelection());
+  }
+
+  function goToWeaponSimulation(): void {
+    if (!app.playerChar || !app.aiChar) { goToSelection(); return; }
+    app.screen = 'weapon-simulation';
+    mountWeaponSimulationScreen(
+      container,
+      app.playerChar,
+      app.aiChar,
+      () => goToSelection(),
+      (weaponIdx, profileIdx) => {
+        app.playerWeaponIndex  = weaponIdx;
+        app.playerProfileIndex = profileIdx;
+        goToCombat();
+      },
+    );
   }
 
   function goToSimulation(): void {
