@@ -15,6 +15,7 @@ import { scoreGambit } from '../ai/heuristicAI.js';
 import { getFactionGambits } from '../data/factions/index.js';
 
 export const SIMULATIONS_PER_GAMBIT = 1000;
+export const SIMULATIONS_PER_WEAPON = 500;
 
 export interface SimResult {
   winner: 'player' | 'ai' | 'draw';
@@ -25,6 +26,16 @@ export interface SimResult {
 export interface GambitStats {
   gambitId: GambitId;
   gambitName: string;
+  winRate: number;        // 0–1
+  avgCRPDelta: number;    // avg (playerCRP - aiCRP)
+  compositeScore: number; // 0–1
+}
+
+export interface WeaponStats {
+  weaponIdx: number;
+  profileIdx: number;
+  weaponName: string;
+  profileName: string;
   winRate: number;        // 0–1
   avgCRPDelta: number;    // avg (playerCRP - aiCRP)
   compositeScore: number; // 0–1
@@ -199,6 +210,111 @@ export async function runAllSimulations(
     onProgress(done, total);
 
     // Yield to the UI thread so the progress bar can repaint.
+    await new Promise(r => setTimeout(r, 0));
+  }
+
+  allStats.sort((a, b) => b.compositeScore - a.compositeScore);
+  return allStats;
+}
+
+/**
+ * Run a single complete simulation, selecting all gambits heuristically
+ * (no forced opening gambit). The weapon used is fixed by weaponIdx/profileIdx.
+ */
+function runSingleWeaponSimulation(
+  playerChar: Character,
+  aiChar: Character,
+  weaponIdx: number,
+  profileIdx: number,
+): SimResult {
+  const dice = new RealDiceRoller();
+  const engine = new ChallengeEngine(playerChar, aiChar, dice);
+  let state = buildInitialState(playerChar, aiChar);
+
+  const preSelected =
+    playerChar.weapons[weaponIdx]?.profiles[profileIdx] ??
+    playerChar.weapons[0]?.profiles[0];
+  if (preSelected) {
+    state = { ...state, player: { ...state.player, selectedWeaponProfile: preSelected } };
+  }
+
+  while (state.phase !== 'ended') {
+    let input: PlayerInput | undefined;
+
+    if (state.phase === 'faceOff' && state.player.selectedGambit === null) {
+      input = { selectedGambit: selectPlayerGambitHeuristic(state, playerChar, aiChar) };
+    } else if (state.phase === 'glory') {
+      input = { continueChallenge: true };
+    }
+
+    let result = engine.advance(state, input);
+    state = result.state;
+
+    while (!result.waitingForInput && state.phase !== 'ended') {
+      result = engine.advance(state);
+      state = result.state;
+    }
+  }
+
+  let winner: 'player' | 'ai' | 'draw';
+  if (state.ai.isCasualty && !state.player.isCasualty) winner = 'player';
+  else if (state.player.isCasualty && !state.ai.isCasualty) winner = 'ai';
+  else if (state.playerCRP > state.aiCRP) winner = 'player';
+  else if (state.aiCRP > state.playerCRP) winner = 'ai';
+  else winner = 'draw';
+
+  return { winner, playerCRP: state.playerCRP, aiCRP: state.aiCRP };
+}
+
+/**
+ * Run the full weapon analysis and return ranked results.
+ *
+ * Iterates over every (weaponIdx, profileIdx) pair available to the player,
+ * runs simsPerWeapon simulations for each using full heuristic gambit
+ * selection every round, yields to the UI thread between weapons, then
+ * returns a sorted array (highest composite score first).
+ *
+ * @param onProgress - called after each weapon batch with (done, total) sim counts
+ */
+export async function runAllWeaponSimulations(
+  playerChar: Character,
+  aiChar: Character,
+  simsPerWeapon: number = SIMULATIONS_PER_WEAPON,
+  onProgress: (done: number, total: number) => void,
+): Promise<WeaponStats[]> {
+  const totalMaxWounds = playerChar.stats.W + aiChar.stats.W;
+
+  // Enumerate all (weaponIdx, profileIdx) pairs
+  const pairs: Array<{ wIdx: number; pIdx: number; weaponName: string; profileName: string }> = [];
+  playerChar.weapons.forEach((weapon, wIdx) => {
+    weapon.profiles.forEach((profile, pIdx) => {
+      pairs.push({ wIdx, pIdx, weaponName: weapon.name, profileName: profile.profileName });
+    });
+  });
+
+  const total = pairs.length * simsPerWeapon;
+  let done = 0;
+
+  const allStats: WeaponStats[] = [];
+
+  for (const { wIdx, pIdx, weaponName, profileName } of pairs) {
+    const results: SimResult[] = [];
+    for (let i = 0; i < simsPerWeapon; i++) {
+      results.push(runSingleWeaponSimulation(playerChar, aiChar, wIdx, pIdx));
+    }
+
+    const n = results.length;
+    const wins = results.filter(r => r.winner === 'player').length;
+    const winRate = wins / n;
+    const avgCRPDelta = results.reduce((sum, r) => sum + (r.playerCRP - r.aiCRP), 0) / n;
+    const compositeScore =
+      winRate * 0.7 + clamp(avgCRPDelta / totalMaxWounds, 0, 1) * 0.3;
+
+    allStats.push({ weaponIdx: wIdx, profileIdx: pIdx, weaponName, profileName, winRate, avgCRPDelta, compositeScore });
+
+    done += simsPerWeapon;
+    onProgress(done, total);
+
     await new Promise(r => setTimeout(r, 0));
   }
 
