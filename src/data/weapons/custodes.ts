@@ -24,6 +24,23 @@ export const APOLLONIAN_SPEAR: Weapon = {
   })],
 };
 
+/** Eternity Blade (melee: +1I, A, +1S, AP2, D1) */
+export const ETERNITY_BLADE: Weapon = {
+  name: 'Eternity Blade',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Eternity Blade',
+    strengthModifier: { kind: 'add', value: 1 },
+    initiativeModifier: { kind: 'add', value: 1 },
+    ap: 2, damage: 1,
+    specialRules: [
+      { name: 'CriticalHit', threshold: 6 },
+      { name: 'DuellistsEdge', value: 2 },
+      { name: 'Shred', threshold: 4 },
+    ],
+  })],
+};
+
 /** Sentinel Warblade (melee: I, A, S, AP2, D1) */
 export const SENTINEL_WARBLADE: Weapon = {
   name: 'Sentinel Warblade',
@@ -52,6 +69,18 @@ export const PARAGON_SPEAR: Weapon = {
     strengthModifier: { kind: 'add', value: 1 },
     ap: 2, damage: 1,
     specialRules: [{ name: 'CriticalHit', threshold: 6 }],
+  })],
+};
+
+/** Eternity Spear (melee: I, A, +1S, AP2, D1, Critical Hit 6+) */
+export const ETERNITY_SPEAR: Weapon = {
+  name: 'Eternity Spear',
+  type: 'melee',
+  profiles: [profile({
+    profileName: 'Eternity Spear',
+    strengthModifier: { kind: 'add', value: 1 },
+    ap: 2, damage: 1,
+    specialRules: [{ name: 'CriticalHit', threshold: 6 }, { name: 'Shred', threshold: 5 }],
   })],
 };
 

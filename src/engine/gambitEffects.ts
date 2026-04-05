@@ -214,6 +214,14 @@ export function getFocusDiceModification(
       // Opponent's CI is set to 1.
       return { ...base, setOpponentCIToOne: true };
 
+    // ── Legio Custodes ───────────────────────────────────────────────────────
+    case 'heavens-strike':
+    case 'raptors-surge':
+    case 'stones-aegis':
+    case 'world-serpents-bane':
+      // No Focus Roll modifications for any of these gambits.
+      return base;
+
     // ── Mechanicum ───────────────────────────────────────────────────────────
     case 'liquifractor-onslaught':
       // Roll 2d6 discard highest; Liquifractor shooting attack handled in strikeStep.ts.
@@ -371,6 +379,26 @@ export function getStrikeModifiers(
         ...base,
         apImprovement: 1,
       };
+
+    case 'heavens-strike':
+      // Attack halving and CriticalHit(6+)→5+ upgrade are both conditional on the
+      // weapon having CriticalHit(6+), so they are resolved inline in strikeStep.ts.
+      return base;
+
+    case 'raptors-surge':
+      // Bonus Attacks equal to (opponent OSB − own OSB, max +3). Both OSBs are 0 in
+      // a 1v1 duel, so this gambit is a no-op in this simulator.
+      return base;
+
+    case 'stones-aegis':
+      // +1T to the defender handled inline in strikeStep.ts.
+      // Wound rolls of 1–2 auto-fail: reuse the existing minimumWoundRoll mechanism
+      // (roll < 3 always fails, i.e. 1 and 2 fail).
+      return { ...base, minimumWoundRoll: 3 };
+
+    case 'world-serpents-bane':
+      // 1 attack; Damage = current Wounds is computed inline in strikeStep.ts.
+      return { ...base, singleAttackCap: true };
 
     case 'every-strike-foreseen':
       // Effect applies in *opponent's* strike step (re-roll one failed save).

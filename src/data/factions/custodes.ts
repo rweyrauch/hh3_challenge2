@@ -8,7 +8,8 @@
 import type { Character } from '../../models/character.js';
 import {
   APOLLONIAN_SPEAR,
-  SENTINEL_WARBLADE,
+  ETERNITY_BLADE,
+  ETERNITY_SPEAR,
   GUARDIAN_SPEAR,
   MISERICORDIA,
 } from '../weapons/custodes.js';
@@ -27,7 +28,7 @@ export const CUSTODES_CHARACTERS: Character[] = [
       Sv: 2, Inv: 4,
     },
     weapons: [APOLLONIAN_SPEAR, MISERICORDIA],
-    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike'],
+    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike', 'heavens-strike', 'raptors-surge', 'stones-aegis', 'world-serpents-bane'],
     specialRules: [
       { name: 'EternalWarrior', value: 2 },
       { name: 'Hatred', target: 'Paragon' },
@@ -46,8 +47,8 @@ export const CUSTODES_CHARACTERS: Character[] = [
       I: 6, A: 6, LD: 12, CL: 10, WP: 10, IN: 10,
       Sv: 2, Inv: 4,
     },
-    weapons: [SENTINEL_WARBLADE, MISERICORDIA],
-    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike'],
+    weapons: [ETERNITY_BLADE, ETERNITY_SPEAR, MISERICORDIA],
+    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike', 'heavens-strike', 'raptors-surge', 'stones-aegis', 'world-serpents-bane'],
     specialRules: [
       { name: 'EternalWarrior', value: 2 },
     ],
@@ -65,8 +66,8 @@ export const CUSTODES_CHARACTERS: Character[] = [
       I: 5, A: 4, LD: 10, CL: 10, WP: 9, IN: 9,
       Sv: 2, Inv: 4,
     },
-    weapons: [SENTINEL_WARBLADE, MISERICORDIA],
-    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike'],
+    weapons: [ETERNITY_BLADE, ETERNITY_SPEAR, MISERICORDIA],
+    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike', 'heavens-strike', 'raptors-surge', 'stones-aegis', 'world-serpents-bane'],
     specialRules: [
       { name: 'EternalWarrior', value: 1 },
     ],
@@ -86,7 +87,7 @@ export const CUSTODES_CHARACTERS: Character[] = [
       Sv: 2, Inv: 6,
     },
     weapons: [GUARDIAN_SPEAR, MISERICORDIA],
-    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike'],
+    factionGambitIds: ['every-strike-foreseen', 'abyssal-strike', 'heavens-strike', 'raptors-surge', 'stones-aegis', 'world-serpents-bane'],
     specialRules: [
       { name: 'EternalWarrior', value: 1 },
     ],

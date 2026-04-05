@@ -19,6 +19,10 @@ export type GambitId =
   // ── Legio Custodes faction gambits ───────────────────────────────────────
   | 'every-strike-foreseen'
   | 'abyssal-strike'
+  | 'heavens-strike'           // all LC: halve Attacks; weapon CriticalHit(6+) becomes CriticalHit(5+)
+  | 'raptors-surge'            // all LC: +Attacks equal to OSB difference (0 in 1v1, no-op)
+  | 'stones-aegis'             // Shield models: +1T but wound rolls 1–2 auto-fail
+  | 'world-serpents-bane'      // all LC: 1 attack; Damage = model's current Wounds
   // ── Ork faction gambits ──────────────────────────────────────────────────
   | 'brutal-but-kunnin'
   | 'kunnin-but-brutal'
