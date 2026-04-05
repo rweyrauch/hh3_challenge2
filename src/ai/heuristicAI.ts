@@ -123,6 +123,41 @@ export function scoreGambit(
       else if (round <= 2) score += 2;
       break;
 
+    case 'heavens-strike': {
+      // Only worthwhile when the selected weapon has CriticalHit(6+) to upgrade.
+      const profile = state.ai.selectedWeaponProfile;
+      const hasWeaponCrit6 = profile !== null
+        && profile.specialRules.some(sr => sr.name === 'CriticalHit' && sr.threshold === 6);
+      if (!hasWeaponCrit6) { score = -99; break; }
+      // Halving attacks is acceptable when base A is high; crit upgrade adds real value.
+      if (aiChar.stats.A >= 4) score += 3;
+      else score += 1;
+      break;
+    }
+
+    case 'raptors-surge':
+      // Outside Support is always 0 in a 1v1 duel — no effect.
+      score = 0;
+      break;
+
+    case 'stones-aegis': {
+      // Requires Shield trait; +1T trades a wound floor for survivability.
+      const hasShield = (aiChar.traits ?? []).includes('Shield');
+      if (!hasShield) { score = -99; break; }
+      if (aiChar.stats.T >= 5) score += 3;
+      else score += 1;
+      break;
+    }
+
+    case 'world-serpents-bane': {
+      // 1 attack for Damage = current Wounds; very powerful when healthy.
+      const wounds = state.ai.currentWounds;
+      if (wounds >= 3) score += 4;
+      else if (wounds >= 1) score += 2;
+      else score = -99;
+      break;
+    }
+
     // ── Ork faction gambits ────────────────────────────────────────────────
 
     case 'brutal-but-kunnin':

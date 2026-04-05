@@ -1695,3 +1695,336 @@ describe("The Myrmidon's Path", () => {
     expect(result.log.some(l => l.includes("Myrmidon's Path"))).toBe(true);
   });
 });
+
+// ─── Custodes faction gambits ──────────────────────────────────────────────────
+
+describe("Heaven's Strike", () => {
+  // Paragon Spear: +1S, AP2, D1, CriticalHit(6+)
+  const paragonSpearProfile = {
+    profileName: 'Paragon Spear',
+    initiativeModifier: { kind: 'none' as const },
+    attacksModifier: { kind: 'none' as const },
+    strengthModifier: { kind: 'add' as const, value: 1 },
+    ap: 2 as number | null,
+    damage: 1,
+    specialRules: [{ name: 'CriticalHit' as const, threshold: 6 }],
+    traits: [] as string[],
+  };
+  // Sentinel Warblade: AP2, D1, no CriticalHit
+  const warbladeProfile = {
+    profileName: 'Sentinel Warblade',
+    initiativeModifier: { kind: 'none' as const },
+    attacksModifier: { kind: 'none' as const },
+    strengthModifier: { kind: 'none' as const },
+    ap: 2 as number | null,
+    damage: 1,
+    specialRules: [] as typeof paragonSpearProfile.specialRules,
+    traits: [] as string[],
+  };
+
+  // Attacker: WS7, S5, A4; Defender: WS5, T5, W5, Sv7+/Inv null (no save)
+  const makeAttacker = (extra: Partial<Character> = {}): Character => ({
+    id: 'test-custodes',
+    name: 'Custodes',
+    faction: 'legio-custodes',
+    type: 'infantry',
+    subTypes: ['Command'],
+    stats: { M: 8, WS: 7, BS: 5, S: 5, T: 5, W: 3, I: 6, A: 4, LD: 10, CL: 10, WP: 9, IN: 9, Sv: 2, Inv: 4 },
+    weapons: [],
+    factionGambitIds: ['heavens-strike'],
+    specialRules: [],
+    ...extra,
+  });
+  const makeDefender = (extra: Partial<Character> = {}): Character => ({
+    id: 'test-defender',
+    name: 'Defender',
+    faction: 'legion-astartes',
+    type: 'infantry',
+    subTypes: [],
+    stats: { M: 6, WS: 5, BS: 4, S: 4, T: 5, W: 5, I: 4, A: 2, LD: 8, CL: 8, WP: 8, IN: 8, Sv: 7, Inv: null },
+    weapons: [],
+    factionGambitIds: [],
+    specialRules: [],
+    ...extra,
+  });
+
+  it('halves attacks and upgrades CriticalHit(6+) to 5+ when weapon has CriticalHit(6+)', () => {
+    // Attacker A=4, WS7 vs WS5 (TN2+). Heaven's Strike: atkA = floor((4+1bonus)/2) = 2.
+    // Paragon Spear CriticalHit(6+) → upgraded to CriticalHit(5+).
+    // Hit rolls [5,5] → both hit (TN2+); both ≥5 → both crit (Heaven's Strike 5+).
+    // Critical hits auto-wound; no wound dice rolled.
+    // critNormalCount=2, normNormalCount=0.
+    // Pool1: rollNd6(2) always consumed even with no save (Sv7+) → 2 dice.
+    // Pool2: rollNd6(0) → 0 dice. D1+1crit bonus=2 per crit → 4 damage total.
+    // AI: A=2, WS5 vs WS7 (TN5+). All miss [1,1].
+    const atk = makeAttacker();
+    const def = makeDefender();
+    const s = buildInitialState(atk, def);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: 'heavens-strike', selectedWeaponProfile: paragonSpearProfile },
+      ai:     { ...s.ai,     selectedGambit: null,             selectedWeaponProfile: warbladeProfile },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5,     // 2 hit rolls (TN2+, both hit; ≥5 → crit with Heaven's Strike 5+)
+      1, 1,     // Pool1: 2 save dice always consumed (effectiveSave=null, auto-fail)
+      1, 1,     // AI: 2 hit rolls (TN5+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, atk, def, 'player');
+    expect(result.playerResult.attacks).toBe(2);      // A=4 → +1 bonus=5 → halved=2
+    expect(result.playerResult.hits).toBe(2);
+    expect(result.playerResult.wounds).toBe(2);       // 2 crits auto-wound
+    expect(result.playerResult.totalDamage).toBe(4);  // 2 crits × (D1+1 crit bonus) = 4
+    expect(result.log.some(l => l.includes("Heaven's Strike"))).toBe(true);
+    expect(result.log.some(l => l.includes('Critical'))).toBe(true);
+  });
+
+  it('does NOT activate when weapon has no CriticalHit(6+)', () => {
+    // Sentinel Warblade has no CriticalHit — Heaven's Strike is a no-op.
+    // Attacker A=4+1bonus=5, WS7 vs WS5 (TN2+). All hit rolls are 1 → miss.
+    // AI: A=2, WS5 vs WS7 (TN5+). All hit rolls are 1 → miss.
+    const atk = makeAttacker();
+    const def = makeDefender();
+    const s = buildInitialState(atk, def);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: 'heavens-strike', selectedWeaponProfile: warbladeProfile },
+      ai:     { ...s.ai,     selectedGambit: null,             selectedWeaponProfile: warbladeProfile },
+    };
+    const dice = new FakeDiceRoller([
+      1, 1, 1, 1, 1,  // 5 player hit rolls (TN2+, all miss)
+      1, 1,            // 2 AI hit rolls (TN5+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, atk, def, 'player');
+    expect(result.playerResult.attacks).toBe(5);  // 4 + 1 bonus, NOT halved
+    expect(result.playerResult.hits).toBe(0);
+    expect(result.log.some(l => l.includes("Heaven's Strike"))).toBe(false);
+  });
+});
+
+describe("Raptor's Surge", () => {
+  it('is a no-op in a 1v1 duel (OSB difference is 0)', () => {
+    // VALDOR (A=6) with raptors-surge (returns base, no attacksDelta) + advantage (+1) = 7 attacks.
+    // AI VALDOR (no gambit, no advantage): A=6+0=6 attacks.
+    // All hit rolls are 1 → miss. WS7 vs WS7 = TN4+ so roll 1 always misses.
+    const s = buildInitialState(VALDOR, VALDOR);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: 'raptors-surge', selectedWeaponProfile: VALDOR.weapons[0].profiles[0] },
+      ai:     { ...s.ai,     selectedGambit: null,             selectedWeaponProfile: VALDOR.weapons[0].profiles[0] },
+    };
+    const dice = new FakeDiceRoller([
+      1, 1, 1, 1, 1, 1, 1,   // 7 player hit rolls (all miss)
+      1, 1, 1, 1, 1, 1,       // 6 AI hit rolls (all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, VALDOR, VALDOR, 'player');
+    expect(result.playerResult.attacks).toBe(7);  // 6 base + 1 advantage, no extra from gambit
+    expect(result.aiResult.attacks).toBe(6);      // 6 base + 0 (no advantage)
+    expect(result.playerResult.hits).toBe(0);
+    expect(result.aiResult.hits).toBe(0);
+  });
+});
+
+describe("Stone's Aegis", () => {
+  // Attacker: WS5, S5, A3; Defender (Stone's Aegis): WS5, T4→5, W4, Sv7+/Inv null
+  const makeAtkChar = (extra: Partial<Character> = {}): Character => ({
+    id: 'test-atk',
+    name: 'Attacker',
+    faction: 'legion-astartes',
+    type: 'infantry',
+    subTypes: [],
+    stats: { M: 6, WS: 5, BS: 4, S: 5, T: 4, W: 4, I: 4, A: 3, LD: 8, CL: 8, WP: 8, IN: 8, Sv: 2, Inv: 4 },
+    weapons: [],
+    factionGambitIds: [],
+    specialRules: [],
+    ...extra,
+  });
+  const makeDefChar = (extra: Partial<Character> = {}): Character => ({
+    id: 'test-def',
+    name: 'Defender',
+    faction: 'legio-custodes',
+    type: 'infantry',
+    subTypes: [],
+    stats: { M: 8, WS: 5, BS: 4, S: 5, T: 4, W: 4, I: 5, A: 2, LD: 10, CL: 10, WP: 9, IN: 9, Sv: 7, Inv: null },
+    weapons: [],
+    factionGambitIds: ['stones-aegis'],
+    specialRules: [],
+    traits: ['Shield'],
+    ...extra,
+  });
+  const atkProfile = {
+    profileName: 'Power Sword',
+    initiativeModifier: { kind: 'none' as const },
+    attacksModifier: { kind: 'none' as const },
+    strengthModifier: { kind: 'none' as const },
+    ap: 3 as number | null,
+    damage: 1,
+    specialRules: [] as { name: string }[],
+    traits: [] as string[],
+  };
+  const defProfile = {
+    profileName: 'Defender Weapon',
+    initiativeModifier: { kind: 'none' as const },
+    attacksModifier: { kind: 'none' as const },
+    strengthModifier: { kind: 'none' as const },
+    ap: 2 as number | null,
+    damage: 1,
+    specialRules: [] as { name: string }[],
+    traits: [] as string[],
+  };
+
+  it('+1T raises the wound TN: S5 vs T4 wounds on 3+; with Stone\'s Aegis T5 wounds on 4+', () => {
+    // S5 vs T4 (S>T by 1) = TN3+. With Stone's Aegis T5 (S=T) = TN4+.
+    // Use wound rolls of 3: succeed at TN3+ but fail at TN4+ (Stone's Aegis).
+    // Attacker A=3+1bonus=4, WS5 vs WS5 = TN4+. Hit [5,5,5,5] all hit.
+    // Wound [3,3,3,3] → all fail at TN4+ (with Stone's Aegis). wounds=0 → early return.
+    // AI: A=2+0=2 attacks, WS5 vs WS5 = TN4+. All miss [1,1].
+    const atk = makeAtkChar();
+    const def = makeDefChar();
+    const s = buildInitialState(atk, def);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: null,           selectedWeaponProfile: atkProfile as any },
+      ai:     { ...s.ai,     selectedGambit: 'stones-aegis', selectedWeaponProfile: defProfile as any },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5, 5, 5,  // 4 hit rolls (TN4+, all hit)
+      3, 3, 3, 3,  // 4 wound rolls (TN4+ w/ Stone's Aegis; 3<4 → all fail)
+      1, 1,        // 2 AI hit rolls (TN4+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, atk, def, 'player');
+    expect(result.playerResult.hits).toBe(4);
+    expect(result.playerResult.wounds).toBe(0);  // all fail at TN4+ (Stone's Aegis T5)
+    expect(result.playerResult.totalDamage).toBe(0);
+  });
+
+  it('wound rolls of 1 or 2 automatically fail against a Stone\'s Aegis defender', () => {
+    // S5 vs T5 (with Stone's Aegis) = TN4+.
+    // Wound rolls [5, 2, 5, 5]: 3 succeed (≥4 and ≥3), 1 auto-fails (roll 2 < minimumWoundRoll 3).
+    // 3 wounds, Sv7+/Inv null → no save. Pool2: rollNd6(3) always consumed → 3 save dice.
+    // 3 × D1 = 3 damage. Defender W4→W1.
+    // AI: A=2, WS5 vs WS5 (TN4+). All miss [1,1].
+    const atk = makeAtkChar();
+    const def = makeDefChar();
+    const s = buildInitialState(atk, def);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: null,           selectedWeaponProfile: atkProfile as any },
+      ai:     { ...s.ai,     selectedGambit: 'stones-aegis', selectedWeaponProfile: defProfile as any },
+    };
+    const dice = new FakeDiceRoller([
+      5, 5, 5, 5,  // 4 hit rolls (TN4+, all hit)
+      5, 2, 5, 5,  // 4 wound rolls (TN4+: 5≥4 pass, 2<3 auto-fail, 5≥4 pass, 5≥4 pass → 3 wounds)
+      1, 1, 1,     // Pool2: 3 save dice always consumed (effectiveSave=null, auto-fail)
+      1, 1,        // 2 AI hit rolls (TN4+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, atk, def, 'player');
+    expect(result.playerResult.hits).toBe(4);
+    expect(result.playerResult.wounds).toBe(3);  // 3 pass (roll 2 auto-fails via minimumWoundRoll=3)
+    expect(result.playerResult.totalDamage).toBe(3);
+    expect(result.updatedState.ai.currentWounds).toBe(1);  // W4 − 3 = W1
+  });
+});
+
+describe("World Serpent's Bane", () => {
+  const makeWSBAttacker = (extra: Partial<Character> = {}): Character => ({
+    id: 'test-wsb',
+    name: 'WSB Attacker',
+    faction: 'legio-custodes',
+    type: 'infantry',
+    subTypes: ['Command'],
+    stats: { M: 8, WS: 7, BS: 5, S: 5, T: 5, W: 5, I: 6, A: 4, LD: 12, CL: 10, WP: 10, IN: 10, Sv: 2, Inv: 4 },
+    weapons: [],
+    factionGambitIds: ['world-serpents-bane'],
+    specialRules: [],
+    ...extra,
+  });
+  const makeWSBDefender = (): Character => ({
+    id: 'test-wsb-def',
+    name: 'WSB Defender',
+    faction: 'legion-astartes',
+    type: 'infantry',
+    subTypes: [],
+    stats: { M: 6, WS: 5, BS: 4, S: 4, T: 4, W: 10, I: 4, A: 2, LD: 8, CL: 8, WP: 8, IN: 8, Sv: 7, Inv: null },
+    weapons: [],
+    factionGambitIds: [],
+    specialRules: [],
+  });
+  const wsbWeapon = {
+    profileName: 'Guardian Spear',
+    initiativeModifier: { kind: 'none' as const },
+    attacksModifier: { kind: 'none' as const },
+    strengthModifier: { kind: 'add' as const, value: 1 },
+    ap: 2 as number | null,
+    damage: 1,
+    specialRules: [] as { name: string }[],
+    traits: [] as string[],
+  };
+  const defWeapon = {
+    profileName: 'Sword',
+    initiativeModifier: { kind: 'none' as const },
+    attacksModifier: { kind: 'none' as const },
+    strengthModifier: { kind: 'none' as const },
+    ap: 2 as number | null,
+    damage: 1,
+    specialRules: [] as { name: string }[],
+    traits: [] as string[],
+  };
+
+  it('makes exactly 1 attack with Damage equal to current wounds', () => {
+    // singleAttackCap: atkA is capped to 1 (after bonus, before min-1).
+    // WS7 vs WS5 = TN2+. Hit [5] → hit. S6 (5+1) vs T4 = TN2+. Wound [5] → wound.
+    // normNormalCount=1. Pool2: rollNd6(1) always consumed → 1 save die.
+    // No save (AP2 vs Sv7+); 1 unsaved wound × D(currentWounds=5) = 5 damage.
+    // AI: A=2, WS5 vs WS7 (TN5+). All miss [1,1].
+    const atk = makeWSBAttacker();
+    const def = makeWSBDefender();
+    const s = buildInitialState(atk, def);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: 'world-serpents-bane', selectedWeaponProfile: wsbWeapon as any, currentWounds: 5 },
+      ai:     { ...s.ai,     selectedGambit: null,                   selectedWeaponProfile: defWeapon as any },
+    };
+    const dice = new FakeDiceRoller([
+      5,     // 1 hit roll (TN2+, hit)
+      5,     // 1 wound roll (S6 vs T4 = TN2+, wound)
+      1,     // Pool2: 1 save die always consumed (no save available)
+      1, 1,  // 2 AI hit rolls (TN5+, all miss)
+    ]);
+    const result = resolveStrikeStep(dice, state, atk, def, 'player');
+    expect(result.playerResult.attacks).toBe(1);      // singleAttackCap = 1
+    expect(result.playerResult.hits).toBe(1);
+    expect(result.playerResult.wounds).toBe(1);
+    expect(result.playerResult.totalDamage).toBe(5);  // Damage = currentWounds (5)
+    expect(result.updatedState.ai.currentWounds).toBe(5);  // W10 − 5 = W5
+  });
+
+  it('Damage scales with current wounds: wounded attacker deals less damage', () => {
+    // Attacker currentWounds=2. Same setup → 1 hit, 1 wound, Damage=2.
+    const atk = makeWSBAttacker();
+    const def = makeWSBDefender();
+    const s = buildInitialState(atk, def);
+    const state: CombatState = {
+      ...s,
+      challengeAdvantage: 'player',
+      player: { ...s.player, selectedGambit: 'world-serpents-bane', selectedWeaponProfile: wsbWeapon as any, currentWounds: 2 },
+      ai:     { ...s.ai,     selectedGambit: null,                   selectedWeaponProfile: defWeapon as any },
+    };
+    const dice = new FakeDiceRoller([
+      5,     // 1 hit (TN2+)
+      5,     // 1 wound (TN2+)
+      1,     // Pool2: 1 save die
+      1, 1,  // 2 AI misses (TN5+)
+    ]);
+    const result = resolveStrikeStep(dice, state, atk, def, 'player');
+    expect(result.playerResult.attacks).toBe(1);
+    expect(result.playerResult.totalDamage).toBe(2);  // currentWounds=2
+    expect(result.updatedState.ai.currentWounds).toBe(8);  // W10 − 2
+  });
+});

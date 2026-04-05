@@ -100,6 +100,11 @@ function resolveAttackSequence(
     defender.selectedGambit, state, !isForPlayer, 1, attackerChar.stats.WS,
   );
 
+  // Heaven's Strike: active only when the attacker's weapon has CriticalHit(6+).
+  // Effect: halve Attacks and upgrade that threshold to 5+.
+  const heavensStrikeActive = attacker.selectedGambit === 'heavens-strike'
+    && profile.specialRules.some(sr => sr.name === 'CriticalHit' && sr.threshold === 6);
+
   // Force: log boost before computing stats
   if (forceBoost !== null) {
     const boostDesc = forceBoost === 'AP' ? 'AP → AP2'
@@ -176,7 +181,13 @@ function resolveAttackSequence(
     }
   }
 
-  // Single-attack cap (Guard Up / Withdraw)
+  // Heaven's Strike: halve total attacks (after all other modifiers, before single-attack cap)
+  if (heavensStrikeActive) {
+    atkA = Math.floor(atkA / 2);
+    log.push(`Heaven's Strike: Attacks halved → ${atkA}, CriticalHit(6+) upgraded to CriticalHit(5+).`);
+  }
+
+  // Single-attack cap (Guard Up / Withdraw / World Serpent's Bane)
   if (mods.singleAttackCap) atkA = 1;
 
   // Dirty Fighter pre-strike: hard-override to the specified attack count
@@ -187,8 +198,13 @@ function resolveAttackSequence(
   // Bite of the Betrayed: +1 T to the defender's base Toughness
   const defTWithBite = defT + biteDefBonus;
   // Steadfast Resilience / Tempered by War may override defender's effective Toughness;
+  // Stone's Aegis adds +1T on top of any override or base value.
   // Phage(T) permanently reduces T by 1 (applied after an attack sequence, persists for the battle)
-  const effectiveDefT = Math.max(1, (defenderMods.overrideDefenderToughness ?? defTWithBite) - (defender.phageTApplied ? 1 : 0));
+  const stonesAegisBonus = defender.selectedGambit === 'stones-aegis' ? 1 : 0;
+  const effectiveDefT = Math.max(1,
+    (defenderMods.overrideDefenderToughness ?? (defTWithBite + stonesAegisBonus))
+    - (defender.phageTApplied ? 1 : 0),
+  );
 
   // Effective Strength and Damage for wound/damage calc
   const effectiveS = Math.max(1, atkS + mods.strengthDelta);
@@ -256,7 +272,9 @@ function resolveAttackSequence(
     if (isHit) {
       for (const sr of profile.specialRules) {
         if (sr.name === 'CriticalHit') {
-          const effectiveCritTN = hasPraeternaturalResilience ? Math.max(sr.threshold, 6) : sr.threshold;
+          // Heaven's Strike upgrades weapon CriticalHit(6+) to CriticalHit(5+)
+          const critThreshold = heavensStrikeActive && sr.threshold === 6 ? 5 : sr.threshold;
+          const effectiveCritTN = hasPraeternaturalResilience ? Math.max(critThreshold, 6) : critThreshold;
           if (roll >= effectiveCritTN) isCrit = true;
         }
       }
@@ -550,6 +568,8 @@ function resolveAttackSequence(
   // ── Apply Damage ─────────────────────────────────────────────────────────
   let dmgPerWound = baseDmg + mods.damageDelta;
   if (mods.damageSetToOne) dmgPerWound = 1;
+  // World Serpent's Bane: Damage Characteristic equals the attacker's current Wounds.
+  if (attacker.selectedGambit === 'world-serpents-bane') dmgPerWound = attacker.currentWounds;
 
   // Eternal Warrior: reduce damage by X, minimum 1
   // A Wall Unyielding also grants EW(1) to its user during the opponent's Strike Step
@@ -562,11 +582,17 @@ function resolveAttackSequence(
   }
   dmgPerWound = Math.max(1, dmgPerWound - ewReduction);
 
+  // Base damage value used for crit/shred bonus calculations (pre-EW).
+  // World Serpent's Bane overrides this base to the attacker's current wounds.
+  const baseDmgForBonuses = attacker.selectedGambit === 'world-serpents-bane'
+    ? attacker.currentWounds
+    : baseDmg + mods.damageDelta;
+
   // Critical Hit wounds increase the Damage Characteristic by +1 (before EW reduction).
   // When Flurry of Blows caps damage to 1, the crit bonus is suppressed by the cap.
   const critDmgPerWound = mods.damageSetToOne
     ? 1
-    : Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
+    : Math.max(1, (baseDmgForBonuses + 1) - ewReduction);
 
   // Shred: wounds that triggered Shred deal +1 Damage (suppressed when Flurry caps D to 1).
   // Normal hits: approximate shred-triggering unsaved wounds via fraction of wound rolls.
@@ -579,8 +605,8 @@ function resolveAttackSequence(
   const unsavedCritShredWounds = critHits > 0 && !mods.damageSetToOne
     ? Math.round((critShredTriggers / critHits) * unsavedCritWounds)
     : 0;
-  const shredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 1) - ewReduction);
-  const critShredDmgPerWound = Math.max(1, (baseDmg + mods.damageDelta + 2) - ewReduction);
+  const shredDmgPerWound = Math.max(1, (baseDmgForBonuses + 1) - ewReduction);
+  const critShredDmgPerWound = Math.max(1, (baseDmgForBonuses + 2) - ewReduction);
   let totalDamage =
     (unsavedCritWounds - unsavedCritShredWounds) * critDmgPerWound +
     unsavedCritShredWounds * critShredDmgPerWound +
