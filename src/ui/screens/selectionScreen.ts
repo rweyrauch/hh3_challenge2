@@ -5,6 +5,8 @@
  *
  * Character filter bar (above the row) lets the user narrow both dropdowns to:
  *   All | Primarchs only | Legion Astartes only
+ *
+ * Each side has two selects: Faction → Character (within that faction).
  */
 import type { Character, PsychicDiscipline, WargearId } from '../../models/character.js';
 import type { CharModifier } from '../../models/weapon.js';
@@ -60,15 +62,21 @@ function applyFilter(chars: Character[], filter: CharacterFilter): Character[] {
   return chars;
 }
 
-/** Build the <option> HTML for both character selects under the given filter. */
-function buildCharacterOptions(filter: CharacterFilter): string {
-  const factions = getCharactersByFaction();
-  return factions.flatMap(({ faction, characters }) => {
-    const filtered = applyFilter(characters, filter);
-    return filtered.map(
-      c => `<option value="${c.id}">${getFactionLabel(faction)} — ${c.name}</option>`,
-    );
-  }).join('');
+/** Build <option> HTML for all factions that have ≥1 character passing the filter. */
+function buildFactionOptions(filter: CharacterFilter): string {
+  return getCharactersByFaction()
+    .filter(({ characters }) => applyFilter(characters, filter).length > 0)
+    .map(({ faction }) => `<option value="${faction}">${getFactionLabel(faction)}</option>`)
+    .join('');
+}
+
+/** Build <option> HTML for characters in a single faction that pass the filter. */
+function buildCharacterOptions(factionId: string, filter: CharacterFilter): string {
+  const entry = getCharactersByFaction().find(f => f.faction === factionId);
+  if (!entry) return '';
+  return applyFilter(entry.characters, filter)
+    .map(c => `<option value="${c.id}">${c.name}</option>`)
+    .join('');
 }
 
 /**
@@ -134,7 +142,11 @@ function buildHTML(): string {
           <div class="card bg-dark border-info">
             <div class="card-header text-info fw-bold text-center">Your Warrior</div>
             <div class="card-body">
-              <label class="form-label small text-muted">Choose your character:</label>
+              <label class="form-label small text-muted">Faction:</label>
+              <select id="player-faction-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
+                <option value="">— Select a faction —</option>
+              </select>
+              <label class="form-label small text-muted">Character:</label>
               <select id="player-char-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                 <option value="">— Select a character —</option>
               </select>
@@ -178,7 +190,11 @@ function buildHTML(): string {
           <div class="card bg-dark border-danger">
             <div class="card-header text-danger fw-bold text-center">AI Warrior</div>
             <div class="card-body">
-              <label class="form-label small text-muted">Choose the AI's character:</label>
+              <label class="form-label small text-muted">Faction:</label>
+              <select id="ai-faction-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
+                <option value="">— Select a faction —</option>
+              </select>
+              <label class="form-label small text-muted">Character:</label>
               <select id="ai-char-select" class="form-select form-select-sm bg-dark text-white border-secondary mb-2">
                 <option value="">— Select a character —</option>
               </select>
@@ -223,23 +239,29 @@ function attachListeners(
   onSimulateWeapons: (result: SelectionResult) => void,
   initialState?: SelectionResult,
 ): void {
-  const playerSelect          = container.querySelector<HTMLSelectElement>('#player-char-select')!;
-  const playerSubfactionSection = container.querySelector<HTMLElement>('#player-subfaction-section')!;
-  const playerSubfactionSelect  = container.querySelector<HTMLSelectElement>('#player-subfaction-select')!;
-  const disciplineSection     = container.querySelector<HTMLElement>('#player-discipline-section')!;
-  const disciplineSelect      = container.querySelector<HTMLSelectElement>('#player-discipline-select')!;
-  const wargearSection        = container.querySelector<HTMLElement>('#player-wargear-section')!;
-  const wargearSelect         = container.querySelector<HTMLSelectElement>('#player-wargear-select')!;
-  const weaponSection         = container.querySelector<HTMLElement>('#player-weapon-section')!;
-  const weaponSelect          = container.querySelector<HTMLSelectElement>('#player-weapon-select')!;
-  const aiSelect              = container.querySelector<HTMLSelectElement>('#ai-char-select')!;
-  const aiSubfactionSection   = container.querySelector<HTMLElement>('#ai-subfaction-section')!;
-  const aiSubfactionSelect    = container.querySelector<HTMLSelectElement>('#ai-subfaction-select')!;
-  const beginBtn              = container.querySelector<HTMLButtonElement>('#begin-btn')!;
-  const simulateBtn           = container.querySelector<HTMLButtonElement>('#simulate-btn')!;
-  const weaponSimBtn          = container.querySelector<HTMLButtonElement>('#weapon-sim-btn')!;
-  const playerStat            = container.querySelector<HTMLElement>('#player-stat-block')!;
-  const aiStat                = container.querySelector<HTMLElement>('#ai-stat-block')!;
+  const playerFactionSelect       = container.querySelector<HTMLSelectElement>('#player-faction-select')!;
+  const playerSelect              = container.querySelector<HTMLSelectElement>('#player-char-select')!;
+  const playerSubfactionSection   = container.querySelector<HTMLElement>('#player-subfaction-section')!;
+  const playerSubfactionSelect    = container.querySelector<HTMLSelectElement>('#player-subfaction-select')!;
+  const disciplineSection         = container.querySelector<HTMLElement>('#player-discipline-section')!;
+  const disciplineSelect          = container.querySelector<HTMLSelectElement>('#player-discipline-select')!;
+  const wargearSection            = container.querySelector<HTMLElement>('#player-wargear-section')!;
+  const wargearSelect             = container.querySelector<HTMLSelectElement>('#player-wargear-select')!;
+  const weaponSection             = container.querySelector<HTMLElement>('#player-weapon-section')!;
+  const weaponSelect              = container.querySelector<HTMLSelectElement>('#player-weapon-select')!;
+  const aiFactionSelect           = container.querySelector<HTMLSelectElement>('#ai-faction-select')!;
+  const aiSelect                  = container.querySelector<HTMLSelectElement>('#ai-char-select')!;
+  const aiSubfactionSection       = container.querySelector<HTMLElement>('#ai-subfaction-section')!;
+  const aiSubfactionSelect        = container.querySelector<HTMLSelectElement>('#ai-subfaction-select')!;
+  const beginBtn                  = container.querySelector<HTMLButtonElement>('#begin-btn')!;
+  const simulateBtn               = container.querySelector<HTMLButtonElement>('#simulate-btn')!;
+  const weaponSimBtn              = container.querySelector<HTMLButtonElement>('#weapon-sim-btn')!;
+  const playerStat                = container.querySelector<HTMLElement>('#player-stat-block')!;
+  const aiStat                    = container.querySelector<HTMLElement>('#ai-stat-block')!;
+
+  const currentFilter = (): CharacterFilter =>
+    (container.querySelector<HTMLInputElement>('input[name="char-filter"]:checked')
+      ?.value ?? 'all') as CharacterFilter;
 
   const updateBeginBtn = () => {
     const ready = Boolean(playerSelect.value && aiSelect.value);
@@ -256,40 +278,69 @@ function attachListeners(
     }
   };
 
-  /**
-   * Rebuild both character dropdowns for the given filter, preserving any
-   * currently selected characters that still appear in the filtered list.
-   */
-  const refreshSelects = (filter: CharacterFilter) => {
-    const prevPlayer = playerSelect.value;
-    const prevAi     = aiSelect.value;
-    const placeholder = '<option value="">— Select a character —</option>';
-    const opts = buildCharacterOptions(filter);
+  /** Rebuild both faction dropdowns for the given filter, then re-populate character
+   *  dropdowns for whichever faction is still selected. Clears character + derived UI
+   *  on each side if the previously selected faction is no longer available. */
+  const refreshFactionSelects = (filter: CharacterFilter) => {
+    const prevPlayerFaction = playerFactionSelect.value;
+    const prevAiFaction     = aiFactionSelect.value;
+    const factionOpts       = buildFactionOptions(filter);
+    const placeholder       = '<option value="">— Select a faction —</option>';
+    const charPlaceholder   = '<option value="">— Select a character —</option>';
 
-    playerSelect.innerHTML = placeholder + opts;
-    aiSelect.innerHTML     = placeholder + opts;
+    playerFactionSelect.innerHTML = placeholder + factionOpts;
+    aiFactionSelect.innerHTML     = placeholder + factionOpts;
 
-    // Restore player selection if it survived the filter
-    if (prevPlayer) {
-      playerSelect.value = prevPlayer;
-      if (playerSelect.value !== prevPlayer) {
-        // Character filtered out — clear derived UI
-        playerSubfactionSection.hidden = true;
-        playerSubfactionSelect.value   = '';
-        wargearSection.hidden = true;
-        wargearSelect.value   = '';
-        weaponSection.hidden = true;
-        playerStat.innerHTML = '';
+    // Restore / clear player faction
+    if (prevPlayerFaction) {
+      playerFactionSelect.value = prevPlayerFaction;
+      if (playerFactionSelect.value === prevPlayerFaction) {
+        // Faction survived — repopulate characters and try to keep selection
+        const prevPlayerChar = playerSelect.value;
+        playerSelect.innerHTML = charPlaceholder + buildCharacterOptions(prevPlayerFaction, filter);
+        playerSelect.value = prevPlayerChar;
+        if (playerSelect.value !== prevPlayerChar) {
+          // Character filtered out — clear derived UI
+          playerSubfactionSection.hidden = true;
+          playerSubfactionSelect.value   = '';
+          disciplineSection.hidden = true;
+          disciplineSelect.value   = '';
+          wargearSection.hidden    = true;
+          wargearSelect.value      = '';
+          weaponSection.hidden     = true;
+          playerStat.innerHTML     = '';
+        }
+      } else {
+        // Faction filtered out — clear everything
+        playerSelect.innerHTML             = charPlaceholder;
+        playerSubfactionSection.hidden     = true;
+        playerSubfactionSelect.value       = '';
+        disciplineSection.hidden           = true;
+        disciplineSelect.value             = '';
+        wargearSection.hidden              = true;
+        wargearSelect.value                = '';
+        weaponSection.hidden               = true;
+        playerStat.innerHTML               = '';
       }
     }
 
-    // Restore AI selection if it survived the filter
-    if (prevAi) {
-      aiSelect.value = prevAi;
-      if (aiSelect.value !== prevAi) {
+    // Restore / clear AI faction
+    if (prevAiFaction) {
+      aiFactionSelect.value = prevAiFaction;
+      if (aiFactionSelect.value === prevAiFaction) {
+        const prevAiChar = aiSelect.value;
+        aiSelect.innerHTML = charPlaceholder + buildCharacterOptions(prevAiFaction, filter);
+        aiSelect.value = prevAiChar;
+        if (aiSelect.value !== prevAiChar) {
+          aiSubfactionSection.hidden = true;
+          aiSubfactionSelect.value   = '';
+          aiStat.innerHTML           = '';
+        }
+      } else {
+        aiSelect.innerHTML         = charPlaceholder;
         aiSubfactionSection.hidden = true;
         aiSubfactionSelect.value   = '';
-        aiStat.innerHTML = '';
+        aiStat.innerHTML           = '';
       }
     }
 
@@ -298,18 +349,27 @@ function attachListeners(
 
   // Populate the selects — restore previous state if available, otherwise use defaults
   if (initialState) {
-    // Re-check the saved filter radio (radio buttons in the same group auto-deselect each other)
+    // Re-check the saved filter radio
     const savedRadio = container.querySelector<HTMLInputElement>(
       `input[name="char-filter"][value="${initialState.filter}"]`,
     );
     if (savedRadio) savedRadio.checked = true;
 
-    refreshSelects(initialState.filter);
+    const factionOpts     = buildFactionOptions(initialState.filter);
+    const placeholder     = '<option value="">— Select a faction —</option>';
+    const charPlaceholder = '<option value="">— Select a character —</option>';
 
-    // Restore player character, sub-faction, discipline, and weapon
-    playerSelect.value = initialState.playerCharId;
+    playerFactionSelect.innerHTML = placeholder + factionOpts;
+    aiFactionSelect.innerHTML     = placeholder + factionOpts;
+
+    // Restore player faction + character
     const savedPlayerChar = ALL_CHARACTERS.find(c => c.id === initialState.playerCharId);
     if (savedPlayerChar) {
+      playerFactionSelect.value = savedPlayerChar.faction;
+      playerSelect.innerHTML = charPlaceholder
+        + buildCharacterOptions(savedPlayerChar.faction, initialState.filter);
+      playerSelect.value = initialState.playerCharId;
+
       // Show sub-faction section if applicable
       if (savedPlayerChar.faction === 'legion-astartes' || savedPlayerChar.faction === 'mechanicum') {
         populateSubfactionSelect(savedPlayerChar.faction, playerSubfactionSelect);
@@ -346,10 +406,14 @@ function attachListeners(
       playerStat.innerHTML = renderStatBlock(savedPlayerChar);
     }
 
-    // Restore AI character and sub-faction
-    aiSelect.value = initialState.aiCharId;
+    // Restore AI faction + character
     const savedAiChar = ALL_CHARACTERS.find(c => c.id === initialState.aiCharId);
     if (savedAiChar) {
+      aiFactionSelect.value = savedAiChar.faction;
+      aiSelect.innerHTML = charPlaceholder
+        + buildCharacterOptions(savedAiChar.faction, initialState.filter);
+      aiSelect.value = initialState.aiCharId;
+
       if (savedAiChar.faction === 'legion-astartes' || savedAiChar.faction === 'mechanicum') {
         populateSubfactionSelect(savedAiChar.faction, aiSubfactionSelect);
         aiSubfactionSection.hidden = false;
@@ -362,14 +426,47 @@ function attachListeners(
 
     updateBeginBtn();
   } else {
-    refreshSelects('all');
+    const factionOpts = buildFactionOptions('all');
+    const placeholder  = '<option value="">— Select a faction —</option>';
+    playerFactionSelect.innerHTML = placeholder + factionOpts;
+    aiFactionSelect.innerHTML     = placeholder + factionOpts;
   }
 
   // Filter radio buttons
   container.querySelectorAll<HTMLInputElement>('input[name="char-filter"]').forEach(radio => {
     radio.addEventListener('change', () => {
-      if (radio.checked) refreshSelects(radio.value as CharacterFilter);
+      if (radio.checked) refreshFactionSelects(radio.value as CharacterFilter);
     });
+  });
+
+  // Faction selects
+  playerFactionSelect.addEventListener('change', () => {
+    const faction = playerFactionSelect.value;
+    const charPlaceholder = '<option value="">— Select a character —</option>';
+    playerSelect.innerHTML = charPlaceholder
+      + (faction ? buildCharacterOptions(faction, currentFilter()) : '');
+    playerSelect.value = '';
+    playerSubfactionSection.hidden = true;
+    playerSubfactionSelect.value   = '';
+    disciplineSection.hidden       = true;
+    disciplineSelect.value         = '';
+    wargearSection.hidden          = true;
+    wargearSelect.value            = '';
+    weaponSection.hidden           = true;
+    playerStat.innerHTML           = '';
+    updateBeginBtn();
+  });
+
+  aiFactionSelect.addEventListener('change', () => {
+    const faction = aiFactionSelect.value;
+    const charPlaceholder = '<option value="">— Select a character —</option>';
+    aiSelect.innerHTML = charPlaceholder
+      + (faction ? buildCharacterOptions(faction, currentFilter()) : '');
+    aiSelect.value             = '';
+    aiSubfactionSection.hidden = true;
+    aiSubfactionSelect.value   = '';
+    aiStat.innerHTML           = '';
+    updateBeginBtn();
   });
 
   playerSelect.addEventListener('change', () => {
@@ -467,13 +564,12 @@ function attachListeners(
 
   const buildResult = (): SelectionResult => {
     const [wIdx, pIdx] = parseWeaponValue(weaponSelect.value);
-    const checkedFilter = container.querySelector<HTMLInputElement>('input[name="char-filter"]:checked');
     return {
       playerCharId: playerSelect.value,
       aiCharId: aiSelect.value,
       playerWeaponIndex: wIdx,
       playerProfileIndex: pIdx,
-      filter: (checkedFilter?.value ?? 'all') as CharacterFilter,
+      filter: currentFilter(),
       playerDiscipline: disciplineSelect.value || undefined,
       playerWargear: (wargearSelect.value || undefined) as WargearId | undefined,
       playerSubFaction: playerSubfactionSelect.value || undefined,
