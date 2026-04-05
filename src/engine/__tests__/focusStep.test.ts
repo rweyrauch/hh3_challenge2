@@ -46,14 +46,11 @@ describe('resolveFocusStep', () => {
   });
 
   it('re-rolls on tie until one side wins', () => {
-    // First two rolls tie, third pair breaks the tie
-    // VALDOR I=6, WARBOSS I=4; roll same raw die, differences come from CI
-    // To force a tie: match totals exactly. Both roll 1 first (tie if I is same).
-    // Use same characters with same I for tie test → use TRIBUNE vs TRIBUNE
-    // Tribune I=6, Warboss I=4 → CI difference = 2.
-    // Force raw rolls: player=1, ai=3 → totals: (1+6)=7 vs (3+4)=7 → tie!
-    // Second pair: player=4, ai=1 → totals: (4+6)=10 vs (1+4)=5 → player wins
-    const dice = new FakeDiceRoller([1, 3, 4, 1]);
+    // Tribune weapons[0] = Eternity Blade: IM+1, DE+2 → CI=7, DE=2, total = dice+9
+    // Warboss weapons[0] = Choppa: no IM, no DE → CI=4, total = dice+4
+    // Tie condition: player_dice + 9 = ai_dice + 4 → player=1, ai=6 → both total 10.
+    // Second pair: player=3, ai=1 → totals (3+9)=12 vs (1+4)=5 → player wins.
+    const dice = new FakeDiceRoller([1, 6, 3, 1]);
     const state = makeState(TRIBUNE, WARBOSS);
     const result = resolveFocusStep(dice, state, TRIBUNE, WARBOSS, null);
     expect(result.advantage).toBe('player');
